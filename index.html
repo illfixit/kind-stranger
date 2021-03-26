@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="icon" href="./icon.png" type="image/icon type" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Kind Stranger</title>
+  </head>
+  <body>
+    <p id="welcome" class="welcome">
+      <br />
+      Welcome to my Reddit viewer... <br />
+      <strong>Kind Stranger</strong>
+      <br />
+      <br />
+      For mobile users:<br />
+      <strong>Use swipes</strong><br /><br />
+
+      For desktop users:<br />
+      <strong>Use mouse wheel</strong><br />
+      or arrow keys<br /><br />
+      <strong>Tap twice</strong> to change the scale of images.<br /><br />
+      <strong> Tap here to start </strong><br /><br />
+      <a
+        href="https://github.com/eslessons/kind-stranger"
+        style="color: CHOCOLATE"
+        >My GitHub Repository</a
+      >
+    </p>
+    <button id="menubtn" class="menubtn hidden">
+      <img src="./icon.png" class="menuimg" id="menuImg" />
+    </button>
+
+    <div>
+      <input id="search" class="search hidden" placeholder="Search..." />
+    </div>
+
+    <div id="results" class="results hidden"></div>
+    <!-- <div id="container"> -->
+    <img id="image" src="" class="image blurred" />
+
+    <!-- poster="https://2.bp.blogspot.com/-R4i03mAdarY/WMksQxeJPeI/AAAAAAAAA90/NqrPy8TfTIQNqVI89vJ_uCce45WvklHhwCLcB/s1600/infinity.gif" -->
+    <!-- poster="https://static.wixstatic.com/media/6e2bd5_0afc500992e0417cb02510329394d0f4.gif" -->
+
+    <video
+      poster="./loader.gif"
+      id="video"
+      src=""
+      class="hidden"
+      preload="auto"
+      autoplay="autoplay"
+      loop
+      playsinline
+      muted
+    ></video>
+    <!-- </div> -->
+    <div class="description hidden" id="description">
+      <a href="" id="a">
+        <div class="title" id="title"></div>
+      </a>
+    </div>
+
+    <div id="menu-close" class="menu-close"></div>
+    <div id="menu" class="menu">
+      <div class="toggle-button-container">
+        <label for="toggle-button" class="toggle-button-text">Slide Show</label>
+        <input
+          type="checkbox"
+          id="slideshow-toggle-button"
+          class="toggle-button"
+        />
+      </div>
+
+      <div class="toggle-button-container">
+        <label for="toggle-button" class="toggle-button-text">Night Mode</label>
+        <input type="checkbox" id="toggle-button" class="toggle-button" />
+      </div>
+      <br />
+      <div class="slider-text hidden" id="slider-text">
+        Intensity of Night Mode
+      </div>
+      <input
+        type="range"
+        min="30"
+        max="80"
+        value="70"
+        class="slider hidden"
+        id="range"
+      />
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
