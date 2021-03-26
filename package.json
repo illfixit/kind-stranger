@@ -2,29 +2,27 @@
   "name": "kind-stranger-react",
   "version": "1.0.0",
   "description": "Kind Stranger. Reddit Viewer written using React",
-  "main": "script.js",
+  "main": "./build/index.js",
   "scripts": {
+    "build": "webpack",
+    "start": "webpack-dev-server",
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/illfixit/kind-stranger-react.git"
   },
   "author": "illfixit",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/illfixit/kind-stranger-react/issues"
-  },
-  "homepage": "https://github.com/illfixit/kind-stranger-react#readme",
   "dependencies": {
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.3",
     "react-router-dom": "^5.2.0",
     "webpack": "^5.28.0",
-    "webpack-cli": "^4.5.0"
+    "webpack-cli": "3.3.12"
   },
   "devDependencies": {
+    "@babel/core": "^7.13.10",
+    "@babel/preset-env": "^7.13.12",
+    "@babel/preset-react": "^7.12.13",
+    "babel-loader": "^8.2.2",
     "webpack-dev-server": "^3.11.2"
   }
 }

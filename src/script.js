@@ -16,7 +16,7 @@ const menuClose = document.getElementById('menu-close');
 
 const screenToggle = document.getElementById('screenToggle');
 const slideshowToggle = document.getElementById('slideshow-toggle-button');
-slideshowToggle.checked = false;
+// slideshowToggle.checked = false;
 
 const welcome = document.getElementById('welcome');
 
