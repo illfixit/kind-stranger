@@ -1,13 +1,29 @@
 import React from 'react';
 
 export default class WelcomeModal extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  closeWelcomeModal() {
+    welcome.style.display = 'none';
+    search.classList.remove('hidden');
+    image.classList.remove('blurred');
+    description.classList.remove('hidden');
+    menubtn.classList.remove('hidden');
+
+    // setTimeout(() => {
+    //   downloadNextPosts(startUrl);
+    // }, 1000);
+  }
+
   render() {
     return (
-      <div>
+      <React.Fragment>
         <p id="welcome" className="welcome">
           <br />
           Welcome to my Reddit viewer... <br />
-          <strong>Kind Stranger</strong>
+          <strong>Kind Stranger (React Edition)</strong>
           <br />
           <br />
           For mobile users:
@@ -25,17 +41,24 @@ export default class WelcomeModal extends React.Component {
           <strong>Tap twice</strong> to change the scale of images.
           <br />
           <br />
-          <strong> Tap here to start </strong>
+          <strong
+            onClick={() => {
+              this.closeWelcomeModal();
+            }}
+          >
+            {' '}
+            Tap here to start{' '}
+          </strong>
           <br />
           <br />
           <a
-            href="https://github.com/eslessons/kind-stranger"
+            href="https://github.com/eslessons/kind-stranger-react"
             style={{ color: 'CHOCOLATE' }}
           >
             My GitHub Repository
           </a>
         </p>
-      </div>
+      </React.Fragment>
     );
   }
 }

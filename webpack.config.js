@@ -8,12 +8,12 @@ module.exports = {
     path: path.resolve(__dirname, 'build'),
     filename: 'index.js',
   },
-  devtool: 'eval-source-map',
+  devtool: 'source-map',
   module: {
     rules: [
       {
         test: /\.js$/,
-        // exclude: /node_modules/,
+        exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {

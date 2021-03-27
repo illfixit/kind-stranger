@@ -5,7 +5,8 @@
   "main": "./build/index.js",
   "scripts": {
     "build": "webpack",
-    "start": "webpack-dev-server",
+    "start": "webpack --watch",
+    "dev-server": "webpack-dev-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "illfixit",
