@@ -7,7 +7,7 @@ export default class Post extends React.Component {
 
     this.state = {
       currentSubreddit: {
-        url: 'r/succulents/',
+        url: 'r/itookapicture/',
         after: '',
         sort: 'hot',
         currentPost: {},
