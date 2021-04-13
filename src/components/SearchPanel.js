@@ -63,7 +63,9 @@ export default class SearchPanel extends React.Component {
           value={this.state.searchTerm}
         />
 
-        <Results resultsArray={this.state.results} />
+        {this.state.results.length > 0 ? (
+          <Results resultsArray={this.state.results} />
+        ) : null}
       </React.Fragment>
     );
   }

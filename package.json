@@ -14,6 +14,7 @@
   "dependencies": {
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-easy-swipe": "0.0.21",
     "react-redux": "^7.2.3",
     "react-router-dom": "^5.2.0",
     "webpack": "^5.28.0",
