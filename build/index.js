@@ -174,7 +174,7 @@ var Post = /*#__PURE__*/function (_React$Component) {
     _this = _super.call(this, props);
     _this.state = {
       currentSubreddit: {
-        url: 'r/succulents/',
+        url: 'r/itookapicture/',
         after: '',
         sort: 'hot',
         currentPost: {},
