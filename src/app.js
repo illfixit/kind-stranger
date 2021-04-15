@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import store from './store';
 
 import WelcomeModal from './components/WelcomeModal.js';
 import Menu from './components/Menu.js';
@@ -9,12 +11,12 @@ import SearchPanel from './components/SearchPanel.js';
 export default class App extends React.Component {
   render() {
     return (
-      <React.Fragment>
+      <Provider store={store}>
         <WelcomeModal />
         <Menu />
         <Post />
         <SearchPanel />
-      </React.Fragment>
+      </Provider>
     );
   }
 }

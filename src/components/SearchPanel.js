@@ -25,7 +25,6 @@ export default class SearchPanel extends React.Component {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log(data.data.children);
         let results = data.data.children.filter(
           (r) => typeof r.data.url === 'string'
         );
@@ -64,7 +63,16 @@ export default class SearchPanel extends React.Component {
         />
 
         {this.state.results.length > 0 ? (
-          <Results resultsArray={this.state.results} />
+          <Results
+            // key={
+            //   this.state.results &&
+            //   this.state.results.reduce((acc, el) => {
+            //     console.log(acc);
+            //     return acc + el.data.url;
+            //   }, '')
+            // }
+            resultsArray={this.state.results}
+          />
         ) : null}
       </React.Fragment>
     );
@@ -124,6 +132,12 @@ class Results extends React.Component {
 class Result extends React.Component {
   constructor(props) {
     super(props);
+
+    this.clickHandler = this.clickHandler.bind(this);
+  }
+
+  clickHandler(e) {
+    console.log(e.target.childNodes[1].data);
   }
 
   // componentDidMount() {
@@ -141,7 +155,7 @@ class Result extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <div className="result">
+        <div className="result" onClick={this.clickHandler}>
           <img
             src={this.props.iconUrl}
             style={{
