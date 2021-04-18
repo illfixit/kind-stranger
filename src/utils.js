@@ -1,12 +1,24 @@
-export default (postsArray) => {
-  let filteredPostsArray = postsArray.filter(
-    (post) =>
-      ((post.preview && post.preview.images[0] != null) ||
-        post.media_metadata != null ||
-        post.domain.includes('imgur') ||
-        post.url.includes('jpg')) &&
-      !post.url.includes('youtu')
-  );
+export const filterPostsArray = (postsArray) => {
+  postsArray = postsArray.map((post) => {
+    if (post && post.crosspost_parent != null) {
+      return post.crosspost_parent_list[0];
+    } else {
+      return post;
+    }
+  });
+
+  let filteredPostsArray = postsArray.filter((post) => {
+    return (
+      (post.preview && post.preview.images[0] != null) ||
+      post.media_metadata != null ||
+      post.domain.includes('imgur') ||
+      post.url.includes('jpg')
+    );
+  });
+
+  if (filteredPostsArray.length < 1) {
+    throw new Error('incompatible post');
+  }
 
   filteredPostsArray = filteredPostsArray.map((post) => {
     let artificialPostsArray = [];
@@ -32,11 +44,8 @@ export default (postsArray) => {
     return artificialPostsArray.length > 1 ? artificialPostsArray : post;
   });
 
-  // console.log(filteredPostsArray);
-
   filteredPostsArray = filteredPostsArray.reduce((acc, post) => {
     if (Array.isArray(post)) {
-      // console.log('post', post);
       post.forEach((p) => acc.unshift(p));
     } else {
       acc.push(post);
@@ -48,51 +57,3 @@ export default (postsArray) => {
 
   return filteredPostsArray;
 };
-
-/*
-
-
-  downloadNextPost() {
-    let url = this.state.currentSubreddit.url;
-    let sort = this.state.currentSubreddit.sort;
-    let after = this.state.currentSubreddit.after;
-
-    fetch(`https://www.reddit.com/${url}${sort}.json?&limit=1&after=${after}`)
-      .then((response) => response.json())
-      .then((data) => {
-        // console.log('data', data);
-
-        let postsArray = data.data.children.map((post) => post.data);
-
-        // console.log(postsArray);
-        let filteredPostsArray;
-
-        try {
-          filteredPostsArray = this.filterPostsArray(postsArray);
-        } catch (e) {
-          console.log(e);
-        }
-
-        this.setState((previousState) => {
-          return {
-            ...previousState,
-            currentSubreddit: {
-              ...previousState.currentSubreddit,
-              previousPosts: [
-                ...previousState.currentSubreddit.previousPosts,
-                previousState.currentSubreddit.currentPost,
-              ],
-              currentPost: filteredPostsArray,
-              after: data.data.after,
-            },
-          };
-        });
-        console.log('-------------------- NEXT --------------------');
-      })
-      .catch((e) => {
-        console.log(e);
-        // this.downloadNextPost();
-      });
-  }
-
-  */

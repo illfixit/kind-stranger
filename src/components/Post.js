@@ -8,6 +8,7 @@ import {
   showPreviousSubpost,
 } from '../actions/index';
 import Swipe from 'react-easy-swipe';
+import Dots from './Dots';
 import { render } from 'react-dom';
 
 class Post extends React.Component {
@@ -21,8 +22,7 @@ class Post extends React.Component {
   }
 
   componentDidMount() {
-    let { url, sort, after } = this.props.api.currentSubreddit;
-    this.props.dispatch(fetchNextPost(url, sort, after));
+    this.props.dispatch(fetchNextPost());
   }
 
   onSwipeDown(position, event) {
@@ -33,8 +33,12 @@ class Post extends React.Component {
 
   onSwipeUp(position, event) {
     if (this.props.api.currentSubreddit.nextPosts.length === 0) {
-      let { url, sort, after } = this.props.api.currentSubreddit;
-      this.props.dispatch(fetchNextPost(url, sort, after));
+      try {
+        this.props.dispatch(fetchNextPost());
+      } catch (e) {
+        console.log('Post', e);
+        this.props.dispatch(fetchNextPost());
+      }
     } else {
       this.props.dispatch(showNextPost());
     }
@@ -59,12 +63,22 @@ class Post extends React.Component {
   }
 
   render() {
-    let imageSource = null;
-    let title = null;
+    // if (post && post.crosspost_parent != null)
+    //   post = post.crosspost_parent_list[0];
 
+    let imageSource = null;
+    let videoSource = null;
+    let title = null;
+    let numberOfSubPosts = 0;
+    let active;
+
+    // console.log('render', this.props.api.currentSubreddit);
     try {
       if (this.props.api.currentSubreddit.currentPost[0]) {
-        let active = this.props.api.currentSubreddit.currentPost[0].active;
+        numberOfSubPosts =
+          this.props.api.currentSubreddit.currentPost.length - 1;
+
+        active = this.props.api.currentSubreddit.currentPost[0].active;
 
         let post = this.props.api.currentSubreddit.currentPost[active];
 
@@ -74,10 +88,49 @@ class Post extends React.Component {
             ].url.replace(/amp;/gi, '')
           : '';
 
+        if (post.url && post.url.includes('redd') && post.url.includes('.gif'))
+          imageSource = post.url;
+        video.classList.add('hidden');
+
+        if (post.url && post.url.includes('gfycat'))
+          imageSource = post.secure_media.oembed.thumbnail_url;
+        video.classList.add('hidden');
+
+        if (
+          post.url &&
+          post.url.endsWith('.gifv') &&
+          !post.url.includes('redd')
+        ) {
+          videoSource = post.url.replace('gifv', 'mp4');
+          video.classList.remove('hidden');
+        }
+        if (
+          post.url &&
+          post.url.endsWith('.gif') &&
+          !post.url.includes('redd')
+        ) {
+          videoSource = post.url.replace('gif', 'mp4');
+          video.classList.remove('hidden');
+        }
+
+        if (post.media && post.media.reddit_video != null) {
+          videoSource = post.media.reddit_video.fallback_url;
+          video.classList.remove('hidden');
+        }
+
+        if (post.url && post.url.includes('redgif')) {
+          videoSource = post.preview.reddit_video_preview.fallback_url;
+          video.classList.remove('hidden');
+        }
+
         title = post.title;
       }
     } catch (e) {
-      console.log('not good');
+      console.log(e, 'not good in render');
+      // this.props.dispatch(fetchNextPost());
+      // let { url, sort, after } = this.props.api.currentSubreddit;
+      // this.props.dispatch(fetchNextPost(url, sort, after));
+      // this.props.dispatch(showNextPost());
     }
 
     return (
@@ -86,13 +139,17 @@ class Post extends React.Component {
         onSwipeUp={this.onSwipeUp}
         onSwipeRight={this.onSwipeRight}
         onSwipeLeft={this.onSwipeLeft}
-        tolerance={100}
+        tolerance={50}
       >
-        <img id="image" src={imageSource} className="image blurred" />
+        <img
+          id="image"
+          src={imageSource ? imageSource : './images/loader.gif'}
+          className="image blurred"
+        />
         <video
           poster="./images/loader.gif"
           id="video"
-          src=""
+          src={videoSource ? videoSource : ''}
           className="hidden"
           preload="auto"
           autoPlay="autoplay"
@@ -100,6 +157,16 @@ class Post extends React.Component {
           playsInline
           muted
         ></video>
+
+        <Dots
+          numberOfSubPosts={numberOfSubPosts}
+          active={active}
+          // bottom={
+          //   document.getElementById('description')
+          //     ? document.getElementById('description').offsetHeight
+          //     : 0
+          // }
+        />
         <div className="description hidden" id="description">
           <a href="" id="a">
             <div className="title" id="title">
@@ -147,7 +214,7 @@ class Post extends React.Component {
 // }
 
 const mapStateToProps = ({ api }) => {
-  console.log(api.currentSubreddit.currentPost[0]);
+  // console.log(api.currentSubreddit.currentPost[0]);
   return { api };
 };
 

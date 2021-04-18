@@ -1,36 +1,31 @@
-import React, { setState } from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
+import {
+  changeSearchTerm,
+  changeSubreddit,
+  checkIfSubredditIsOk,
+  fetchNextPost,
+  getListOfSubreddits,
+  hideSearchResults,
+} from '../actions';
+import Results from './Results';
 
-export default class SearchPanel extends React.Component {
+class SearchPanel extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { searchTerm: '', results: [] };
     this.handleInput = this.handleInput.bind(this);
-    this.searchSubreddits = this.searchSubreddits.bind(this);
   }
 
   handleInput(e) {
     let value = e.target.value;
 
-    this.setState({
-      searchTerm: value,
-    });
+    this.props.dispatch(changeSearchTerm(value));
+    this.props.dispatch(getListOfSubreddits(value));
 
-    this.searchSubreddits(value);
-  }
-
-  searchSubreddits(s) {
-    fetch(
-      `https://www.reddit.com/api/subreddit_autocomplete_v2.json?query=${s}&raw_json=1&gilding_detail=1`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        let results = data.data.children.filter(
-          (r) => typeof r.data.url === 'string'
-        );
-        this.setState({ results });
-      })
-      .catch((e) => {});
+    if (value && (e.key === 'Enter' || e.keyCode === 13)) {
+      this.props.dispatch(checkIfSubredditIsOk(`/r/${value}/`));
+    }
   }
 
   // componentDidMount() {
@@ -46,6 +41,7 @@ export default class SearchPanel extends React.Component {
   // }
 
   render() {
+    // console.log(this.props.api.search);
     return (
       <React.Fragment>
         <button id="menubtn" className="menubtn hidden">
@@ -59,10 +55,14 @@ export default class SearchPanel extends React.Component {
           onInput={(e) => {
             this.handleInput(e);
           }}
-          value={this.state.searchTerm}
+          onKeyUp={(e) => {
+            this.handleInput(e);
+          }}
+          value={this.props.api.search.searchTerm}
         />
 
-        {this.state.results.length > 0 ? (
+        {this.props.api.search.results &&
+        this.props.api.search.results.length > 0 ? (
           <Results
             // key={
             //   this.state.results &&
@@ -71,7 +71,8 @@ export default class SearchPanel extends React.Component {
             //     return acc + el.data.url;
             //   }, '')
             // }
-            resultsArray={this.state.results}
+            hidden={this.props.api.search.hidden}
+            resultsArray={this.props.api.search.results}
           />
         ) : null}
       </React.Fragment>
@@ -79,103 +80,8 @@ export default class SearchPanel extends React.Component {
   }
 }
 
-class Results extends React.Component {
-  constructor(props) {
-    super(props);
+const mapStateToProps = ({ api }) => {
+  return { api };
+};
 
-    this.state = { results: [] };
-  }
-
-  // componentDidMount() {
-  //   console.log('Results:CDM', this.state);
-  // }
-
-  // componentDidUpdate() {
-  //   console.log('Results:CDU', this.state);
-  // }
-
-  // componentWillUnmount() {
-  //   console.log('Results:CWU', this.state);
-  // }
-
-  showResults() {
-    let results = this.props.resultsArray.map((element) => {
-      let iconUrl = element.data.community_icon
-        ? element.data.community_icon
-        : element.data.icon_img ||
-          `https://b.thumbs.redditmedia.com/8cMVsK9DKU-HJSM2WEG9mAGHIgd8-cEsnpJNJlB5NPw.png`;
-
-      return (
-        <React.Fragment>
-          <Result
-            key={element.data.subscribers}
-            url={element.data.url}
-            iconUrl={iconUrl}
-            numOfSubscribers={element.data.subscribers}
-          />
-        </React.Fragment>
-      );
-    });
-
-    return results;
-  }
-
-  render() {
-    return (
-      <div id="results" className="results">
-        {this.showResults()}
-      </div>
-    );
-  }
-}
-
-class Result extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.clickHandler = this.clickHandler.bind(this);
-  }
-
-  clickHandler(e) {
-    console.log(e.target.childNodes[1].data);
-  }
-
-  // componentDidMount() {
-  //   console.log('Result:CDM', this.state);
-  // }
-
-  // componentDidUpdate() {
-  //   console.log('Result:CDU', this.state);
-  // }
-
-  // componentWillUnmount() {
-  //   console.log('Result:CWU', this.state);
-  // }
-
-  render() {
-    return (
-      <React.Fragment>
-        <div className="result" onClick={this.clickHandler}>
-          <img
-            src={this.props.iconUrl}
-            style={{
-              width: '1.5rem',
-              height: '1.5rem',
-              marginRight: '0.5rem',
-            }}
-          />
-          {this.props.url} -{' '}
-          {new Intl.NumberFormat().format(this.props.numOfSubscribers)}{' '}
-          subscribers
-        </div>
-      </React.Fragment>
-    );
-  }
-}
-
-{
-  /* 
-{element.data.url} - ${new Intl.NumberFormat().format(
-   element.data.subscribers
- )} subscribers */
-}
+export default connect(mapStateToProps)(SearchPanel);

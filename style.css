@@ -357,3 +357,24 @@ a {
 .blurred {
   filter: blur(5px);
 }
+
+.dots {
+  position: fixed;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  top: 2.5rem;
+  width: 100vw;
+  left: 0;
+  font-size: 28px;
+  /* border: 1px red solid; */
+}
+
+.dot {
+  color: rgb(173, 173, 173);
+}
+
+.active {
+  color: rgb(218, 218, 218);
+}

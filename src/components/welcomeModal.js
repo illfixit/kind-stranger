@@ -11,6 +11,9 @@ export default class WelcomeModal extends React.Component {
     image.classList.remove('blurred');
     description.classList.remove('hidden');
     menubtn.classList.remove('hidden');
+    setTimeout(() => {
+      dots.classList.remove('hidden');
+    }, 1000);
 
     // setTimeout(() => {
     //   downloadNextPosts(startUrl);

@@ -70,13 +70,21 @@ function _objectWithoutPropertiesLoose(source, excluded) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "fetchNextPost": () => (/* binding */ fetchNextPost),
+/* harmony export */   "checkIfSubredditIsOk": () => (/* binding */ checkIfSubredditIsOk),
+/* harmony export */   "getListOfSubreddits": () => (/* binding */ getListOfSubreddits),
+/* harmony export */   "showCurrentPost": () => (/* binding */ showCurrentPost),
 /* harmony export */   "showPreviousPost": () => (/* binding */ showPreviousPost),
 /* harmony export */   "showNextPost": () => (/* binding */ showNextPost),
 /* harmony export */   "showNextSubpost": () => (/* binding */ showNextSubpost),
-/* harmony export */   "showPreviousSubpost": () => (/* binding */ showPreviousSubpost)
+/* harmony export */   "showPreviousSubpost": () => (/* binding */ showPreviousSubpost),
+/* harmony export */   "changeSubreddit": () => (/* binding */ changeSubreddit),
+/* harmony export */   "changeSearchTerm": () => (/* binding */ changeSearchTerm),
+/* harmony export */   "hideSearchResults": () => (/* binding */ hideSearchResults),
+/* harmony export */   "showSearchResults": () => (/* binding */ showSearchResults)
 /* harmony export */ });
 /* harmony import */ var _actiontypes__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../actiontypes */ "./src/actiontypes/index.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils */ "./src/utils.js");
+/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../store */ "./src/store.js");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -85,12 +93,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
-var fetchNextPost = function fetchNextPost(url, sort, after) {
+
+var fetchNextPost = function fetchNextPost() {
+  var _store$getState$api$c = _store__WEBPACK_IMPORTED_MODULE_2__.default.getState().api.currentSubreddit,
+      url = _store$getState$api$c.url,
+      sort = _store$getState$api$c.sort,
+      after = _store$getState$api$c.after;
   return function (dispatch) {
     dispatch(fetchNextPostStarted());
-    fetch("https://www.reddit.com/".concat(url).concat(sort, ".json?&limit=1&after=").concat(after)).then(function (response) {
+    fetch("https://www.reddit.com".concat(url).concat(sort, ".json?&limit=1&after=").concat(after)).then(function (response) {
       return response.json();
     }).then(function (data) {
+      dispatch(updateCurrentSubredditAfter(data.data.after));
       var postsArray = data.data.children.map(function (post) {
         return post.data;
       });
@@ -98,18 +112,78 @@ var fetchNextPost = function fetchNextPost(url, sort, after) {
       var filteredPostsArray;
 
       try {
-        filteredPostsArray = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.default)(postsArray);
+        filteredPostsArray = (0,_utils__WEBPACK_IMPORTED_MODULE_1__.filterPostsArray)(postsArray);
       } catch (e) {
-        console.log(e);
-      } // console.log('fetchNextPost', filteredPostsArray);
-
+        // console.log('INCOMPATIBLE POST', postsArray);
+        dispatch(fetchNextPostFailure({
+          e: e
+        }));
+        dispatch(fetchNextPost());
+      }
 
       dispatch(fetchNextPostSuccess({
         filteredPostsArray: filteredPostsArray,
         after: after
       }));
+      dispatch(showCurrentPost());
     })["catch"](function (e) {
-      dispatch(fetchNextPostFailure(e));
+      // console.log('FETCH_NEW_POST failed');
+      dispatch(fetchNextPostFailure({
+        e: e
+      }));
+      dispatch(fetchNextPost());
+    });
+  };
+};
+var checkIfSubredditIsOk = function checkIfSubredditIsOk(subreddit) {
+  return function (dispatch) {
+    dispatch(checkIfSubredditIsOkStarted());
+    var exists = false;
+    fetch("https://www.reddit.com".concat(subreddit, "hot.json")).then(function (data) {
+      return data.json();
+    }).then(function (data) {
+      // console.log('check', data.data);
+      for (var i = 1; i < 10; i++) {
+        try {
+          if (data.data.children[i].data.preview.images[0].resolutions.length > 1) {
+            exists = true;
+            break;
+          }
+        } catch (e) {// console.log(e);
+        }
+      }
+
+      if (exists === false) {
+        dispatch(checkIfSubredditIsOkFailure('Bad subreddit'));
+      } else if (exists === true) {
+        dispatch(checkIfSubredditIsOkSuccess());
+        dispatch(hideSearchResults());
+        dispatch(changeSubreddit(subreddit));
+        dispatch(fetchNextPost());
+      }
+    })["catch"](function (e) {
+      // console.log(`${subreddit} doesn't exist!`);
+      // alert('Please, choose another subreddit');
+      exists = false;
+      dispatch(checkIfSubredditIsOkFailure('Bad subreddit'));
+    });
+  };
+};
+var getListOfSubreddits = function getListOfSubreddits(searchTerm) {
+  return function (dispatch) {
+    dispatch(getListOfSubredditsStarted());
+    fetch("https://www.reddit.com/api/subreddit_autocomplete_v2.json?query=".concat(searchTerm, "&raw_json=1&gilding_detail=1")).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      var results = data.data.children.filter(function (r) {
+        return typeof r.data.url === 'string';
+      });
+      dispatch(showSearchResults());
+      dispatch(getListOfSubredditsSuccess());
+      dispatch(updateSearchResults(results));
+    })["catch"](function (e) {
+      console.log(e);
+      dispatch(getListOfSubredditsFailure(e));
     });
   };
 };
@@ -136,6 +210,20 @@ var fetchNextPostFailure = function fetchNextPostFailure(error) {
   };
 };
 
+var updateCurrentSubredditAfter = function updateCurrentSubredditAfter(after) {
+  return {
+    type: _actiontypes__WEBPACK_IMPORTED_MODULE_0__.UPDATE_CURRENT_SUBREDDIT_AFTER,
+    payload: {
+      after: after
+    }
+  };
+};
+
+var showCurrentPost = function showCurrentPost() {
+  return {
+    type: _actiontypes__WEBPACK_IMPORTED_MODULE_0__.SHOW_CURRENT_POST
+  };
+};
 var showPreviousPost = function showPreviousPost() {
   return {
     type: _actiontypes__WEBPACK_IMPORTED_MODULE_0__.SHOW_PREVIOUS_POST
@@ -157,6 +245,81 @@ var showPreviousSubpost = function showPreviousSubpost() {
   };
 };
 
+var checkIfSubredditIsOkStarted = function checkIfSubredditIsOkStarted() {
+  return {
+    type: _actiontypes__WEBPACK_IMPORTED_MODULE_0__.CHECK_IF_SUBREDDIT_IS_OK_STARTED
+  };
+};
+
+var checkIfSubredditIsOkSuccess = function checkIfSubredditIsOkSuccess() {
+  return {
+    type: _actiontypes__WEBPACK_IMPORTED_MODULE_0__.CHECK_IF_SUBREDDIT_IS_OK_SUCCESS
+  };
+};
+
+var checkIfSubredditIsOkFailure = function checkIfSubredditIsOkFailure(error) {
+  return {
+    type: _actiontypes__WEBPACK_IMPORTED_MODULE_0__.CHECK_IF_SUBREDDIT_IS_OK_FAILURE,
+    payload: {
+      error: error
+    }
+  };
+};
+
+var changeSubreddit = function changeSubreddit(subreddit) {
+  return {
+    type: _actiontypes__WEBPACK_IMPORTED_MODULE_0__.CHANGE_SUBREDDIT,
+    payload: {
+      subreddit: subreddit
+    }
+  };
+};
+var changeSearchTerm = function changeSearchTerm(searchTerm) {
+  return {
+    type: _actiontypes__WEBPACK_IMPORTED_MODULE_0__.CHANGE_SEARCH_TERM,
+    payload: {
+      searchTerm: searchTerm
+    }
+  };
+}; // TO REFACTOR START
+
+var getListOfSubredditsStarted = function getListOfSubredditsStarted() {
+  return {
+    type: _actiontypes__WEBPACK_IMPORTED_MODULE_0__.GET_LIST_OF_SUBREDDITS_STARTED
+  };
+};
+
+var getListOfSubredditsFailure = function getListOfSubredditsFailure() {
+  return {
+    type: _actiontypes__WEBPACK_IMPORTED_MODULE_0__.GET_LIST_OF_SUBREDDITS_FAILURE
+  };
+};
+
+var getListOfSubredditsSuccess = function getListOfSubredditsSuccess() {
+  return {
+    type: _actiontypes__WEBPACK_IMPORTED_MODULE_0__.GET_LIST_OF_SUBREDDITS_SUCCESS
+  };
+}; // END
+
+
+var updateSearchResults = function updateSearchResults(results) {
+  return {
+    type: _actiontypes__WEBPACK_IMPORTED_MODULE_0__.UPDATE_SEARCH_RESULTS,
+    payload: results
+  };
+};
+
+var hideSearchResults = function hideSearchResults() {
+  return {
+    type: _actiontypes__WEBPACK_IMPORTED_MODULE_0__.HIDE_SEARCH_RESULTS
+  };
+};
+var showSearchResults = function showSearchResults() {
+  return {
+    type: _actiontypes__WEBPACK_IMPORTED_MODULE_0__.SHOW_SEARCH_RESULTS
+  };
+};
+
 /***/ }),
 
 /***/ "./src/actiontypes/index.js":
@@ -172,17 +335,159 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "FETCH_NEXT_POST_SUCCESS": () => (/* binding */ FETCH_NEXT_POST_SUCCESS),
 /* harmony export */   "FETCH_NEXT_POST_FAILURE": () => (/* binding */ FETCH_NEXT_POST_FAILURE),
 /* harmony export */   "SHOW_PREVIOUS_POST": () => (/* binding */ SHOW_PREVIOUS_POST),
+/* harmony export */   "SHOW_CURRENT_POST": () => (/* binding */ SHOW_CURRENT_POST),
 /* harmony export */   "SHOW_NEXT_POST": () => (/* binding */ SHOW_NEXT_POST),
 /* harmony export */   "SHOW_NEXT_SUBPOST": () => (/* binding */ SHOW_NEXT_SUBPOST),
-/* harmony export */   "SHOW_PREVIOUS_SUBPOST": () => (/* binding */ SHOW_PREVIOUS_SUBPOST)
+/* harmony export */   "SHOW_PREVIOUS_SUBPOST": () => (/* binding */ SHOW_PREVIOUS_SUBPOST),
+/* harmony export */   "CHECK_IF_SUBREDDIT_IS_OK": () => (/* binding */ CHECK_IF_SUBREDDIT_IS_OK),
+/* harmony export */   "CHECK_IF_SUBREDDIT_IS_OK_STARTED": () => (/* binding */ CHECK_IF_SUBREDDIT_IS_OK_STARTED),
+/* harmony export */   "CHECK_IF_SUBREDDIT_IS_OK_FAILURE": () => (/* binding */ CHECK_IF_SUBREDDIT_IS_OK_FAILURE),
+/* harmony export */   "CHECK_IF_SUBREDDIT_IS_OK_SUCCESS": () => (/* binding */ CHECK_IF_SUBREDDIT_IS_OK_SUCCESS),
+/* harmony export */   "CHANGE_SUBREDDIT": () => (/* binding */ CHANGE_SUBREDDIT),
+/* harmony export */   "CHANGE_SEARCH_TERM": () => (/* binding */ CHANGE_SEARCH_TERM),
+/* harmony export */   "GET_LIST_OF_SUBREDDITS": () => (/* binding */ GET_LIST_OF_SUBREDDITS),
+/* harmony export */   "GET_LIST_OF_SUBREDDITS_STARTED": () => (/* binding */ GET_LIST_OF_SUBREDDITS_STARTED),
+/* harmony export */   "GET_LIST_OF_SUBREDDITS_FAILURE": () => (/* binding */ GET_LIST_OF_SUBREDDITS_FAILURE),
+/* harmony export */   "GET_LIST_OF_SUBREDDITS_SUCCESS": () => (/* binding */ GET_LIST_OF_SUBREDDITS_SUCCESS),
+/* harmony export */   "UPDATE_SEARCH_RESULTS": () => (/* binding */ UPDATE_SEARCH_RESULTS),
+/* harmony export */   "HIDE_SEARCH_RESULTS": () => (/* binding */ HIDE_SEARCH_RESULTS),
+/* harmony export */   "SHOW_SEARCH_RESULTS": () => (/* binding */ SHOW_SEARCH_RESULTS),
+/* harmony export */   "UPDATE_CURRENT_SUBREDDIT_AFTER": () => (/* binding */ UPDATE_CURRENT_SUBREDDIT_AFTER)
 /* harmony export */ });
 var FETCH_NEXT_POST_STARTED = 'FETCH_NEXT_POST_STARTED';
 var FETCH_NEXT_POST_SUCCESS = 'FETCH_NEXT_POST_SUCCESS';
 var FETCH_NEXT_POST_FAILURE = 'FETCH_NEXT_POST_FAILURE';
 var SHOW_PREVIOUS_POST = 'SHOW_PREVIOUS_POST';
+var SHOW_CURRENT_POST = 'SHOW_CURRENT_POST';
 var SHOW_NEXT_POST = 'SHOW_NEXT_POST';
 var SHOW_NEXT_SUBPOST = 'SHOW_NEXT_SUBPOST';
 var SHOW_PREVIOUS_SUBPOST = 'SHOW_PREVIOUS_SUBPOST';
+var CHECK_IF_SUBREDDIT_IS_OK = 'CHECK_IF_SUBREDDIT_IS_OK';
+var CHECK_IF_SUBREDDIT_IS_OK_STARTED = 'CHECK_IF_SUBREDDIT_IS_OK_STARTED';
+var CHECK_IF_SUBREDDIT_IS_OK_FAILURE = 'CHECK_IF_SUBREDDIT_IS_OK_FAILURE';
+var CHECK_IF_SUBREDDIT_IS_OK_SUCCESS = 'CHECK_IF_SUBREDDIT_IS_OK_SUCCESS';
+var CHANGE_SUBREDDIT = 'CHANGE_SUBREDDIT';
+var CHANGE_SEARCH_TERM = 'CHANGE_SEARCH_TERM';
+var GET_LIST_OF_SUBREDDITS = 'GET_LIST_OF_SUBREDDITS';
+var GET_LIST_OF_SUBREDDITS_STARTED = 'GET_LIST_OF_SUBREDDITS_STARTED';
+var GET_LIST_OF_SUBREDDITS_FAILURE = 'GET_LIST_OF_SUBREDDITS_FAILURE';
+var GET_LIST_OF_SUBREDDITS_SUCCESS = 'GET_LIST_OF_SUBREDDITS_SUCCESS';
+var UPDATE_SEARCH_RESULTS = 'UPDATE_SEARCH_RESULTS';
+var HIDE_SEARCH_RESULTS = 'HIDE_SEARCH_RESULTS';
+var SHOW_SEARCH_RESULTS = 'SHOW_SEARCH_RESULTS';
+var UPDATE_CURRENT_SUBREDDIT_AFTER = 'UPDATE_CURRENT_SUBREDDIT_AFTER';
+
+/***/ }),
+
+/***/ "./src/components/Dots.js":
+/*!********************************!*\
+  !*** ./src/components/Dots.js ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Dots)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+var Dots = /*#__PURE__*/function (_React$Component) {
+  _inherits(Dots, _React$Component);
+
+  var _super = _createSuper(Dots);
+
+  function Dots(props) {
+    _classCallCheck(this, Dots);
+
+    return _super.call(this, props);
+  }
+
+  _createClass(Dots, [{
+    key: "showDots",
+    value: function showDots(numberOfDots, active) {
+      // console.log('showDots', numberOfDots, active);
+      if (numberOfDots > 0) {
+        return _toConsumableArray(Array(numberOfDots)).map(function (e, i) {
+          if (i + 1 == active) {
+            return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", {
+              key: i,
+              className: "dot active"
+            }, "\u2022");
+          }
+
+          return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", {
+            key: i,
+            className: "dot"
+          }, "\u2022");
+        });
+      }
+    } // calculateOffset() {
+    //   if (this.props.numberOfSubPosts > 1) {
+    //     return `${this.props.bottom + 5}px`;
+    //   } else {
+    //     return `${this.props.bottom - 100}px`;
+    //   }
+    // }
+
+  }, {
+    key: "toggleHidden",
+    value: function toggleHidden() {
+      if (this.props.numberOfSubPosts > 1) {
+        return 'dots';
+      } else {
+        return 'dots hidden';
+      }
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+        id: "dots",
+        className: this.toggleHidden()
+      }, this.showDots(this.props.numberOfSubPosts, this.props.active));
+    }
+  }]);
+
+  return Dots;
+}(react__WEBPACK_IMPORTED_MODULE_0__.Component);
+
+
 
 /***/ }),
 
@@ -297,7 +602,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _actions_index__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../actions/index */ "./src/actions/index.js");
 /* harmony import */ var react_easy_swipe__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-easy-swipe */ "./node_modules/react-easy-swipe/lib/index.js");
 /* harmony import */ var react_easy_swipe__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react_easy_swipe__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+/* harmony import */ var _Dots__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Dots */ "./src/components/Dots.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -326,6 +632,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
+
 var Post = /*#__PURE__*/function (_React$Component) {
   _inherits(Post, _React$Component);
 
@@ -347,11 +654,7 @@ var Post = /*#__PURE__*/function (_React$Component) {
   _createClass(Post, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      var _this$props$api$curre = this.props.api.currentSubreddit,
-          url = _this$props$api$curre.url,
-          sort = _this$props$api$curre.sort,
-          after = _this$props$api$curre.after;
-      this.props.dispatch((0,_actions_index__WEBPACK_IMPORTED_MODULE_2__.fetchNextPost)(url, sort, after));
+      this.props.dispatch((0,_actions_index__WEBPACK_IMPORTED_MODULE_2__.fetchNextPost)());
     }
   }, {
     key: "onSwipeDown",
@@ -364,11 +667,12 @@ var Post = /*#__PURE__*/function (_React$Component) {
     key: "onSwipeUp",
     value: function onSwipeUp(position, event) {
       if (this.props.api.currentSubreddit.nextPosts.length === 0) {
-        var _this$props$api$curre2 = this.props.api.currentSubreddit,
-            url = _this$props$api$curre2.url,
-            sort = _this$props$api$curre2.sort,
-            after = _this$props$api$curre2.after;
-        this.props.dispatch((0,_actions_index__WEBPACK_IMPORTED_MODULE_2__.fetchNextPost)(url, sort, after));
+        try {
+          this.props.dispatch((0,_actions_index__WEBPACK_IMPORTED_MODULE_2__.fetchNextPost)());
+        } catch (e) {
+          console.log('Post', e);
+          this.props.dispatch((0,_actions_index__WEBPACK_IMPORTED_MODULE_2__.fetchNextPost)());
+        }
       } else {
         this.props.dispatch((0,_actions_index__WEBPACK_IMPORTED_MODULE_2__.showNextPost)());
       }
@@ -396,18 +700,52 @@ var Post = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
+      // if (post && post.crosspost_parent != null)
+      //   post = post.crosspost_parent_list[0];
       var imageSource = null;
+      var videoSource = null;
       var title = null;
+      var numberOfSubPosts = 0;
+      var active; // console.log('render', this.props.api.currentSubreddit);
 
       try {
         if (this.props.api.currentSubreddit.currentPost[0]) {
-          var active = this.props.api.currentSubreddit.currentPost[0].active;
+          numberOfSubPosts = this.props.api.currentSubreddit.currentPost.length - 1;
+          active = this.props.api.currentSubreddit.currentPost[0].active;
           var post = this.props.api.currentSubreddit.currentPost[active];
           imageSource = post.preview ? post.preview.images[0].resolutions[post.preview.images[0].resolutions.length - 1].url.replace(/amp;/gi, '') : '';
+          if (post.url && post.url.includes('redd') && post.url.includes('.gif')) imageSource = post.url;
+          video.classList.add('hidden');
+          if (post.url && post.url.includes('gfycat')) imageSource = post.secure_media.oembed.thumbnail_url;
+          video.classList.add('hidden');
+
+          if (post.url && post.url.endsWith('.gifv') && !post.url.includes('redd')) {
+            videoSource = post.url.replace('gifv', 'mp4');
+            video.classList.remove('hidden');
+          }
+
+          if (post.url && post.url.endsWith('.gif') && !post.url.includes('redd')) {
+            videoSource = post.url.replace('gif', 'mp4');
+            video.classList.remove('hidden');
+          }
+
+          if (post.media && post.media.reddit_video != null) {
+            videoSource = post.media.reddit_video.fallback_url;
+            video.classList.remove('hidden');
+          }
+
+          if (post.url && post.url.includes('redgif')) {
+            videoSource = post.preview.reddit_video_preview.fallback_url;
+            video.classList.remove('hidden');
+          }
+
           title = post.title;
         }
       } catch (e) {
-        console.log('not good');
+        console.log(e, 'not good in render'); // this.props.dispatch(fetchNextPost());
+        // let { url, sort, after } = this.props.api.currentSubreddit;
+        // this.props.dispatch(fetchNextPost(url, sort, after));
+        // this.props.dispatch(showNextPost());
       }
 
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement((react_easy_swipe__WEBPACK_IMPORTED_MODULE_3___default()), {
@@ -415,21 +753,29 @@ var Post = /*#__PURE__*/function (_React$Component) {
         onSwipeUp: this.onSwipeUp,
         onSwipeRight: this.onSwipeRight,
         onSwipeLeft: this.onSwipeLeft,
-        tolerance: 100
+        tolerance: 50
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("img", {
         id: "image",
-        src: imageSource,
+        src: imageSource ? imageSource : './images/loader.gif',
         className: "image blurred"
       }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("video", {
         poster: "./images/loader.gif",
         id: "video",
-        src: "",
+        src: videoSource ? videoSource : '',
         className: "hidden",
         preload: "auto",
         autoPlay: "autoplay",
         loop: true,
         playsInline: true,
         muted: true
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Dots__WEBPACK_IMPORTED_MODULE_4__.default, {
+        numberOfSubPosts: numberOfSubPosts,
+        active: active // bottom={
+        //   document.getElementById('description')
+        //     ? document.getElementById('description').offsetHeight
+        //     : 0
+        // }
+
       }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
         className: "description hidden",
         id: "description"
@@ -476,7 +822,7 @@ var Post = /*#__PURE__*/function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(_ref) {
   var api = _ref.api;
-  console.log(api.currentSubreddit.currentPost[0]);
+  // console.log(api.currentSubreddit.currentPost[0]);
   return {
     api: api
   };
@@ -486,18 +832,20 @@ var mapStateToProps = function mapStateToProps(_ref) {
 
 /***/ }),
 
-/***/ "./src/components/SearchPanel.js":
-/*!***************************************!*\
-  !*** ./src/components/SearchPanel.js ***!
-  \***************************************/
+/***/ "./src/components/Result.js":
+/*!**********************************!*\
+  !*** ./src/components/Result.js ***!
+  \**********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ SearchPanel)
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+/* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../actions */ "./src/actions/index.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -522,171 +870,28 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
-var SearchPanel = /*#__PURE__*/function (_React$Component) {
-  _inherits(SearchPanel, _React$Component);
-
-  var _super = _createSuper(SearchPanel);
-
-  function SearchPanel(props) {
-    var _this;
-
-    _classCallCheck(this, SearchPanel);
-
-    _this = _super.call(this, props);
-    _this.state = {
-      searchTerm: '',
-      results: []
-    };
-    _this.handleInput = _this.handleInput.bind(_assertThisInitialized(_this));
-    _this.searchSubreddits = _this.searchSubreddits.bind(_assertThisInitialized(_this));
-    return _this;
-  }
-
-  _createClass(SearchPanel, [{
-    key: "handleInput",
-    value: function handleInput(e) {
-      var value = e.target.value;
-      this.setState({
-        searchTerm: value
-      });
-      this.searchSubreddits(value);
-    }
-  }, {
-    key: "searchSubreddits",
-    value: function searchSubreddits(s) {
-      var _this2 = this;
-
-      fetch("https://www.reddit.com/api/subreddit_autocomplete_v2.json?query=".concat(s, "&raw_json=1&gilding_detail=1")).then(function (response) {
-        return response.json();
-      }).then(function (data) {
-        var results = data.data.children.filter(function (r) {
-          return typeof r.data.url === 'string';
-        });
-
-        _this2.setState({
-          results: results
-        });
-      })["catch"](function (e) {});
-    } // componentDidMount() {
-    //   console.log('SearchPanel:CDM', this.state);
-    // }
-    // componentDidUpdate() {
-    //   console.log('SearchPanel:CDU', this.state);
-    // }
-    // componentWillUnmount() {
-    //   console.log('SearchPanel:CWU', this.state);
-    // }
-
-  }, {
-    key: "render",
-    value: function render() {
-      var _this3 = this;
-
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", {
-        id: "menubtn",
-        className: "menubtn hidden"
-      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("img", {
-        src: "./images/icon.png",
-        className: "menuimg",
-        id: "menuImg"
-      })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
-        id: "search",
-        className: "search hidden",
-        placeholder: "Search...",
-        onInput: function onInput(e) {
-          _this3.handleInput(e);
-        },
-        value: this.state.searchTerm
-      }), this.state.results.length > 0 ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(Results // key={
-      //   this.state.results &&
-      //   this.state.results.reduce((acc, el) => {
-      //     console.log(acc);
-      //     return acc + el.data.url;
-      //   }, '')
-      // }
-      , {
-        resultsArray: this.state.results
-      }) : null);
-    }
-  }]);
-
-  return SearchPanel;
-}(react__WEBPACK_IMPORTED_MODULE_0__.Component);
 
 
+var Result = /*#__PURE__*/function (_React$Component) {
+  _inherits(Result, _React$Component);
 
-var Results = /*#__PURE__*/function (_React$Component2) {
-  _inherits(Results, _React$Component2);
-
-  var _super2 = _createSuper(Results);
-
-  function Results(props) {
-    var _this4;
-
-    _classCallCheck(this, Results);
-
-    _this4 = _super2.call(this, props);
-    _this4.state = {
-      results: []
-    };
-    return _this4;
-  } // componentDidMount() {
-  //   console.log('Results:CDM', this.state);
-  // }
-  // componentDidUpdate() {
-  //   console.log('Results:CDU', this.state);
-  // }
-  // componentWillUnmount() {
-  //   console.log('Results:CWU', this.state);
-  // }
-
-
-  _createClass(Results, [{
-    key: "showResults",
-    value: function showResults() {
-      var results = this.props.resultsArray.map(function (element) {
-        var iconUrl = element.data.community_icon ? element.data.community_icon : element.data.icon_img || "https://b.thumbs.redditmedia.com/8cMVsK9DKU-HJSM2WEG9mAGHIgd8-cEsnpJNJlB5NPw.png";
-        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(Result, {
-          key: element.data.subscribers,
-          url: element.data.url,
-          iconUrl: iconUrl,
-          numOfSubscribers: element.data.subscribers
-        }));
-      });
-      return results;
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-        id: "results",
-        className: "results"
-      }, this.showResults());
-    }
-  }]);
-
-  return Results;
-}(react__WEBPACK_IMPORTED_MODULE_0__.Component);
-
-var Result = /*#__PURE__*/function (_React$Component3) {
-  _inherits(Result, _React$Component3);
-
-  var _super3 = _createSuper(Result);
+  var _super = _createSuper(Result);
 
   function Result(props) {
-    var _this5;
+    var _this;
 
     _classCallCheck(this, Result);
 
-    _this5 = _super3.call(this, props);
-    _this5.clickHandler = _this5.clickHandler.bind(_assertThisInitialized(_this5));
-    return _this5;
+    _this = _super.call(this, props);
+    _this.clickHandler = _this.clickHandler.bind(_assertThisInitialized(_this));
+    return _this;
   }
 
   _createClass(Result, [{
     key: "clickHandler",
     value: function clickHandler(e) {
-      console.log(e.target.childNodes[1].data);
+      // console.log('result:', e.target.childNodes[1].data);
+      this.props.dispatch((0,_actions__WEBPACK_IMPORTED_MODULE_2__.checkIfSubredditIsOk)(e.target.childNodes[1].data));
     } // componentDidMount() {
     //   console.log('Result:CDM', this.state);
     // }
@@ -723,6 +928,246 @@ var Result = /*#__PURE__*/function (_React$Component3) {
    element.data.subscribers
   )} subscribers */
 }
+
+var mapStateToProps = function mapStateToProps(_ref) {
+  var api = _ref.api;
+  // console.log(api.currentSubreddit.currentPost[0]);
+  return {
+    api: api
+  };
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,react_redux__WEBPACK_IMPORTED_MODULE_1__.connect)(mapStateToProps)(Result));
+
+/***/ }),
+
+/***/ "./src/components/Results.js":
+/*!***********************************!*\
+  !*** ./src/components/Results.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Results)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _Result__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Result */ "./src/components/Result.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+
+var Results = /*#__PURE__*/function (_React$Component) {
+  _inherits(Results, _React$Component);
+
+  var _super = _createSuper(Results);
+
+  function Results(props) {
+    var _this;
+
+    _classCallCheck(this, Results);
+
+    _this = _super.call(this, props);
+    _this.state = {
+      results: []
+    };
+    return _this;
+  } // componentDidMount() {
+  //   console.log('Results:CDM', this.state);
+  // }
+  // componentDidUpdate() {
+  //   console.log('Results:CDU', this.state);
+  // }
+  // componentWillUnmount() {
+  //   console.log('Results:CWU', this.state);
+  // }
+
+
+  _createClass(Results, [{
+    key: "showResults",
+    value: function showResults() {
+      var results = this.props.resultsArray.map(function (element) {
+        var iconUrl = element.data.community_icon ? element.data.community_icon : element.data.icon_img || "https://b.thumbs.redditmedia.com/8cMVsK9DKU-HJSM2WEG9mAGHIgd8-cEsnpJNJlB5NPw.png";
+        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Result__WEBPACK_IMPORTED_MODULE_1__.default, {
+          key: element.data.subscribers,
+          url: element.data.url,
+          iconUrl: iconUrl,
+          numOfSubscribers: element.data.subscribers
+        }));
+      });
+      return results;
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var classes = 'results';
+
+      if (this.props.hidden) {
+        classes = 'results hidden';
+      }
+
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+        id: "results",
+        className: classes
+      }, this.showResults());
+    }
+  }]);
+
+  return Results;
+}(react__WEBPACK_IMPORTED_MODULE_0__.Component);
+
+
+
+/***/ }),
+
+/***/ "./src/components/SearchPanel.js":
+/*!***************************************!*\
+  !*** ./src/components/SearchPanel.js ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+/* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../actions */ "./src/actions/index.js");
+/* harmony import */ var _Results__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Results */ "./src/components/Results.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+
+
+
+var SearchPanel = /*#__PURE__*/function (_React$Component) {
+  _inherits(SearchPanel, _React$Component);
+
+  var _super = _createSuper(SearchPanel);
+
+  function SearchPanel(props) {
+    var _this;
+
+    _classCallCheck(this, SearchPanel);
+
+    _this = _super.call(this, props);
+    _this.handleInput = _this.handleInput.bind(_assertThisInitialized(_this));
+    return _this;
+  }
+
+  _createClass(SearchPanel, [{
+    key: "handleInput",
+    value: function handleInput(e) {
+      var value = e.target.value;
+      this.props.dispatch((0,_actions__WEBPACK_IMPORTED_MODULE_2__.changeSearchTerm)(value));
+      this.props.dispatch((0,_actions__WEBPACK_IMPORTED_MODULE_2__.getListOfSubreddits)(value));
+
+      if (value && (e.key === 'Enter' || e.keyCode === 13)) {
+        this.props.dispatch((0,_actions__WEBPACK_IMPORTED_MODULE_2__.checkIfSubredditIsOk)("/r/".concat(value, "/")));
+      }
+    } // componentDidMount() {
+    //   console.log('SearchPanel:CDM', this.state);
+    // }
+    // componentDidUpdate() {
+    //   console.log('SearchPanel:CDU', this.state);
+    // }
+    // componentWillUnmount() {
+    //   console.log('SearchPanel:CWU', this.state);
+    // }
+
+  }, {
+    key: "render",
+    value: function render() {
+      var _this2 = this;
+
+      // console.log(this.props.api.search);
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", {
+        id: "menubtn",
+        className: "menubtn hidden"
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("img", {
+        src: "./images/icon.png",
+        className: "menuimg",
+        id: "menuImg"
+      })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
+        id: "search",
+        className: "search hidden",
+        placeholder: "Search...",
+        onInput: function onInput(e) {
+          _this2.handleInput(e);
+        },
+        onKeyUp: function onKeyUp(e) {
+          _this2.handleInput(e);
+        },
+        value: this.props.api.search.searchTerm
+      }), this.props.api.search.results && this.props.api.search.results.length > 0 ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Results__WEBPACK_IMPORTED_MODULE_3__.default // key={
+      //   this.state.results &&
+      //   this.state.results.reduce((acc, el) => {
+      //     console.log(acc);
+      //     return acc + el.data.url;
+      //   }, '')
+      // }
+      , {
+        hidden: this.props.api.search.hidden,
+        resultsArray: this.props.api.search.results
+      }) : null);
+    }
+  }]);
+
+  return SearchPanel;
+}(react__WEBPACK_IMPORTED_MODULE_0__.Component);
+
+var mapStateToProps = function mapStateToProps(_ref) {
+  var api = _ref.api;
+  return {
+    api: api
+  };
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,react_redux__WEBPACK_IMPORTED_MODULE_1__.connect)(mapStateToProps)(SearchPanel));
 
 /***/ }),
 
@@ -780,7 +1225,10 @@ var WelcomeModal = /*#__PURE__*/function (_React$Component) {
       search.classList.remove('hidden');
       image.classList.remove('blurred');
       description.classList.remove('hidden');
-      menubtn.classList.remove('hidden'); // setTimeout(() => {
+      menubtn.classList.remove('hidden');
+      setTimeout(function () {
+        dots.classList.remove('hidden');
+      }, 1000); // setTimeout(() => {
       //   downloadNextPosts(startUrl);
       // }, 1000);
     }
@@ -847,7 +1295,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var INITIAL_STATE = {
   currentSubreddit: {
-    url: 'r/itookapicture/',
+    url: '/r/itookapicture/',
     after: '',
     sort: 'hot',
     currentPost: {},
@@ -861,6 +1309,11 @@ var INITIAL_STATE = {
     currentPost: null,
     previousPosts: {},
     nextPosts: []
+  },
+  search: {
+    searchTerm: '',
+    results: [],
+    hidden: true
   },
   loading: false,
   error: null
@@ -877,12 +1330,15 @@ var api = function api() {
       });
 
     case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.FETCH_NEXT_POST_SUCCESS:
-      console.log(_actiontypes__WEBPACK_IMPORTED_MODULE_0__.FETCH_NEXT_POST_SUCCESS);
+      // console.log(FETCH_NEXT_POST_SUCCESS);
       return _objectSpread(_objectSpread({}, state), {}, {
         currentSubreddit: _objectSpread(_objectSpread({}, state.currentSubreddit), {}, {
           previousPosts: [].concat(_toConsumableArray(state.currentSubreddit.previousPosts), [state.currentSubreddit.currentPost]),
           currentPost: action.payload.filteredPostsArray,
           after: action.payload.after
+        }),
+        search: _objectSpread(_objectSpread({}, state.search), {}, {
+          hidden: true
         }),
         loading: false,
         error: null
@@ -894,8 +1350,20 @@ var api = function api() {
         error: action.payload.error
       });
 
+    case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.UPDATE_CURRENT_SUBREDDIT_AFTER:
+      // console.log('UPDATE_CURRENT_SUBREDDIT_AFTER', action.payload.after);
+      return _objectSpread(_objectSpread({}, state), {}, {
+        currentSubreddit: _objectSpread(_objectSpread({}, state.currentSubreddit), {}, {
+          after: action.payload.after
+        })
+      });
+
+    case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.SHOW_CURRENT_POST:
+      // console.log('SHOW_CURRENT_POST');
+      return _objectSpread({}, state);
+
     case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.SHOW_PREVIOUS_POST:
-      console.log('SHOW_PREVIOUS_POST');
+      // console.log('SHOW_PREVIOUS_POST');
       return _objectSpread(_objectSpread({}, state), {}, {
         currentSubreddit: _objectSpread(_objectSpread({}, state.currentSubreddit), {}, {
           previousPosts: state.currentSubreddit.previousPosts.slice(0, -1),
@@ -905,7 +1373,7 @@ var api = function api() {
       });
 
     case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.SHOW_NEXT_POST:
-      console.log('SHOW_NEXT_POST');
+      // console.log('SHOW_NEXT_POST');
       return _objectSpread(_objectSpread({}, state), {}, {
         currentSubreddit: _objectSpread(_objectSpread({}, state.currentSubreddit), {}, {
           previousPosts: [].concat(_toConsumableArray(state.currentSubreddit.previousPosts), [state.currentSubreddit.currentPost]),
@@ -915,8 +1383,8 @@ var api = function api() {
       });
 
     case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.SHOW_NEXT_SUBPOST:
-      console.log(_actiontypes__WEBPACK_IMPORTED_MODULE_0__.SHOW_NEXT_SUBPOST); // console.log(state.currentSubreddit.currentPost);
-
+      // console.log(SHOW_NEXT_SUBPOST);
+      // // console.log(state.currentSubreddit.currentPost);
       return _objectSpread(_objectSpread({}, state), {}, {
         currentSubreddit: _objectSpread(_objectSpread({}, state.currentSubreddit), {}, {
           currentPost: state.currentSubreddit.currentPost.map(function (el) {
@@ -928,7 +1396,7 @@ var api = function api() {
       });
 
     case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.SHOW_PREVIOUS_SUBPOST:
-      console.log('SHOW_PREVIOUS_SUBPOST');
+      // console.log('SHOW_PREVIOUS_SUBPOST');
       return _objectSpread(_objectSpread({}, state), {}, {
         currentSubreddit: _objectSpread(_objectSpread({}, state.currentSubreddit), {}, {
           currentPost: state.currentSubreddit.currentPost.map(function (el) {
@@ -939,24 +1407,93 @@ var api = function api() {
         })
       });
 
-    default:
+    case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.CHECK_IF_SUBREDDIT_IS_OK_STARTED:
+      return _objectSpread(_objectSpread({}, state), {}, {
+        loading: true
+      });
+
+    case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.CHECK_IF_SUBREDDIT_IS_OK_FAILURE:
+      return _objectSpread(_objectSpread({}, state), {}, {
+        loading: false,
+        error: action.payload.error
+      });
+
+    case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.CHECK_IF_SUBREDDIT_IS_OK_SUCCESS:
+      return _objectSpread(_objectSpread({}, state), {}, {
+        loading: false,
+        error: null
+      });
+
+    case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.CHANGE_SUBREDDIT:
+      // console.log('CHANGE_SUBREDDIT', action.payload);
+      return _objectSpread(_objectSpread({}, state), {}, {
+        previousSubreddit: _objectSpread({}, state.currentSubreddit),
+        currentSubreddit: {
+          url: action.payload.subreddit,
+          after: '',
+          sort: 'hot',
+          currentPost: {},
+          previousPosts: [],
+          nextPosts: []
+        },
+        search: _objectSpread(_objectSpread({}, state.search), {}, {
+          hidden: true
+        })
+      });
+
+    case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.CHANGE_SEARCH_TERM:
+      // console.log('CHANGE_SEARCH_TERM');
+      return _objectSpread(_objectSpread({}, state), {}, {
+        search: _objectSpread(_objectSpread({}, state.search), {}, {
+          searchTerm: action.payload.searchTerm
+        })
+      });
+
+    case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.GET_LIST_OF_SUBREDDITS_STARTED:
+      // // console.log('GET_LIST_OF_SUBREDDITS_STARTED');
       return state;
-  }
-};
 
-var ui = function ui() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : INITIAL_STATE;
-  var action = arguments.length > 1 ? arguments[1] : undefined;
+    case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.GET_LIST_OF_SUBREDDITS_FAILURE:
+      // // console.log('GET_LIST_OF_SUBREDDITS_FAILURE');
+      return state;
 
-  switch (action.type) {
+    case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.GET_LIST_OF_SUBREDDITS_SUCCESS:
+      // // console.log('GET_LIST_OF_SUBREDDITS_SUCCESS');
+      return state;
+
+    case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.UPDATE_SEARCH_RESULTS:
+      // console.log('UPDATE_SEARCH_RESULTS', action.payload);
+      return _objectSpread(_objectSpread({}, state), {}, {
+        search: _objectSpread(_objectSpread({}, state.search), {}, {
+          results: action.payload,
+          hidden: false
+        })
+      });
+
+    case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.HIDE_SEARCH_RESULTS:
+      // console.log('HIDE_SEARCH_RESULTS');
+      return _objectSpread(_objectSpread({}, state), {}, {
+        search: _objectSpread(_objectSpread({}, state.search), {}, {
+          searchTerm: '',
+          hidden: true
+        })
+      });
+
+    case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.SHOW_SEARCH_RESULTS:
+      // console.log('SHOW_SEARCH_RESULTS');
+      return _objectSpread(_objectSpread({}, state), {}, {
+        search: _objectSpread(_objectSpread({}, state.search), {}, {
+          hidden: false
+        })
+      });
+
     default:
       return state;
   }
 };
 
 var rootReducer = (0,redux__WEBPACK_IMPORTED_MODULE_1__.combineReducers)({
-  api: api,
-  ui: ui
+  api: api
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (rootReducer);
 
@@ -973,13 +1510,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var redux__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+/* harmony import */ var redux__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 /* harmony import */ var redux_thunk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! redux-thunk */ "./node_modules/redux-thunk/es/index.js");
 /* harmony import */ var _reducers_index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./reducers/index */ "./src/reducers/index.js");
+/* harmony import */ var redux_devtools_extension__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! redux-devtools-extension */ "./node_modules/redux-devtools-extension/index.js");
 
 
 
-var store = (0,redux__WEBPACK_IMPORTED_MODULE_2__.createStore)(_reducers_index__WEBPACK_IMPORTED_MODULE_1__.default, (0,redux__WEBPACK_IMPORTED_MODULE_2__.applyMiddleware)(redux_thunk__WEBPACK_IMPORTED_MODULE_0__.default));
+
+var store = (0,redux__WEBPACK_IMPORTED_MODULE_3__.createStore)(_reducers_index__WEBPACK_IMPORTED_MODULE_1__.default, (0,redux_devtools_extension__WEBPACK_IMPORTED_MODULE_2__.composeWithDevTools)((0,redux__WEBPACK_IMPORTED_MODULE_3__.applyMiddleware)(redux_thunk__WEBPACK_IMPORTED_MODULE_0__.default)));
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (store);
 
 /***/ }),
@@ -993,7 +1532,7 @@ var store = (0,redux__WEBPACK_IMPORTED_MODULE_2__.createStore)(_reducers_index__
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   "filterPostsArray": () => (/* binding */ filterPostsArray)
 /* harmony export */ });
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -1013,10 +1552,22 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (function (postsArray) {
-  var filteredPostsArray = postsArray.filter(function (post) {
-    return (post.preview && post.preview.images[0] != null || post.media_metadata != null || post.domain.includes('imgur') || post.url.includes('jpg')) && !post.url.includes('youtu');
+var filterPostsArray = function filterPostsArray(postsArray) {
+  postsArray = postsArray.map(function (post) {
+    if (post && post.crosspost_parent != null) {
+      return post.crosspost_parent_list[0];
+    } else {
+      return post;
+    }
   });
+  var filteredPostsArray = postsArray.filter(function (post) {
+    return post.preview && post.preview.images[0] != null || post.media_metadata != null || post.domain.includes('imgur') || post.url.includes('jpg');
+  });
+
+  if (filteredPostsArray.length < 1) {
+    throw new Error('incompatible post');
+  }
+
   filteredPostsArray = filteredPostsArray.map(function (post) {
     var artificialPostsArray = [];
 
@@ -1050,11 +1601,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     }
 
     return artificialPostsArray.length > 1 ? artificialPostsArray : post;
-  }); // console.log(filteredPostsArray);
-
+  });
   filteredPostsArray = filteredPostsArray.reduce(function (acc, post) {
     if (Array.isArray(post)) {
-      // console.log('post', post);
       post.forEach(function (p) {
         return acc.unshift(p);
       });
@@ -1068,54 +1617,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     active: 1
   });
   return filteredPostsArray;
-});
-/*
-
-
-  downloadNextPost() {
-    let url = this.state.currentSubreddit.url;
-    let sort = this.state.currentSubreddit.sort;
-    let after = this.state.currentSubreddit.after;
-
-    fetch(`https://www.reddit.com/${url}${sort}.json?&limit=1&after=${after}`)
-      .then((response) => response.json())
-      .then((data) => {
-        // console.log('data', data);
-
-        let postsArray = data.data.children.map((post) => post.data);
-
-        // console.log(postsArray);
-        let filteredPostsArray;
-
-        try {
-          filteredPostsArray = this.filterPostsArray(postsArray);
-        } catch (e) {
-          console.log(e);
-        }
-
-        this.setState((previousState) => {
-          return {
-            ...previousState,
-            currentSubreddit: {
-              ...previousState.currentSubreddit,
-              previousPosts: [
-                ...previousState.currentSubreddit.previousPosts,
-                previousState.currentSubreddit.currentPost,
-              ],
-              currentPost: filteredPostsArray,
-              after: data.data.after,
-            },
-          };
-        });
-        console.log('-------------------- NEXT --------------------');
-      })
-      .catch((e) => {
-        console.log(e);
-        // this.downloadNextPost();
-      });
-  }
-
-  */
+};
 
 /***/ }),
 
@@ -33030,6 +33532,39 @@ exports.version = ReactVersion;
 if (false) {} else {
   module.exports = __webpack_require__(/*! ./cjs/react.development.js */ "./node_modules/react/cjs/react.development.js");
 }
+
+
+/***/ }),
+
+/***/ "./node_modules/redux-devtools-extension/index.js":
+/*!********************************************************!*\
+  !*** ./node_modules/redux-devtools-extension/index.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+
+var compose = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js").compose;
+
+exports.__esModule = true;
+exports.composeWithDevTools =
+  typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    : function () {
+        if (arguments.length === 0) return undefined;
+        if (typeof arguments[0] === 'object') return compose;
+        return compose.apply(null, arguments);
+      };
+
+exports.devToolsEnhancer =
+  typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION__
+    ? window.__REDUX_DEVTOOLS_EXTENSION__
+    : function () {
+        return function (noop) {
+          return noop;
+        };
+      };
 
 
 /***/ }),
