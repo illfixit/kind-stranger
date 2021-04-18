@@ -20,6 +20,7 @@ import {
   UPDATE_SEARCH_RESULTS,
   HIDE_SEARCH_RESULTS,
   SHOW_SEARCH_RESULTS,
+  CHANGE_VISIBILITY,
 } from '../actiontypes';
 import { filterPostsArray } from '../utils';
 import store from '../store';
@@ -231,4 +232,9 @@ export const hideSearchResults = () => ({
 
 export const showSearchResults = () => ({
   type: SHOW_SEARCH_RESULTS,
+});
+
+export const changeVisibility = (elements) => ({
+  type: CHANGE_VISIBILITY,
+  payload: elements,
 });

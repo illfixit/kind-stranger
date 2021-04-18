@@ -144,13 +144,17 @@ class Post extends React.Component {
         <img
           id="image"
           src={imageSource ? imageSource : './images/loader.gif'}
-          className="image blurred"
+          className={`image blurred ${
+            this.props.api.visibilityOfElements.image ? '' : 'hidden'
+          }`}
         />
         <video
           poster="./images/loader.gif"
           id="video"
           src={videoSource ? videoSource : ''}
-          className="hidden"
+          className={`video ${
+            this.props.api.visibilityOfElements.video ? '' : 'hidden'
+          }`}
           preload="auto"
           autoPlay="autoplay"
           loop
@@ -167,7 +171,12 @@ class Post extends React.Component {
           //     : 0
           // }
         />
-        <div className="description hidden" id="description">
+        <div
+          className={`description ${
+            this.props.api.visibilityOfElements.description ? '' : 'hidden'
+          }`}
+          id="description"
+        >
           <a href="" id="a">
             <div className="title" id="title">
               {title}

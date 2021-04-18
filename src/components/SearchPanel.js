@@ -44,13 +44,20 @@ class SearchPanel extends React.Component {
     // console.log(this.props.api.search);
     return (
       <React.Fragment>
-        <button id="menubtn" className="menubtn hidden">
+        <button
+          id="menubtn"
+          className={`menubtn ${
+            this.props.api.visibilityOfElements.searchPanel ? '' : 'hidden'
+          }`}
+        >
           <img src="./images/icon.png" className="menuimg" id="menuImg" />
         </button>
 
         <input
           id="search"
-          className="search hidden"
+          className={`search ${
+            this.props.api.visibilityOfElements.searchPanel ? '' : 'hidden'
+          }`}
           placeholder="Search..."
           onInput={(e) => {
             this.handleInput(e);

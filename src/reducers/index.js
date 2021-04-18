@@ -19,6 +19,7 @@ import {
   UPDATE_SEARCH_RESULTS,
   HIDE_SEARCH_RESULTS,
   SHOW_SEARCH_RESULTS,
+  CHANGE_VISIBILITY,
 } from '../actiontypes';
 import { combineReducers } from 'redux';
 
@@ -43,6 +44,16 @@ const INITIAL_STATE = {
     searchTerm: '',
     results: [],
     hidden: true,
+  },
+  visibilityOfElements: {
+    welcomeModal: true,
+    searchPanel: false,
+    results: false,
+    image: true,
+    video: false,
+    dots: false,
+    description: false,
+    menu: false,
   },
   loading: false,
   error: null,
@@ -139,7 +150,7 @@ const api = (state = INITIAL_STATE, action) => {
         currentSubreddit: {
           ...state.currentSubreddit,
           currentPost: state.currentSubreddit.currentPost.map((el) => {
-            return el.active > 0 ? { active: el.active + 1 } : el;
+            return el.active > 0 ? { ...el, active: el.active + 1 } : el;
           }),
         },
       };
@@ -151,7 +162,7 @@ const api = (state = INITIAL_STATE, action) => {
         currentSubreddit: {
           ...state.currentSubreddit,
           currentPost: state.currentSubreddit.currentPost.map((el) => {
-            return el.active ? { active: el.active - 1 } : el;
+            return el.active ? { ...el, active: el.active - 1 } : el;
           }),
         },
       };
@@ -239,6 +250,22 @@ const api = (state = INITIAL_STATE, action) => {
         search: {
           ...state.search,
           hidden: false,
+        },
+      };
+
+    case CHANGE_VISIBILITY:
+      console.log('CHANGE_VISIBILITY');
+      return {
+        ...state,
+        visibilityOfElements: {
+          welcomeModal: false,
+          searchPanel: true,
+          results: true,
+          image: true,
+          video: false,
+          dots: true,
+          description: true,
+          menu: true,
         },
       };
     default:

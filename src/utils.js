@@ -7,6 +7,8 @@ export const filterPostsArray = (postsArray) => {
     }
   });
 
+  console.log('postsArray', postsArray);
+
   let filteredPostsArray = postsArray.filter((post) => {
     return (
       (post.preview && post.preview.images[0] != null) ||
@@ -53,7 +55,11 @@ export const filterPostsArray = (postsArray) => {
     return acc;
   }, []);
 
-  filteredPostsArray.unshift({ active: 1 });
+  filteredPostsArray.unshift({
+    active: 1,
+    numberOfSubposts: filteredPostsArray.length,
+  });
 
+  console.log('filteredPostsArray', filteredPostsArray);
   return filteredPostsArray;
 };

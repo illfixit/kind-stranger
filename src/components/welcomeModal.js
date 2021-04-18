@@ -1,19 +1,31 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { changeVisibility } from '../actions';
 
-export default class WelcomeModal extends React.Component {
+class WelcomeModal extends React.Component {
   constructor(props) {
     super(props);
   }
 
   closeWelcomeModal() {
-    welcome.style.display = 'none';
-    search.classList.remove('hidden');
     image.classList.remove('blurred');
-    description.classList.remove('hidden');
-    menubtn.classList.remove('hidden');
-    setTimeout(() => {
-      dots.classList.remove('hidden');
-    }, 1000);
+    this.props.dispatch(
+      changeVisibility({
+        welcome: false,
+        search: true,
+        description: true,
+        menu: true,
+        dots: true,
+      })
+    );
+    // welcome.style.display = 'none';
+    // search.classList.remove('hidden');
+
+    // description.classList.remove('hidden');
+    // menubtn.classList.remove('hidden');
+    // setTimeout(() => {
+    //   dots.classList.remove('hidden');
+    // }, 1000);
 
     // setTimeout(() => {
     //   downloadNextPosts(startUrl);
@@ -23,7 +35,12 @@ export default class WelcomeModal extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <p id="welcome" className="welcome">
+        <p
+          id="welcome"
+          className={`welcome ${
+            this.props.api.visibilityOfElements.welcomeModal ? '' : 'hidden'
+          }`}
+        >
           <br />
           Welcome to my Reddit viewer... <br />
           <strong>Kind Stranger (React Edition)</strong>
@@ -65,3 +82,10 @@ export default class WelcomeModal extends React.Component {
     );
   }
 }
+
+const mapStateToProps = ({ api }) => {
+  // console.log(api.currentSubreddit.currentPost[0]);
+  return { api };
+};
+
+export default connect(mapStateToProps)(WelcomeModal);

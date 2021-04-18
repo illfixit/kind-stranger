@@ -80,7 +80,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "changeSubreddit": () => (/* binding */ changeSubreddit),
 /* harmony export */   "changeSearchTerm": () => (/* binding */ changeSearchTerm),
 /* harmony export */   "hideSearchResults": () => (/* binding */ hideSearchResults),
-/* harmony export */   "showSearchResults": () => (/* binding */ showSearchResults)
+/* harmony export */   "showSearchResults": () => (/* binding */ showSearchResults),
+/* harmony export */   "changeVisibility": () => (/* binding */ changeVisibility)
 /* harmony export */ });
 /* harmony import */ var _actiontypes__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../actiontypes */ "./src/actiontypes/index.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils */ "./src/utils.js");
@@ -319,6 +320,12 @@ var showSearchResults = function showSearchResults() {
     type: _actiontypes__WEBPACK_IMPORTED_MODULE_0__.SHOW_SEARCH_RESULTS
   };
 };
+var changeVisibility = function changeVisibility(elements) {
+  return {
+    type: _actiontypes__WEBPACK_IMPORTED_MODULE_0__.CHANGE_VISIBILITY,
+    payload: elements
+  };
+};
 
 /***/ }),
 
@@ -352,7 +359,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "UPDATE_SEARCH_RESULTS": () => (/* binding */ UPDATE_SEARCH_RESULTS),
 /* harmony export */   "HIDE_SEARCH_RESULTS": () => (/* binding */ HIDE_SEARCH_RESULTS),
 /* harmony export */   "SHOW_SEARCH_RESULTS": () => (/* binding */ SHOW_SEARCH_RESULTS),
-/* harmony export */   "UPDATE_CURRENT_SUBREDDIT_AFTER": () => (/* binding */ UPDATE_CURRENT_SUBREDDIT_AFTER)
+/* harmony export */   "UPDATE_CURRENT_SUBREDDIT_AFTER": () => (/* binding */ UPDATE_CURRENT_SUBREDDIT_AFTER),
+/* harmony export */   "CHANGE_VISIBILITY": () => (/* binding */ CHANGE_VISIBILITY)
 /* harmony export */ });
 var FETCH_NEXT_POST_STARTED = 'FETCH_NEXT_POST_STARTED';
 var FETCH_NEXT_POST_SUCCESS = 'FETCH_NEXT_POST_SUCCESS';
@@ -376,6 +384,7 @@ var UPDATE_SEARCH_RESULTS = 'UPDATE_SEARCH_RESULTS';
 var HIDE_SEARCH_RESULTS = 'HIDE_SEARCH_RESULTS';
 var SHOW_SEARCH_RESULTS = 'SHOW_SEARCH_RESULTS';
 var UPDATE_CURRENT_SUBREDDIT_AFTER = 'UPDATE_CURRENT_SUBREDDIT_AFTER';
+var CHANGE_VISIBILITY = 'CHANGE_VISIBILITY';
 
 /***/ }),
 
@@ -388,9 +397,10 @@ var UPDATE_CURRENT_SUBREDDIT_AFTER = 'UPDATE_CURRENT_SUBREDDIT_AFTER';
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Dots)
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -424,6 +434,7 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
 
 
 
@@ -464,22 +475,20 @@ var Dots = /*#__PURE__*/function (_React$Component) {
     //     return `${this.props.bottom - 100}px`;
     //   }
     // }
+    // toggleHidden() {
+    //   if (this.props.numberOfSubPosts > 1) {
+    //     return 'dots';
+    //   } else {
+    //     return 'dots hidden';
+    //   }
+    // }
 
-  }, {
-    key: "toggleHidden",
-    value: function toggleHidden() {
-      if (this.props.numberOfSubPosts > 1) {
-        return 'dots';
-      } else {
-        return 'dots hidden';
-      }
-    }
   }, {
     key: "render",
     value: function render() {
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
         id: "dots",
-        className: this.toggleHidden()
+        className: "dots ".concat(!this.props.api.visibilityOfElements.welcomeModal && this.props.api.currentSubreddit.currentPost && this.props.api.currentSubreddit.currentPost[0] && this.props.api.currentSubreddit.currentPost[0].numberOfSubposts > 1 ? '' : 'hidden')
       }, this.showDots(this.props.numberOfSubPosts, this.props.active));
     }
   }]);
@@ -487,7 +496,15 @@ var Dots = /*#__PURE__*/function (_React$Component) {
   return Dots;
 }(react__WEBPACK_IMPORTED_MODULE_0__.Component);
 
+var mapStateToProps = function mapStateToProps(_ref) {
+  var api = _ref.api;
+  // console.log(api.currentSubreddit.currentPost[0]);
+  return {
+    api: api
+  };
+};
 
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,react_redux__WEBPACK_IMPORTED_MODULE_1__.connect)(mapStateToProps)(Dots));
 
 /***/ }),
 
@@ -757,12 +774,12 @@ var Post = /*#__PURE__*/function (_React$Component) {
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("img", {
         id: "image",
         src: imageSource ? imageSource : './images/loader.gif',
-        className: "image blurred"
+        className: "image blurred ".concat(this.props.api.visibilityOfElements.image ? '' : 'hidden')
       }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("video", {
         poster: "./images/loader.gif",
         id: "video",
         src: videoSource ? videoSource : '',
-        className: "hidden",
+        className: "video ".concat(this.props.api.visibilityOfElements.video ? '' : 'hidden'),
         preload: "auto",
         autoPlay: "autoplay",
         loop: true,
@@ -777,7 +794,7 @@ var Post = /*#__PURE__*/function (_React$Component) {
         // }
 
       }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-        className: "description hidden",
+        className: "description ".concat(this.props.api.visibilityOfElements.description ? '' : 'hidden'),
         id: "description"
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("a", {
         href: "",
@@ -1127,14 +1144,14 @@ var SearchPanel = /*#__PURE__*/function (_React$Component) {
       // console.log(this.props.api.search);
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", {
         id: "menubtn",
-        className: "menubtn hidden"
+        className: "menubtn ".concat(this.props.api.visibilityOfElements.searchPanel ? '' : 'hidden')
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("img", {
         src: "./images/icon.png",
         className: "menuimg",
         id: "menuImg"
       })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
         id: "search",
-        className: "search hidden",
+        className: "search ".concat(this.props.api.visibilityOfElements.searchPanel ? '' : 'hidden'),
         placeholder: "Search...",
         onInput: function onInput(e) {
           _this2.handleInput(e);
@@ -1180,9 +1197,11 @@ var mapStateToProps = function mapStateToProps(_ref) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ WelcomeModal)
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+/* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../actions */ "./src/actions/index.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1207,6 +1226,8 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
+
+
 var WelcomeModal = /*#__PURE__*/function (_React$Component) {
   _inherits(WelcomeModal, _React$Component);
 
@@ -1221,14 +1242,21 @@ var WelcomeModal = /*#__PURE__*/function (_React$Component) {
   _createClass(WelcomeModal, [{
     key: "closeWelcomeModal",
     value: function closeWelcomeModal() {
-      welcome.style.display = 'none';
-      search.classList.remove('hidden');
       image.classList.remove('blurred');
-      description.classList.remove('hidden');
-      menubtn.classList.remove('hidden');
-      setTimeout(function () {
-        dots.classList.remove('hidden');
-      }, 1000); // setTimeout(() => {
+      this.props.dispatch((0,_actions__WEBPACK_IMPORTED_MODULE_2__.changeVisibility)({
+        welcome: false,
+        search: true,
+        description: true,
+        menu: true,
+        dots: true
+      })); // welcome.style.display = 'none';
+      // search.classList.remove('hidden');
+      // description.classList.remove('hidden');
+      // menubtn.classList.remove('hidden');
+      // setTimeout(() => {
+      //   dots.classList.remove('hidden');
+      // }, 1000);
+      // setTimeout(() => {
       //   downloadNextPosts(startUrl);
       // }, 1000);
     }
@@ -1239,7 +1267,7 @@ var WelcomeModal = /*#__PURE__*/function (_React$Component) {
 
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", {
         id: "welcome",
-        className: "welcome"
+        className: "welcome ".concat(this.props.api.visibilityOfElements.welcomeModal ? '' : 'hidden')
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), "Welcome to my Reddit viewer... ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("strong", null, "Kind Stranger (React Edition)"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), "For mobile users:", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("strong", null, "Use swipes"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), "For desktop users:", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("strong", null, "Use mouse wheel"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), "or arrow keys", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("strong", null, "Tap twice"), " to change the scale of images.", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("strong", {
         onClick: function onClick() {
           _this.closeWelcomeModal();
@@ -1256,7 +1284,15 @@ var WelcomeModal = /*#__PURE__*/function (_React$Component) {
   return WelcomeModal;
 }(react__WEBPACK_IMPORTED_MODULE_0__.Component);
 
+var mapStateToProps = function mapStateToProps(_ref) {
+  var api = _ref.api;
+  // console.log(api.currentSubreddit.currentPost[0]);
+  return {
+    api: api
+  };
+};
 
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,react_redux__WEBPACK_IMPORTED_MODULE_1__.connect)(mapStateToProps)(WelcomeModal));
 
 /***/ }),
 
@@ -1314,6 +1350,16 @@ var INITIAL_STATE = {
     searchTerm: '',
     results: [],
     hidden: true
+  },
+  visibilityOfElements: {
+    welcomeModal: true,
+    searchPanel: false,
+    results: false,
+    image: true,
+    video: false,
+    dots: false,
+    description: false,
+    menu: false
   },
   loading: false,
   error: null
@@ -1388,9 +1434,9 @@ var api = function api() {
       return _objectSpread(_objectSpread({}, state), {}, {
         currentSubreddit: _objectSpread(_objectSpread({}, state.currentSubreddit), {}, {
           currentPost: state.currentSubreddit.currentPost.map(function (el) {
-            return el.active > 0 ? {
+            return el.active > 0 ? _objectSpread(_objectSpread({}, el), {}, {
               active: el.active + 1
-            } : el;
+            }) : el;
           })
         })
       });
@@ -1400,9 +1446,9 @@ var api = function api() {
       return _objectSpread(_objectSpread({}, state), {}, {
         currentSubreddit: _objectSpread(_objectSpread({}, state.currentSubreddit), {}, {
           currentPost: state.currentSubreddit.currentPost.map(function (el) {
-            return el.active ? {
+            return el.active ? _objectSpread(_objectSpread({}, el), {}, {
               active: el.active - 1
-            } : el;
+            }) : el;
           })
         })
       });
@@ -1487,6 +1533,21 @@ var api = function api() {
         })
       });
 
+    case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.CHANGE_VISIBILITY:
+      console.log('CHANGE_VISIBILITY');
+      return _objectSpread(_objectSpread({}, state), {}, {
+        visibilityOfElements: {
+          welcomeModal: false,
+          searchPanel: true,
+          results: true,
+          image: true,
+          video: false,
+          dots: true,
+          description: true,
+          menu: true
+        }
+      });
+
     default:
       return state;
   }
@@ -1560,6 +1621,7 @@ var filterPostsArray = function filterPostsArray(postsArray) {
       return post;
     }
   });
+  console.log('postsArray', postsArray);
   var filteredPostsArray = postsArray.filter(function (post) {
     return post.preview && post.preview.images[0] != null || post.media_metadata != null || post.domain.includes('imgur') || post.url.includes('jpg');
   });
@@ -1614,8 +1676,10 @@ var filterPostsArray = function filterPostsArray(postsArray) {
     return acc;
   }, []);
   filteredPostsArray.unshift({
-    active: 1
+    active: 1,
+    numberOfSubposts: filteredPostsArray.length
   });
+  console.log('filteredPostsArray', filteredPostsArray);
   return filteredPostsArray;
 };
 
