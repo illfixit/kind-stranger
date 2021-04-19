@@ -785,7 +785,10 @@ var Post = /*#__PURE__*/function (_React$Component) {
         loop: true,
         playsInline: true,
         muted: true
-      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Dots__WEBPACK_IMPORTED_MODULE_4__.default, {
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+        className: "description ".concat(this.props.api.visibilityOfElements.description ? '' : 'hidden'),
+        id: "description"
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Dots__WEBPACK_IMPORTED_MODULE_4__.default, {
         numberOfSubPosts: numberOfSubPosts,
         active: active // bottom={
         //   document.getElementById('description')
@@ -793,10 +796,7 @@ var Post = /*#__PURE__*/function (_React$Component) {
         //     : 0
         // }
 
-      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-        className: "description ".concat(this.props.api.visibilityOfElements.description ? '' : 'hidden'),
-        id: "description"
-      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("a", {
+      }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("a", {
         href: "",
         id: "a"
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
@@ -1271,18 +1271,26 @@ var WelcomeModal = /*#__PURE__*/function (_React$Component) {
       }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), "Welcome to my Reddit viewer... ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("strong", null, "Kind Stranger (React Edition)"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), "For mobile users:", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("strong", null, "Use swipes"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), "For desktop users:", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("strong", null, "Use mouse wheel"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), "or arrow keys", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("strong", null, "Tap twice"), " to change the scale of images.", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("strong", {
         onClick: function onClick() {
           _this.closeWelcomeModal();
-        }
-      }, ' ', "Tap here to start", ' '), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("a", {
-        href: "https://github.com/eslessons/kind-stranger-react",
+        },
         style: {
           color: 'CHOCOLATE'
         }
-      }, "My GitHub Repository")));
+      }, ' ', "Tap here to start", ' '), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null)));
     }
   }]);
 
   return WelcomeModal;
 }(react__WEBPACK_IMPORTED_MODULE_0__.Component);
+/*
+          <a
+            href="https://github.com/eslessons/kind-stranger-react"
+            style={{ color: 'CHOCOLATE' }}
+          >
+            My GitHub Repository
+          </a>
+
+          */
+
 
 var mapStateToProps = function mapStateToProps(_ref) {
   var api = _ref.api;
@@ -1534,7 +1542,7 @@ var api = function api() {
       });
 
     case _actiontypes__WEBPACK_IMPORTED_MODULE_0__.CHANGE_VISIBILITY:
-      console.log('CHANGE_VISIBILITY');
+      // console.log('CHANGE_VISIBILITY');
       return _objectSpread(_objectSpread({}, state), {}, {
         visibilityOfElements: {
           welcomeModal: false,
@@ -1593,7 +1601,8 @@ var store = (0,redux__WEBPACK_IMPORTED_MODULE_3__.createStore)(_reducers_index__
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "filterPostsArray": () => (/* binding */ filterPostsArray)
+/* harmony export */   "filterPostsArray": () => (/* binding */ filterPostsArray),
+/* harmony export */   "getBasicResults": () => (/* binding */ getBasicResults)
 /* harmony export */ });
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -1620,8 +1629,8 @@ var filterPostsArray = function filterPostsArray(postsArray) {
     } else {
       return post;
     }
-  });
-  console.log('postsArray', postsArray);
+  }); // console.log('postsArray', postsArray);
+
   var filteredPostsArray = postsArray.filter(function (post) {
     return post.preview && post.preview.images[0] != null || post.media_metadata != null || post.domain.includes('imgur') || post.url.includes('jpg');
   });
@@ -1678,9 +1687,13 @@ var filterPostsArray = function filterPostsArray(postsArray) {
   filteredPostsArray.unshift({
     active: 1,
     numberOfSubposts: filteredPostsArray.length
-  });
-  console.log('filteredPostsArray', filteredPostsArray);
+  }); // console.log('filteredPostsArray', filteredPostsArray);
+
   return filteredPostsArray;
+};
+var getBasicResults = function getBasicResults() {
+  return;
+  ["<div class=\"result\">\n  <img src=\"https://styles.redditmedia.com/t5_2r1tc/styles/communityIcon_p1gzakhq6y201.png\" style=\"width: 1.5rem; height: 1.5rem; margin-right: 0.5rem;\">/r/itookapicture/</div>", "<div class=\"result\">\n  <img src=\"https://styles.redditmedia.com/t5_2qh1o/styles/communityIcon_6fzlk8ukx6s51.jpg\" style=\"width: 1.5rem; height: 1.5rem; margin-right: 0.5rem;\">/r/aww/</div>", "<div class=\"result\">\n  <img src=\"https://b.thumbs.redditmedia.com/VoZlOfOxgNGkqayUrmGI96XuSOGKVT-MVI4WK-CXP3o.png\" style=\"width: 1.5rem; height: 1.5rem; margin-right: 0.5rem;\">/r/art/</div>", "<div class=\"result\">\n  <img src=\"https://b.thumbs.redditmedia.com/8cMVsK9DKU-HJSM2WEG9mAGHIgd8-cEsnpJNJlB5NPw.png\" style=\"width: 1.5rem; height: 1.5rem; margin-right: 0.5rem;\">/r/cozyplaces/</div>", "<div class=\"result\">\n  <img src=\"https://a.thumbs.redditmedia.com/bDWcvO6mkX1TIcTnrO-N-5QJPUaWaq6nnQFel3kywD8.png\" style=\"width: 1.5rem; height: 1.5rem; margin-right: 0.5rem;\">/r/food/</div>"];
 };
 
 /***/ }),

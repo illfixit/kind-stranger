@@ -129,7 +129,7 @@ input {
   bottom: 0;
   left: 0;
   right: 0;
-  /* right: 0; */
+  overflow: visible;
   width: 100vw;
   height: auto;
   font-size: 1.2rem;
@@ -359,12 +359,13 @@ a {
 }
 
 .dots {
-  position: fixed;
+  position: absolute;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  top: 2.5rem;
+  /* top: 2.5rem; */
+  top: -35px;
   width: 100vw;
   left: 0;
   font-size: 28px;
@@ -372,9 +373,9 @@ a {
 }
 
 .dot {
-  color: rgb(173, 173, 173);
+  color: rgb(255, 255, 255, 0.5);
 }
 
 .active {
-  color: rgb(218, 218, 218);
+  color: rgb(255, 255, 255, 0.8);
 }

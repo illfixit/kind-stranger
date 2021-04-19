@@ -162,21 +162,21 @@ class Post extends React.Component {
           muted
         ></video>
 
-        <Dots
-          numberOfSubPosts={numberOfSubPosts}
-          active={active}
-          // bottom={
-          //   document.getElementById('description')
-          //     ? document.getElementById('description').offsetHeight
-          //     : 0
-          // }
-        />
         <div
           className={`description ${
             this.props.api.visibilityOfElements.description ? '' : 'hidden'
           }`}
           id="description"
         >
+          <Dots
+            numberOfSubPosts={numberOfSubPosts}
+            active={active}
+            // bottom={
+            //   document.getElementById('description')
+            //     ? document.getElementById('description').offsetHeight
+            //     : 0
+            // }
+          />
           <a href="" id="a">
             <div className="title" id="title">
               {title}

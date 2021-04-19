@@ -254,7 +254,7 @@ const api = (state = INITIAL_STATE, action) => {
       };
 
     case CHANGE_VISIBILITY:
-      console.log('CHANGE_VISIBILITY');
+      // console.log('CHANGE_VISIBILITY');
       return {
         ...state,
         visibilityOfElements: {
