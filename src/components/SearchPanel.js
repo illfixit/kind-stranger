@@ -18,7 +18,7 @@ class SearchPanel extends React.Component {
   }
 
   handleInput(e) {
-    let value = e.target.value;
+    let value = e.target.value.trim();
 
     this.props.dispatch(changeSearchTerm(value));
     this.props.dispatch(getListOfSubreddits(value));

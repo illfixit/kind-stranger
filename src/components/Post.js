@@ -9,6 +9,7 @@ import {
 } from '../actions/index';
 import Swipe from 'react-easy-swipe';
 import Dots from './Dots';
+import Hammer from 'rc-hammerjs';
 import { render } from 'react-dom';
 
 class Post extends React.Component {
@@ -59,6 +60,16 @@ class Post extends React.Component {
 
     if (active > 1) {
       this.props.dispatch(showPreviousSubpost());
+    }
+  }
+
+  handleDoubleTap(e) {
+    if (image.style.objectFit != 'contain') {
+      image.style.objectFit = 'contain';
+      video.style.objectFit = 'contain';
+    } else {
+      image.style.objectFit = 'cover';
+      video.style.objectFit = 'cover';
     }
   }
 
@@ -134,56 +145,60 @@ class Post extends React.Component {
     }
 
     return (
-      <Swipe
-        onSwipeDown={this.onSwipeDown}
-        onSwipeUp={this.onSwipeUp}
-        onSwipeRight={this.onSwipeRight}
-        onSwipeLeft={this.onSwipeLeft}
-        tolerance={50}
-      >
-        <img
-          id="image"
-          src={imageSource ? imageSource : './images/loader.gif'}
-          className={`image blurred ${
-            this.props.api.visibilityOfElements.image ? '' : 'hidden'
-          }`}
-        />
-        <video
-          poster="./images/loader.gif"
-          id="video"
-          src={videoSource ? videoSource : ''}
-          className={`video ${
-            this.props.api.visibilityOfElements.video ? '' : 'hidden'
-          }`}
-          preload="auto"
-          autoPlay="autoplay"
-          loop
-          playsInline
-          muted
-        ></video>
-
-        <div
-          className={`description ${
-            this.props.api.visibilityOfElements.description ? '' : 'hidden'
-          }`}
-          id="description"
+      <Hammer onDoubleTap={this.handleDoubleTap}>
+        <Swipe
+          onSwipeDown={this.onSwipeDown}
+          onSwipeUp={this.onSwipeUp}
+          onSwipeRight={this.onSwipeRight}
+          onSwipeLeft={this.onSwipeLeft}
+          tolerance={50}
         >
-          <Dots
-            numberOfSubPosts={numberOfSubPosts}
-            active={active}
-            // bottom={
-            //   document.getElementById('description')
-            //     ? document.getElementById('description').offsetHeight
-            //     : 0
-            // }
+          <img
+            id="image"
+            onDoubleClick={this.handleDoubleClick}
+            onWheel={this.handleWheel}
+            src={imageSource ? imageSource : './images/loader.gif'}
+            className={`image blurred ${
+              this.props.api.visibilityOfElements.image ? '' : 'hidden'
+            }`}
           />
-          <a href="" id="a">
-            <div className="title" id="title">
-              {title}
-            </div>
-          </a>
-        </div>
-      </Swipe>
+          <video
+            poster="./images/loader.gif"
+            id="video"
+            src={videoSource ? videoSource : ''}
+            className={`video ${
+              this.props.api.visibilityOfElements.video ? '' : 'hidden'
+            }`}
+            preload="auto"
+            autoPlay="autoplay"
+            loop
+            playsInline
+            muted
+          ></video>
+
+          <div
+            className={`description ${
+              this.props.api.visibilityOfElements.description ? '' : 'hidden'
+            }`}
+            id="description"
+          >
+            <Dots
+              numberOfSubPosts={numberOfSubPosts}
+              active={active}
+              // bottom={
+              //   document.getElementById('description')
+              //     ? document.getElementById('description').offsetHeight
+              //     : 0
+              // }
+            />
+            <a href="" id="a">
+              <div className="title" id="title">
+                {title}
+              </div>
+            </a>
+          </div>
+        </Swipe>
+      </Hammer>
     );
   }
 }

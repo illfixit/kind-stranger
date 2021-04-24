@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { changeVisibility } from '../actions';
+import { changeVisibility, prefetchPostsInCurrentSubreddit } from '../actions';
 
 class WelcomeModal extends React.Component {
   constructor(props) {
@@ -8,6 +8,10 @@ class WelcomeModal extends React.Component {
   }
 
   closeWelcomeModal() {
+    this.props.dispatch(
+      prefetchPostsInCurrentSubreddit(this.props.api.currentSubreddit.url)
+    );
+
     image.classList.remove('blurred');
     this.props.dispatch(
       changeVisibility({
@@ -18,18 +22,6 @@ class WelcomeModal extends React.Component {
         dots: true,
       })
     );
-    // welcome.style.display = 'none';
-    // search.classList.remove('hidden');
-
-    // description.classList.remove('hidden');
-    // menubtn.classList.remove('hidden');
-    // setTimeout(() => {
-    //   dots.classList.remove('hidden');
-    // }, 1000);
-
-    // setTimeout(() => {
-    //   downloadNextPosts(startUrl);
-    // }, 1000);
   }
 
   render() {
