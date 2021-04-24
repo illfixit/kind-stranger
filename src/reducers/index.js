@@ -20,6 +20,8 @@ import {
   HIDE_SEARCH_RESULTS,
   SHOW_SEARCH_RESULTS,
   CHANGE_VISIBILITY,
+  CHANGE_PRELOAD_AFTER,
+  UPDATE_PRELOADED,
 } from '../actiontypes';
 import { combineReducers } from 'redux';
 
@@ -54,6 +56,11 @@ const INITIAL_STATE = {
     dots: false,
     description: false,
     menu: false,
+  },
+  preload: {
+    subreddit: '/r/itookapicture/',
+    after: '',
+    preloaded: [],
   },
   loading: false,
   error: null,
@@ -203,6 +210,11 @@ const api = (state = INITIAL_STATE, action) => {
           ...state.search,
           hidden: true,
         },
+        preload: {
+          subreddit: action.payload.subreddit,
+          after: '',
+          preloaded: [],
+        },
       };
     case CHANGE_SEARCH_TERM:
       // console.log('CHANGE_SEARCH_TERM');
@@ -268,6 +280,27 @@ const api = (state = INITIAL_STATE, action) => {
           menu: true,
         },
       };
+
+    case CHANGE_PRELOAD_AFTER:
+      // console.log('CHANGE_PRELOAD_AFTER', action.payload);
+      return {
+        ...state,
+        preload: {
+          ...state.preload,
+          after: action.payload,
+        },
+      };
+
+    case UPDATE_PRELOADED:
+      // console.log('UPDATE_PRELOADED', action.payload);
+      return {
+        ...state,
+        preload: {
+          ...state.preload,
+          preloaded: [...state.preload.preloaded, action.payload],
+        },
+      };
+    // default
     default:
       return state;
   }
