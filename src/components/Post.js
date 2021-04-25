@@ -21,10 +21,16 @@ class Post extends React.Component {
     this.onSwipeLeft = this.onSwipeLeft.bind(this);
     this.onSwipeRight = this.onSwipeRight.bind(this);
     this.handleDoubleTap = this.handleDoubleTap.bind(this);
+    this.handleKeyboard = this.handleKeyboard.bind(this);
   }
 
   componentDidMount() {
     this.props.dispatch(fetchNextPost());
+    document.addEventListener('keydown', this.handleKeyboard, false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyboard, false);
   }
 
   onSwipeDown(position, event) {
@@ -61,6 +67,38 @@ class Post extends React.Component {
 
     if (active > 1) {
       this.props.dispatch(showPreviousSubpost());
+    }
+  }
+
+  handleKeyboard(e) {
+    // console.log(e);
+    if (e.key === 'ArrowDown') {
+      if (this.props.api.currentSubreddit.nextPosts.length === 0) {
+        try {
+          this.props.dispatch(fetchNextPost());
+        } catch (e) {
+          console.log('Post', e);
+          this.props.dispatch(fetchNextPost());
+        }
+      } else {
+        this.props.dispatch(showNextPost());
+      }
+    } else if (e.key === 'ArrowUp') {
+      if (this.props.api.currentSubreddit.previousPosts.length > 1) {
+        this.props.dispatch(showPreviousPost());
+      }
+    } else if (e.key === 'ArrowLeft') {
+      let active = this.props.api.currentSubreddit.currentPost[0].active;
+
+      if (active > 1) {
+        this.props.dispatch(showPreviousSubpost());
+      }
+    } else if (e.key === 'ArrowRight') {
+      let active = this.props.api.currentSubreddit.currentPost[0].active;
+
+      if (active < this.props.api.currentSubreddit.currentPost.length - 1) {
+        this.props.dispatch(showNextSubpost());
+      }
     }
   }
 
@@ -160,7 +198,9 @@ class Post extends React.Component {
             onDoubleClick={this.handleDoubleClick}
             onWheel={this.handleWheel}
             src={imageSource ? imageSource : './images/loader.gif'}
-            style={{ objectFit: this.props.api.visibilityOfElements.objectFit }}
+            style={{
+              objectFit: this.props.api.visibilityOfElements.objectFit,
+            }}
             className={`image blurred ${
               this.props.api.visibilityOfElements.image ? '' : 'hidden'
             }`}
@@ -170,7 +210,9 @@ class Post extends React.Component {
             poster="./images/loader.gif"
             id="video"
             src={videoSource ? videoSource : ''}
-            style={{ objectFit: this.props.api.visibilityOfElements.objectFit }}
+            style={{
+              objectFit: this.props.api.visibilityOfElements.objectFit,
+            }}
             className={`video ${
               this.props.api.visibilityOfElements.video ? '' : 'hidden'
             }`}

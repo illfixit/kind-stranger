@@ -38,16 +38,17 @@ class WelcomeModal extends React.Component {
           <strong>Kind Stranger (React Edition)</strong>
           <br />
           <br />
-          For mobile users:
+          To navigate between posts:
           <br />
-          <strong>Use swipes</strong>
+          <strong>Use up-down swipes or keys</strong>
           <br />
           <br />
-          For desktop users:
+          If post has <strong>multiple images</strong>
           <br />
-          <strong>Use mouse wheel</strong>
+          (you'll see white dots)
           <br />
-          or arrow keys
+          you can swipe left-right <br />
+          or press left-right keys
           <br />
           <br />
           <strong>Tap twice</strong> to change the scale of images.
