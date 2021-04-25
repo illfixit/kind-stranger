@@ -79,3 +79,5 @@ export const getBasicResults = () => {
   <img src="https://a.thumbs.redditmedia.com/bDWcvO6mkX1TIcTnrO-N-5QJPUaWaq6nnQFel3kywD8.png" style="width: 1.5rem; height: 1.5rem; margin-right: 0.5rem;">/r/food/</div>`,
   ];
 };
+
+// .url.replace(/amp;/gi, '')

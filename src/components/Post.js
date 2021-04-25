@@ -6,10 +6,11 @@ import {
   showPreviousPost,
   showNextSubpost,
   showPreviousSubpost,
+  changeMediaScale,
 } from '../actions/index';
 import Swipe from 'react-easy-swipe';
 import Dots from './Dots';
-import { render } from 'react-dom';
+import Hammer from 'rc-hammerjs';
 
 class Post extends React.Component {
   constructor(props) {
@@ -19,6 +20,7 @@ class Post extends React.Component {
     this.onSwipeDown = this.onSwipeDown.bind(this);
     this.onSwipeLeft = this.onSwipeLeft.bind(this);
     this.onSwipeRight = this.onSwipeRight.bind(this);
+    this.handleDoubleTap = this.handleDoubleTap.bind(this);
   }
 
   componentDidMount() {
@@ -60,6 +62,17 @@ class Post extends React.Component {
     if (active > 1) {
       this.props.dispatch(showPreviousSubpost());
     }
+  }
+
+  handleDoubleTap(e) {
+    this.props.dispatch(changeMediaScale());
+    // if (image.style.objectFit != 'contain') {
+    //   image.style.objectFit = 'contain';
+    //   video.style.objectFit = 'contain';
+    // } else {
+    //   image.style.objectFit = 'cover';
+    //   video.style.objectFit = 'cover';
+    // }
   }
 
   render() {
@@ -134,63 +147,70 @@ class Post extends React.Component {
     }
 
     return (
-      <Swipe
-        onSwipeDown={this.onSwipeDown}
-        onSwipeUp={this.onSwipeUp}
-        onSwipeRight={this.onSwipeRight}
-        onSwipeLeft={this.onSwipeLeft}
-        tolerance={50}
-      >
-        <img
-          id="image"
-          src={imageSource ? imageSource : './images/loader.gif'}
-          className={`image blurred ${
-            this.props.api.visibilityOfElements.image ? '' : 'hidden'
-          }`}
-        />
-        <video
-          poster="./images/loader.gif"
-          id="video"
-          src={videoSource ? videoSource : ''}
-          className={`video ${
-            this.props.api.visibilityOfElements.video ? '' : 'hidden'
-          }`}
-          preload="auto"
-          autoPlay="autoplay"
-          loop
-          playsInline
-          muted
-        ></video>
-
-        <div
-          className={`description ${
-            this.props.api.visibilityOfElements.description ? '' : 'hidden'
-          }`}
-          id="description"
+      <Hammer onDoubleTap={this.handleDoubleTap}>
+        <Swipe
+          onSwipeDown={this.onSwipeDown}
+          onSwipeUp={this.onSwipeUp}
+          onSwipeRight={this.onSwipeRight}
+          onSwipeLeft={this.onSwipeLeft}
+          tolerance={50}
         >
-          <Dots
-            numberOfSubPosts={numberOfSubPosts}
-            active={active}
-            // bottom={
-            //   document.getElementById('description')
-            //     ? document.getElementById('description').offsetHeight
-            //     : 0
-            // }
+          <img
+            id="image"
+            onDoubleClick={this.handleDoubleClick}
+            onWheel={this.handleWheel}
+            src={imageSource ? imageSource : './images/loader.gif'}
+            style={{ objectFit: this.props.api.visibilityOfElements.objectFit }}
+            className={`image blurred ${
+              this.props.api.visibilityOfElements.image ? '' : 'hidden'
+            }`}
           />
-          <a
-            href={
-              this.props.api.currentSubreddit.currentPost[1]
-                ? this.props.api.currentSubreddit.currentPost[1].url
-                : 'https://www.reddit.com'
-            }
-            id="a"
+
+          <video
+            poster="./images/loader.gif"
+            id="video"
+            src={videoSource ? videoSource : ''}
+            style={{ objectFit: this.props.api.visibilityOfElements.objectFit }}
+            className={`video ${
+              this.props.api.visibilityOfElements.video ? '' : 'hidden'
+            }`}
+            preload="auto"
+            autoPlay="autoplay"
+            loop
+            playsInline
+            muted
+          ></video>
+
+          <div
+            className={`description ${
+              this.props.api.visibilityOfElements.description ? '' : 'hidden'
+            }`}
+            id="description"
           >
-            <div className="title" id="title">
-              {title}
-            </div>
-          </a>
-        </div>
-      </Swipe>
+            <Dots
+              numberOfSubPosts={numberOfSubPosts}
+              active={active}
+              // bottom={
+              //   document.getElementById('description')
+              //     ? document.getElementById('description').offsetHeight
+              //     : 0
+              // }
+            />
+            <a
+              href={
+                this.props.api.currentSubreddit.currentPost[1]
+                  ? this.props.api.currentSubreddit.currentPost[1].url
+                  : 'https://www.reddit.com'
+              }
+              id="a"
+            >
+              <div className="title" id="title">
+                {title}
+              </div>
+            </a>
+          </div>
+        </Swipe>
+      </Hammer>
     );
   }
 }

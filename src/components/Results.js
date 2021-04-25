@@ -1,4 +1,4 @@
-import React, { setState } from 'react';
+import React from 'react';
 import Result from './Result';
 
 export default class Results extends React.Component {
@@ -7,18 +7,6 @@ export default class Results extends React.Component {
 
     this.state = { results: [] };
   }
-
-  // componentDidMount() {
-  //   console.log('Results:CDM', this.state);
-  // }
-
-  // componentDidUpdate() {
-  //   console.log('Results:CDU', this.state);
-  // }
-
-  // componentWillUnmount() {
-  //   console.log('Results:CWU', this.state);
-  // }
 
   showResults() {
     let results = this.props.resultsArray.map((element) => {

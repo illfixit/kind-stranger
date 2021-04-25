@@ -21,6 +21,9 @@ import {
   HIDE_SEARCH_RESULTS,
   SHOW_SEARCH_RESULTS,
   CHANGE_VISIBILITY,
+  CHANGE_PRELOAD_AFTER,
+  UPDATE_PRELOADED,
+  CHANGE_MEDIA_SCALE,
 } from '../actiontypes';
 import { filterPostsArray } from '../utils';
 import store from '../store';
@@ -49,6 +52,21 @@ export const fetchNextPost = () => {
 
         dispatch(fetchNextPostSuccess({ filteredPostsArray, after }));
         dispatch(showCurrentPost());
+        // console.log(
+        //   'previous posts:',
+        //   store.getState().api.currentSubreddit.previousPosts.length
+        // );
+        // console.log(
+        //   'preloaded:',
+        //   store.getState().api.preload.preloaded.length * 5
+        // );
+        if (
+          store.getState().api.preload.preloaded.length * 5 -
+            store.getState().api.currentSubreddit.previousPosts.length <
+          5
+        ) {
+          dispatch(prefetchPostsInCurrentSubreddit());
+        }
       })
       .catch((e) => {
         // console.log('FETCH_NEW_POST failed');
@@ -86,7 +104,7 @@ export const checkIfSubredditIsOk = (subreddit) => {
           dispatch(checkIfSubredditIsOkSuccess());
           dispatch(hideSearchResults());
           dispatch(changeSubreddit(subreddit));
-
+          dispatch(prefetchPostsInCurrentSubreddit());
           dispatch(fetchNextPost());
         }
       })
@@ -238,3 +256,55 @@ export const changeVisibility = (elements) => ({
   type: CHANGE_VISIBILITY,
   payload: elements,
 });
+
+export const prefetchPostsInCurrentSubreddit = () => {
+  return (dispatch) => {
+    const { subreddit, after } = store.getState().api.preload;
+
+    fetch(`https://www.reddit.com${subreddit}hot.json?limit=5&after=${after}`)
+      .then((response) => response.json())
+      .then((data) => {
+        dispatch(changePreloadAfter(data.data.after));
+
+        let posts = data.data.children;
+        let images = posts.map((post) => {
+          return {
+            subreddit,
+            url: post.data.preview.images[0].resolutions[
+              post.data.preview.images[0].resolutions.length - 1
+            ].url.replace(/amp;/gi, ''),
+          };
+        });
+
+        images.forEach((image) => {
+          let img = new Image();
+          img.src = image.url;
+        });
+        dispatch(updatePreloaded(images));
+      });
+  };
+};
+
+export const changePreloadAfter = (after) => ({
+  type: CHANGE_PRELOAD_AFTER,
+  payload: after,
+});
+
+const updatePreloaded = (images) => ({
+  type: UPDATE_PRELOADED,
+  payload: images,
+});
+
+export const changeMediaScale = () => {
+  if (store.getState().api.visibilityOfElements.objectFit == 'contain') {
+    return {
+      type: CHANGE_MEDIA_SCALE,
+      payload: 'cover',
+    };
+  } else {
+    return {
+      type: CHANGE_MEDIA_SCALE,
+      payload: 'contain',
+    };
+  }
+};
