@@ -65,7 +65,7 @@ class Post extends React.Component {
   render() {
     // if (post && post.crosspost_parent != null)
     //   post = post.crosspost_parent_list[0];
-
+    // console.log(this.props.api.currentSubreddit.currentPost[1]);
     let imageSource = null;
     let videoSource = null;
     let title = null;
@@ -177,7 +177,14 @@ class Post extends React.Component {
             //     : 0
             // }
           />
-          <a href="" id="a">
+          <a
+            href={
+              this.props.api.currentSubreddit.currentPost[1]
+                ? this.props.api.currentSubreddit.currentPost[1].url
+                : 'https://www.reddit.com'
+            }
+            id="a"
+          >
             <div className="title" id="title">
               {title}
             </div>

@@ -65,28 +65,23 @@ class WelcomeModal extends React.Component {
             onClick={() => {
               this.closeWelcomeModal();
             }}
-            style={{ color: 'CHOCOLATE' }}
           >
             {' '}
             Tap here to start{' '}
           </strong>
           <br />
           <br />
+          <a
+            href="https://github.com/illfixit/kind-stranger-react"
+            style={{ color: 'CHOCOLATE' }}
+          >
+            My GitHub Repository
+          </a>
         </p>
       </React.Fragment>
     );
   }
 }
-
-/*
-          <a
-            href="https://github.com/eslessons/kind-stranger-react"
-            style={{ color: 'CHOCOLATE' }}
-          >
-            My GitHub Repository
-          </a>
-
-          */
 
 const mapStateToProps = ({ api }) => {
   // console.log(api.currentSubreddit.currentPost[0]);

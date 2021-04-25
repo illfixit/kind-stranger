@@ -4,7 +4,7 @@
   "description": "Kind Stranger. Reddit Viewer written using React",
   "main": "./build/index.js",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack --optimization-minimize",
     "start": "webpack --watch",
     "dev-server": "webpack-dev-server",
     "test": "echo \"Error: no test specified\" && exit 1"

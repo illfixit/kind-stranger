@@ -3,7 +3,8 @@ console.log(path.resolve(__dirname, 'build'));
 
 module.exports = {
   entry: './src/app.js',
-  mode: 'development',
+  // mode: 'development',
+  mode: 'production',
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'index.js',
