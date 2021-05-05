@@ -1,3 +1,6 @@
+![screenshot](https://i.redd.it/9go05rx77bx61.jpg)
+
+
 # Kind Stranger (React Edition)
 Minimalistic Mobile Reddit Viewer written in React and Redux
 
