@@ -9,6 +9,10 @@ export default class Results extends React.Component {
   }
 
   showResults() {
+    // toDo
+    // if resultsArray is Empty => show basic subs !!!
+    //
+
     let results = this.props.resultsArray.map((element) => {
       let iconUrl = element.data.community_icon
         ? element.data.community_icon

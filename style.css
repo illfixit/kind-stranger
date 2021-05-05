@@ -346,6 +346,19 @@ a {
   filter: invert(1);
 } */
 
+#scale {
+  top: -3rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border-color: #5d5d5d85;
+  outline: none;
+  color: #ffffff;
+  background-color: #ffffff30;
+  position: absolute;
+  right: 1rem;
+}
+
 .welcome {
   border-radius: 20px;
   padding: 1.5rem;

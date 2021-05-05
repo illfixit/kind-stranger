@@ -296,15 +296,15 @@ const updatePreloaded = (images) => ({
 });
 
 export const changeMediaScale = () => {
-  if (store.getState().api.visibilityOfElements.objectFit == 'contain') {
+  if (store.getState().api.visibilityOfElements.objectFit == 'cover') {
     return {
       type: CHANGE_MEDIA_SCALE,
-      payload: 'cover',
+      payload: 'contain',
     };
   } else {
     return {
       type: CHANGE_MEDIA_SCALE,
-      payload: 'contain',
+      payload: 'cover',
     };
   }
 };
