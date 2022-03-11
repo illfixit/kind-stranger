@@ -84,8 +84,10 @@ export const getBasicResults = () => {
 export const prefetchImages = (images) => {
   // console.log('Prefetch Images');
   images.forEach((image) => {
-    let img = new Image();
-    img.src = image.url;
+    try {
+      let img = new Image();
+      img.src = image.url;
+    } catch (e) {}
   });
 };
 
@@ -93,6 +95,8 @@ export const getPostInfo = (post) => {
   let imageSource;
   let videoSource;
   let title;
+
+  // print('post:', post);
 
   imageSource = post.preview
     ? post.preview.images[0].resolutions[

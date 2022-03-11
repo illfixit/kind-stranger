@@ -125,78 +125,81 @@ class Post extends React.Component {
     let active;
 
     // console.log('render', this.props.api.currentSubreddit);
-    try {
-      if (this.props.api.currentSubreddit.currentPost[0]) {
-        numberOfSubPosts =
-          this.props.api.currentSubreddit.currentPost.length - 1;
 
-        active = this.props.api.currentSubreddit.currentPost[0].active;
+    if (this.props.api.currentSubreddit.currentPost != undefined) {
+      try {
+        if (this.props.api.currentSubreddit.currentPost[0]) {
+          numberOfSubPosts =
+            this.props.api.currentSubreddit.currentPost.length - 1;
 
-        let post = this.props.api.currentSubreddit.currentPost[active];
+          active = this.props.api.currentSubreddit.currentPost[0].active;
 
-        let postObject = getPostInfo(post);
-        videoSource = postObject.videoSource;
-        if (videoSource) {
-          image.classList.add('hidden');
-          video.classList.remove('hidden');
-        } else {
-          video.classList.add('hidden');
-          image.classList.remove('hidden');
-          imageSource = postObject.imageSource;
+          let post = this.props.api.currentSubreddit.currentPost[active];
+
+          let postObject = getPostInfo(post);
+          videoSource = postObject.videoSource;
+          if (videoSource) {
+            image.classList.add('hidden');
+            video.classList.remove('hidden');
+          } else {
+            video.classList.add('hidden');
+            image.classList.remove('hidden');
+            imageSource = postObject.imageSource;
+          }
+          title = postObject.title;
+
+          // console.log(imageSource, videoSource, title);
+
+          // imageSource = post.preview
+          //   ? post.preview.images[0].resolutions[
+          //       post.preview.images[0].resolutions.length - 1
+          //     ].url.replace(/amp;/gi, '')
+          //   : '';
+
+          // if (post.url && post.url.includes('redd') && post.url.includes('.gif'))
+          //   imageSource = post.url;
+          // video.classList.add('hidden');
+
+          // if (post.url && post.url.includes('gfycat'))
+          //   imageSource = post.secure_media.oembed.thumbnail_url;
+          // video.classList.add('hidden');
+
+          // if (
+          //   post.url &&
+          //   post.url.endsWith('.gifv') &&
+          //   !post.url.includes('redd')
+          // ) {
+          //   videoSource = post.url.replace('gifv', 'mp4');
+          //   video.classList.remove('hidden');
+          // }
+          // if (
+          //   post.url &&
+          //   post.url.endsWith('.gif') &&
+          //   !post.url.includes('redd')
+          // ) {
+          //   videoSource = post.url.replace('gif', 'mp4');
+          //   video.classList.remove('hidden');
+          // }
+
+          // if (post.media && post.media.reddit_video != null) {
+          //   videoSource = post.media.reddit_video.fallback_url;
+          //   video.classList.remove('hidden');
+          // }
+
+          // if (post.url && post.url.includes('redgif')) {
+          //   videoSource = post.preview.reddit_video_preview.fallback_url;
+          //   video.classList.remove('hidden');
+          // }
+
+          // title = post.title;
         }
-        title = postObject.title;
-
-        // console.log(imageSource, videoSource, title);
-
-        // imageSource = post.preview
-        //   ? post.preview.images[0].resolutions[
-        //       post.preview.images[0].resolutions.length - 1
-        //     ].url.replace(/amp;/gi, '')
-        //   : '';
-
-        // if (post.url && post.url.includes('redd') && post.url.includes('.gif'))
-        //   imageSource = post.url;
-        // video.classList.add('hidden');
-
-        // if (post.url && post.url.includes('gfycat'))
-        //   imageSource = post.secure_media.oembed.thumbnail_url;
-        // video.classList.add('hidden');
-
-        // if (
-        //   post.url &&
-        //   post.url.endsWith('.gifv') &&
-        //   !post.url.includes('redd')
-        // ) {
-        //   videoSource = post.url.replace('gifv', 'mp4');
-        //   video.classList.remove('hidden');
-        // }
-        // if (
-        //   post.url &&
-        //   post.url.endsWith('.gif') &&
-        //   !post.url.includes('redd')
-        // ) {
-        //   videoSource = post.url.replace('gif', 'mp4');
-        //   video.classList.remove('hidden');
-        // }
-
-        // if (post.media && post.media.reddit_video != null) {
-        //   videoSource = post.media.reddit_video.fallback_url;
-        //   video.classList.remove('hidden');
-        // }
-
-        // if (post.url && post.url.includes('redgif')) {
-        //   videoSource = post.preview.reddit_video_preview.fallback_url;
-        //   video.classList.remove('hidden');
-        // }
-
-        // title = post.title;
+      } catch (e) {
+        console.log(e, 'not good in render');
+        // this.props.dispatch(fetchNextPost());
+        // let { url, sort, after } = this.props.api.currentSubreddit;
+        // this.props.dispatch(fetchNextPost(url, sort, after));
+        // this.props.dispatch(showNextPost());
       }
-    } catch (e) {
-      console.log(e, 'not good in render');
-      // this.props.dispatch(fetchNextPost());
-      // let { url, sort, after } = this.props.api.currentSubreddit;
-      // this.props.dispatch(fetchNextPost(url, sort, after));
-      // this.props.dispatch(showNextPost());
     }
 
     return (
@@ -255,6 +258,7 @@ class Post extends React.Component {
             />
             <a
               href={
+                this.props.api.currentSubreddit.currentPost &&
                 this.props.api.currentSubreddit.currentPost[1]
                   ? this.props.api.currentSubreddit.currentPost[1].url
                   : 'https://www.reddit.com'

@@ -71,7 +71,7 @@ class WelcomeModal extends React.Component {
             My GitHub Repository
           </a>
           <br />
-          <span style={{ color: 'rgba(0, 0, 0, 0.5)' }}>Build: 0.9.0</span>
+          <span style={{ color: 'rgba(0, 0, 0, 0.5)' }}>Build: 0.9.1</span>
         </p>
       </React.Fragment>
     );

@@ -18,13 +18,13 @@ class SearchPanel extends React.Component {
   }
 
   handleInput(e) {
-    let value = e.target.value;
+    let value = e.target.value.toLowerCase();
 
     this.props.dispatch(changeSearchTerm(value));
     this.props.dispatch(getListOfSubreddits(value));
 
     if (value && (e.key === 'Enter' || e.keyCode === 13)) {
-      this.props.dispatch(checkIfSubredditIsOk(`/r/${value}/`));
+      this.props.dispatch(checkIfSubredditIsOk(`/r/${value.trim()}/`));
     }
   }
 
@@ -66,6 +66,8 @@ class SearchPanel extends React.Component {
             this.handleInput(e);
           }}
           value={this.props.api.search.searchTerm}
+          // autocomplete="off"
+          // spellcheck="false"
         />
 
         {this.props.api.search.results &&
