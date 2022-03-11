@@ -1,12 +1,12 @@
 const path = require('path');
-console.log(path.resolve(__dirname, 'build'));
+console.log('Build path: ', path.resolve(__dirname, 'build'));
 
 module.exports = {
   entry: './src/app.js',
   // mode: 'development',
   mode: 'production',
   output: {
-    path: path.resolve(__dirname, 'build'),
+    path: path.join(__dirname, '/build/'),
     filename: 'index.js',
   },
   devtool: 'source-map',

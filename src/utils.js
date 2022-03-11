@@ -81,3 +81,50 @@ export const getBasicResults = () => {
 };
 
 // .url.replace(/amp;/gi, '')
+export const prefetchImages = (images) => {
+  // console.log('Prefetch Images');
+  images.forEach((image) => {
+    let img = new Image();
+    img.src = image.url;
+  });
+};
+
+export const getPostInfo = (post) => {
+  let imageSource;
+  let videoSource;
+  let title;
+
+  imageSource = post.preview
+    ? post.preview.images[0].resolutions[
+        post.preview.images[0].resolutions.length - 1
+      ].url.replace(/amp;/gi, '')
+    : '';
+
+  if (post.url && post.url.includes('redd') && post.url.includes('.gif')) {
+    imageSource = post.url;
+  }
+
+  if (post.url && post.url.includes('gfycat')) {
+    imageSource = post.secure_media.oembed.thumbnail_url;
+  }
+
+  if (post.url && post.url.endsWith('.gifv') && !post.url.includes('redd')) {
+    videoSource = post.url.replace('gifv', 'mp4');
+  }
+
+  if (post.url && post.url.endsWith('.gif') && !post.url.includes('redd')) {
+    videoSource = post.url.replace('gif', 'mp4');
+  }
+
+  if (post.media && post.media.reddit_video != null) {
+    videoSource = post.media.reddit_video.fallback_url;
+  }
+
+  if (post.url && post.url.includes('redgif')) {
+    videoSource = post.preview.reddit_video_preview.fallback_url;
+  }
+
+  title = post.title;
+
+  return { imageSource, videoSource, title };
+};

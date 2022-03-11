@@ -25,7 +25,7 @@ import {
   UPDATE_PRELOADED,
   CHANGE_MEDIA_SCALE,
 } from '../actiontypes';
-import { filterPostsArray } from '../utils';
+import { filterPostsArray, prefetchImages } from '../utils';
 import store from '../store';
 
 export const fetchNextPost = () => {
@@ -34,7 +34,7 @@ export const fetchNextPost = () => {
   return (dispatch) => {
     dispatch(fetchNextPostStarted());
 
-    fetch(`https://www.reddit.com${url}${sort}.json?&limit=1&after=${after}`)
+    fetch(`https://www.reddit.com${url}${sort}.json?limit=1&after=${after}`)
       .then((response) => response.json())
       .then((data) => {
         dispatch(updateCurrentSubredditAfter(data.data.after));
@@ -102,7 +102,7 @@ export const checkIfSubredditIsOk = (subreddit) => {
           dispatch(checkIfSubredditIsOkFailure('Bad subreddit'));
         } else if (exists === true) {
           dispatch(checkIfSubredditIsOkSuccess());
-          dispatch(hideSearchResults());
+          dispatch(hideSearchResults(subreddit.slice(3, -1)));
           dispatch(changeSubreddit(subreddit));
           dispatch(prefetchPostsInCurrentSubreddit());
           dispatch(fetchNextPost());
@@ -122,7 +122,7 @@ export const getListOfSubreddits = (searchTerm) => {
     dispatch(getListOfSubredditsStarted());
 
     fetch(
-      `https://www.reddit.com/api/subreddit_autocomplete_v2.json?query=${searchTerm}&raw_json=1&gilding_detail=1`
+      `https://www.reddit.com/api/subreddit_autocomplete_v2.json?query=${searchTerm}&include_over_18=true&raw_json=1&gilding_detail=1`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -244,8 +244,9 @@ const updateSearchResults = (results) => ({
   payload: results,
 });
 
-export const hideSearchResults = () => ({
+export const hideSearchResults = (subreddit) => ({
   type: HIDE_SEARCH_RESULTS,
+  payload: subreddit,
 });
 
 export const showSearchResults = () => ({
@@ -267,19 +268,27 @@ export const prefetchPostsInCurrentSubreddit = () => {
         dispatch(changePreloadAfter(data.data.after));
 
         let posts = data.data.children;
+        // console.log('posts', posts);
         let images = posts.map((post) => {
-          return {
-            subreddit,
-            url: post.data.preview.images[0].resolutions[
-              post.data.preview.images[0].resolutions.length - 1
-            ].url.replace(/amp;/gi, ''),
-          };
+          try {
+            return {
+              subreddit,
+              url: post.data.preview.images[0].resolutions[
+                post.data.preview.images[0].resolutions.length - 1
+              ].url.replace(/amp;/gi, ''),
+            };
+          } catch (e) {
+            console.log('unable to prefetch');
+          }
         });
+        // console.log('images[0].url', images[0].url);
 
-        images.forEach((image) => {
-          let img = new Image();
-          img.src = image.url;
-        });
+        // images.forEach((image) => {
+        //   let img = new Image();
+        //   img.src = image.url;
+        // });
+
+        prefetchImages(images);
         dispatch(updatePreloaded(images));
       });
   };

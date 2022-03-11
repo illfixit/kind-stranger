@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --optimization-minimize",
     "start": "webpack --watch",
-    "dev-server": "webpack-dev-server",
+    "dev-server": "webpack serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "illfixit",
@@ -25,13 +25,13 @@
     "redux-devtools-extension": "^2.13.9",
     "redux-thunk": "^2.3.0",
     "webpack": "^5.28.0",
-    "webpack-cli": "3.3.12"
+    "webpack-cli": "^4.9.2"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.13.15",
     "@babel/preset-env": "^7.13.15",
     "babel-core": "^6.0.20",
     "babel-preset-env": "^1.7.0",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^4.7.4"
   }
 }

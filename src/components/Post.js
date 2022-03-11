@@ -11,6 +11,7 @@ import {
 import Swipe from 'react-easy-swipe';
 import Dots from './Dots';
 import Hammer from 'rc-hammerjs';
+import { getPostInfo } from '../utils';
 
 class Post extends React.Component {
   constructor(props) {
@@ -133,48 +134,62 @@ class Post extends React.Component {
 
         let post = this.props.api.currentSubreddit.currentPost[active];
 
-        imageSource = post.preview
-          ? post.preview.images[0].resolutions[
-              post.preview.images[0].resolutions.length - 1
-            ].url.replace(/amp;/gi, '')
-          : '';
-
-        if (post.url && post.url.includes('redd') && post.url.includes('.gif'))
-          imageSource = post.url;
-        video.classList.add('hidden');
-
-        if (post.url && post.url.includes('gfycat'))
-          imageSource = post.secure_media.oembed.thumbnail_url;
-        video.classList.add('hidden');
-
-        if (
-          post.url &&
-          post.url.endsWith('.gifv') &&
-          !post.url.includes('redd')
-        ) {
-          videoSource = post.url.replace('gifv', 'mp4');
+        let postObject = getPostInfo(post);
+        videoSource = postObject.videoSource;
+        if (videoSource) {
+          image.classList.add('hidden');
           video.classList.remove('hidden');
+        } else {
+          video.classList.add('hidden');
+          image.classList.remove('hidden');
+          imageSource = postObject.imageSource;
         }
-        if (
-          post.url &&
-          post.url.endsWith('.gif') &&
-          !post.url.includes('redd')
-        ) {
-          videoSource = post.url.replace('gif', 'mp4');
-          video.classList.remove('hidden');
-        }
+        title = postObject.title;
 
-        if (post.media && post.media.reddit_video != null) {
-          videoSource = post.media.reddit_video.fallback_url;
-          video.classList.remove('hidden');
-        }
+        // console.log(imageSource, videoSource, title);
 
-        if (post.url && post.url.includes('redgif')) {
-          videoSource = post.preview.reddit_video_preview.fallback_url;
-          video.classList.remove('hidden');
-        }
+        // imageSource = post.preview
+        //   ? post.preview.images[0].resolutions[
+        //       post.preview.images[0].resolutions.length - 1
+        //     ].url.replace(/amp;/gi, '')
+        //   : '';
 
-        title = post.title;
+        // if (post.url && post.url.includes('redd') && post.url.includes('.gif'))
+        //   imageSource = post.url;
+        // video.classList.add('hidden');
+
+        // if (post.url && post.url.includes('gfycat'))
+        //   imageSource = post.secure_media.oembed.thumbnail_url;
+        // video.classList.add('hidden');
+
+        // if (
+        //   post.url &&
+        //   post.url.endsWith('.gifv') &&
+        //   !post.url.includes('redd')
+        // ) {
+        //   videoSource = post.url.replace('gifv', 'mp4');
+        //   video.classList.remove('hidden');
+        // }
+        // if (
+        //   post.url &&
+        //   post.url.endsWith('.gif') &&
+        //   !post.url.includes('redd')
+        // ) {
+        //   videoSource = post.url.replace('gif', 'mp4');
+        //   video.classList.remove('hidden');
+        // }
+
+        // if (post.media && post.media.reddit_video != null) {
+        //   videoSource = post.media.reddit_video.fallback_url;
+        //   video.classList.remove('hidden');
+        // }
+
+        // if (post.url && post.url.includes('redgif')) {
+        //   videoSource = post.preview.reddit_video_preview.fallback_url;
+        //   video.classList.remove('hidden');
+        // }
+
+        // title = post.title;
       }
     } catch (e) {
       console.log(e, 'not good in render');
@@ -216,7 +231,7 @@ class Post extends React.Component {
             className={`video ${
               this.props.api.visibilityOfElements.video ? '' : 'hidden'
             }`}
-            preload="auto"
+            // preload="auto"
             autoPlay="autoplay"
             loop
             playsInline

@@ -248,12 +248,12 @@ const api = (state = INITIAL_STATE, action) => {
       };
 
     case HIDE_SEARCH_RESULTS:
-      // console.log('HIDE_SEARCH_RESULTS');
+      console.log('HIDE_SEARCH_RESULTS', action.payload);
       return {
         ...state,
         search: {
           ...state.search,
-          searchTerm: '',
+          searchTerm: action.payload,
           hidden: true,
         },
       };
