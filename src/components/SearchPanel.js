@@ -15,17 +15,32 @@ class SearchPanel extends React.Component {
     super(props);
 
     this.handleInput = this.handleInput.bind(this);
+    this.reloadPage = this.reloadPage.bind(this);
   }
 
   handleInput(e) {
-    let value = e.target.value.toLowerCase();
+    let value = e.target.value;
+    let cValue = '';
+
+    if (value.includes('+')) {
+      cValue = value.split('+');
+      cValue = cValue[cValue.length - 1];
+    }
 
     this.props.dispatch(changeSearchTerm(value));
-    this.props.dispatch(getListOfSubreddits(value));
+    if (!cValue) {
+      this.props.dispatch(getListOfSubreddits(value));
+    } else {
+      this.props.dispatch(getListOfSubreddits(cValue));
+    }
 
     if (value && (e.key === 'Enter' || e.keyCode === 13)) {
       this.props.dispatch(checkIfSubredditIsOk(`/r/${value.trim()}/`));
     }
+  }
+
+  reloadPage() {
+    document.location.reload();
   }
 
   // componentDidMount() {
@@ -49,6 +64,7 @@ class SearchPanel extends React.Component {
           className={`menubtn ${
             this.props.api.visibilityOfElements.searchPanel ? '' : 'hidden'
           }`}
+          onClick={this.reloadPage}
         >
           <img src="./images/icon.png" className="menuimg" id="menuImg" />
         </button>

@@ -23,6 +23,9 @@ import {
   CHANGE_PRELOAD_AFTER,
   UPDATE_PRELOADED,
   CHANGE_MEDIA_SCALE,
+  SHOW_COMMENTS,
+  HIDE_COMMENTS,
+  CHANGE_SORT,
 } from '../actiontypes';
 import { combineReducers } from 'redux';
 
@@ -50,7 +53,7 @@ const INITIAL_STATE = {
   },
   visibilityOfElements: {
     welcomeModal: true,
-    searchPanel: false,
+    searchPanel: true,
     results: false,
     image: true,
     video: false,
@@ -58,10 +61,12 @@ const INITIAL_STATE = {
     description: false,
     menu: false,
     objectFit: 'cover',
+    comments: false,
   },
   preload: {
     subreddit: '/r/itookapicture/',
     after: '',
+    sort: 'hot',
     preloaded: [],
   },
   loading: false,
@@ -308,7 +313,47 @@ const api = (state = INITIAL_STATE, action) => {
         ...state,
         visibilityOfElements: {
           ...state.visibilityOfElements,
-          objectFit: action.payload,
+          objectFitClass: action.payload,
+        },
+      };
+
+    case CHANGE_SORT:
+      // console.log('CHANGE_SORT');
+
+      return {
+        ...state,
+        currentSubreddit: {
+          ...state.currentSubreddit,
+          sort: action.payload,
+          after: '',
+          previousPosts: [],
+          nextPosts: [],
+        },
+        preload: {
+          ...state.preload,
+          preloaded: [],
+          after: '',
+          sort: action.payload,
+        },
+      };
+
+    case SHOW_COMMENTS:
+      console.log('SHOW_COMMENTS');
+      return {
+        ...state,
+        visibilityOfElements: {
+          ...state.visibilityOfElements,
+          comments: true,
+        },
+      };
+
+    case HIDE_COMMENTS:
+      console.log('HIDE_COMMENTS');
+      return {
+        ...state,
+        visibilityOfElements: {
+          ...state.visibilityOfElements,
+          comments: false,
         },
       };
 

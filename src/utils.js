@@ -14,7 +14,8 @@ export const filterPostsArray = (postsArray) => {
       (post.preview && post.preview.images[0] != null) ||
       post.media_metadata != null ||
       post.domain.includes('imgur') ||
-      post.url.includes('jpg')
+      post.url.includes('jpg') ||
+      post.selftext != null
     );
   });
 
@@ -95,8 +96,9 @@ export const getPostInfo = (post) => {
   let imageSource;
   let videoSource;
   let title;
+  let selftext;
 
-  // print('post:', post);
+  // console.log('post:', post);
 
   imageSource = post.preview
     ? post.preview.images[0].resolutions[
@@ -129,6 +131,22 @@ export const getPostInfo = (post) => {
   }
 
   title = post.title;
+  selftext = post.selftext ? post.selftext : '';
 
-  return { imageSource, videoSource, title };
+  if (typeof imageSource == 'undefined') imageSource = '';
+  if (typeof videoSource == 'undefined') videoSource = '';
+  if (typeof title == 'undefined') title = '';
+  if (typeof selftext == 'undefined') selftext = '';
+
+  // console.log(
+  //   imageSource,
+  //   '|',
+  //   videoSource,
+  //   '|',
+  //   title,
+  //   '|',
+  //   selftext.slice(0, 16)
+  // );
+
+  return { imageSource, videoSource, title, selftext };
 };

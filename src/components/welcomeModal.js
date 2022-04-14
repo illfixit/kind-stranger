@@ -12,7 +12,6 @@ class WelcomeModal extends React.Component {
       prefetchPostsInCurrentSubreddit(this.props.api.currentSubreddit.url)
     );
 
-    image.classList.remove('blurred');
     this.props.dispatch(
       changeVisibility({
         welcome: false,
@@ -27,21 +26,26 @@ class WelcomeModal extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <p
+        <div
           id="welcome"
           className={`welcome ${
             this.props.api.visibilityOfElements.welcomeModal ? '' : 'hidden'
           }`}
+          onClick={() => {
+            this.closeWelcomeModal();
+          }}
         >
-          <br />
-          Welcome to my Reddit viewer... <br />
-          <strong>Kind Stranger (React Edition)</strong>
-          <br />
-          <br />
-          To navigate between posts:
-          <br />
-          <strong>Use up-down swipes or keys</strong>
-          <br />
+          <p id="welcome-text" className="welcome-text">
+            <br />
+            Welcome to my Reddit viewer... <br />
+            <strong>Kind Stranger</strong>
+            <br />
+            <br />
+            To navigate between posts:
+            <br />
+            <strong>Use up-down swipes or keys</strong>
+            <br />
+            {/* <br />
           <br />
           If post has <strong>multiple images</strong>
           <br />
@@ -49,30 +53,38 @@ class WelcomeModal extends React.Component {
           <br />
           you can swipe left-right <br />
           or press left-right keys
-          <br />
-          <br />
-          <strong>Tap twice</strong> to change the scale of images.
-          <br />
-          <br />
-          <strong
-            onClick={() => {
-              this.closeWelcomeModal();
-            }}
-          >
-            {' '}
-            Tap here to start{' '}
-          </strong>
-          <br />
-          <br />
-          <a
-            href="https://github.com/illfixit/kind-stranger-react"
-            style={{ color: 'CHOCOLATE' }}
-          >
-            My GitHub Repository
-          </a>
-          <br />
-          <span style={{ color: 'rgba(0, 0, 0, 0.5)' }}>Build: 0.9.1</span>
-        </p>
+          <br /> */}
+            <br />
+            <strong>Tap twice</strong>
+            <br />
+            to change the scale of images.
+            <br />
+            <br />
+            <strong
+              onClick={() => {
+                this.closeWelcomeModal();
+              }}
+            >
+              {' '}
+              Tap here to start{' '}
+            </strong>
+            <br />
+            <br />
+            <a
+              href="https://github.com/illfixit/kind-stranger-react"
+              style={{ color: 'CHOCOLATE' }}
+            >
+              My GitHub Repository
+            </a>
+            <br />
+            <br />
+            <span
+              style={{ color: 'rgba(150, 150, 150, 1)', marginTop: '0.5rem' }}
+            >
+              Build: 0.9.3
+            </span>
+          </p>
+        </div>
       </React.Fragment>
     );
   }

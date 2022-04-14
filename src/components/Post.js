@@ -7,9 +7,17 @@ import {
   showNextSubpost,
   showPreviousSubpost,
   changeMediaScale,
+  changeSort,
+  showComments,
 } from '../actions/index';
 import Swipe from 'react-easy-swipe';
-import Dots from './Dots';
+
+import PostText from './PostText';
+import PostImage from './PostImage';
+import PostVideo from './PostVideo';
+import PostTitleAndDots from './PostTitleAndDots';
+
+import Comments from './Comments';
 import Hammer from 'rc-hammerjs';
 import { getPostInfo } from '../utils';
 
@@ -23,6 +31,26 @@ class Post extends React.Component {
     this.onSwipeRight = this.onSwipeRight.bind(this);
     this.handleDoubleTap = this.handleDoubleTap.bind(this);
     this.handleKeyboard = this.handleKeyboard.bind(this);
+    this.changeSort = this.changeSort.bind(this);
+    // this.showPostComments = this.showPostComments.bind(this);
+
+    this.imageSource = '';
+    this.imageVisibilityClass = 'hidden';
+
+    this.videoSource = '';
+    this.videoVisibilityClass = 'hidden';
+
+    this.title = '';
+    this.titleVisibilityClass = 'hidden';
+
+    this.selftext = '';
+    this.textVisibilityClass = 'hidden';
+
+    this.objectFitClass = 'contain';
+    this.numberOfSubPosts = 0;
+    this.active;
+
+    this.currentSortMethod = 'hot';
   }
 
   componentDidMount() {
@@ -71,6 +99,14 @@ class Post extends React.Component {
     }
   }
 
+  handleDoubleTap(e) {
+    if (this.objectFitClass !== 'cover') {
+      this.props.dispatch(changeMediaScale('cover'));
+    } else {
+      this.props.dispatch(changeMediaScale('contain'));
+    }
+  }
+
   handleKeyboard(e) {
     // console.log(e);
     if (e.key === 'ArrowDown') {
@@ -103,104 +139,80 @@ class Post extends React.Component {
     }
   }
 
-  handleDoubleTap(e) {
-    this.props.dispatch(changeMediaScale());
-    // if (image.style.objectFit != 'contain') {
-    //   image.style.objectFit = 'contain';
-    //   video.style.objectFit = 'contain';
-    // } else {
-    //   image.style.objectFit = 'cover';
-    //   video.style.objectFit = 'cover';
-    // }
+  // showPostComments() {
+  //   console.log('Show Comments');
+  //   this.props.dispatch(showComments());
+  // }
+
+  changeSort(e) {
+    let sortMethod = e.target.innerText.toLowerCase();
+    console.log('changeSort', sortMethod);
+
+    this.props.dispatch(changeSort(sortMethod));
+    this.props.dispatch(fetchNextPost());
   }
 
-  render() {
-    // if (post && post.crosspost_parent != null)
-    //   post = post.crosspost_parent_list[0];
-    // console.log(this.props.api.currentSubreddit.currentPost[1]);
-    let imageSource = null;
-    let videoSource = null;
-    let title = null;
-    let numberOfSubPosts = 0;
-    let active;
-
-    // console.log('render', this.props.api.currentSubreddit);
-
-    if (this.props.api.currentSubreddit.currentPost != undefined) {
+  preparePost(currentPost) {
+    if (currentPost != undefined) {
       try {
-        if (this.props.api.currentSubreddit.currentPost[0]) {
-          numberOfSubPosts =
-            this.props.api.currentSubreddit.currentPost.length - 1;
+        if (currentPost[0]) {
+          this.numberOfSubPosts = currentPost.length - 1;
+          this.active = currentPost[0].active;
 
-          active = this.props.api.currentSubreddit.currentPost[0].active;
-
-          let post = this.props.api.currentSubreddit.currentPost[active];
-
+          let post = currentPost[this.active];
           let postObject = getPostInfo(post);
-          videoSource = postObject.videoSource;
-          if (videoSource) {
-            image.classList.add('hidden');
-            video.classList.remove('hidden');
-          } else {
-            video.classList.add('hidden');
-            image.classList.remove('hidden');
-            imageSource = postObject.imageSource;
+
+          this.imageSource = postObject.imageSource;
+          this.videoSource = postObject.videoSource;
+          this.title = postObject.title;
+          this.selftext = postObject.selftext;
+
+          if (!this.videoSource) {
+            this.videoVisibilityClass = 'hidden';
           }
-          title = postObject.title;
 
-          // console.log(imageSource, videoSource, title);
+          if (!this.imageSource) {
+            this.imageVisibilityClass = 'hidden';
+          }
 
-          // imageSource = post.preview
-          //   ? post.preview.images[0].resolutions[
-          //       post.preview.images[0].resolutions.length - 1
-          //     ].url.replace(/amp;/gi, '')
-          //   : '';
+          if (!this.videoSource && !this.imageSource) {
+            // console.log('!this.videoSource && !this.imageSource');
+            this.titleVisibilityClass = 'hidden';
+            this.textVisibilityClass = 'visible';
+          }
 
-          // if (post.url && post.url.includes('redd') && post.url.includes('.gif'))
-          //   imageSource = post.url;
-          // video.classList.add('hidden');
+          if (this.imageSource) {
+            this.imageVisibilityClass = 'visible';
+            this.videoVisibilityClass = 'hidden';
 
-          // if (post.url && post.url.includes('gfycat'))
-          //   imageSource = post.secure_media.oembed.thumbnail_url;
-          // video.classList.add('hidden');
+            this.titleVisibilityClass = 'visible';
+            this.textVisibilityClass = 'hidden';
+          }
 
-          // if (
-          //   post.url &&
-          //   post.url.endsWith('.gifv') &&
-          //   !post.url.includes('redd')
-          // ) {
-          //   videoSource = post.url.replace('gifv', 'mp4');
-          //   video.classList.remove('hidden');
-          // }
-          // if (
-          //   post.url &&
-          //   post.url.endsWith('.gif') &&
-          //   !post.url.includes('redd')
-          // ) {
-          //   videoSource = post.url.replace('gif', 'mp4');
-          //   video.classList.remove('hidden');
-          // }
+          if (this.videoSource) {
+            this.imageVisibilityClass = 'hidden';
+            this.videoVisibilityClass = 'visible';
 
-          // if (post.media && post.media.reddit_video != null) {
-          //   videoSource = post.media.reddit_video.fallback_url;
-          //   video.classList.remove('hidden');
-          // }
-
-          // if (post.url && post.url.includes('redgif')) {
-          //   videoSource = post.preview.reddit_video_preview.fallback_url;
-          //   video.classList.remove('hidden');
-          // }
-
-          // title = post.title;
+            this.titleVisibilityClass = 'visible';
+            this.textVisibilityClass = 'hidden';
+          }
         }
       } catch (e) {
         console.log(e, 'not good in render');
-        // this.props.dispatch(fetchNextPost());
-        // let { url, sort, after } = this.props.api.currentSubreddit;
-        // this.props.dispatch(fetchNextPost(url, sort, after));
-        // this.props.dispatch(showNextPost());
       }
     }
+  }
+
+  render() {
+    window.scrollTo(0, 1);
+
+    this.objectFitClass =
+      this.props.api.visibilityOfElements.objectFitClass || 'cover';
+
+    let currentPost = this.props.api.currentSubreddit.currentPost;
+    this.preparePost(currentPost);
+    this.currentSortMethod = this.props.api.currentSubreddit.sort;
+    // console.log(this.currentSortMethod);
 
     return (
       <Hammer onDoubleTap={this.handleDoubleTap}>
@@ -211,104 +223,64 @@ class Post extends React.Component {
           onSwipeLeft={this.onSwipeLeft}
           tolerance={50}
         >
-          <img
-            id="image"
-            onDoubleClick={this.handleDoubleClick}
-            onWheel={this.handleWheel}
-            src={imageSource ? imageSource : './images/loader.gif'}
-            style={{
-              objectFit: this.props.api.visibilityOfElements.objectFit,
-            }}
-            className={`image blurred ${
-              this.props.api.visibilityOfElements.image ? '' : 'hidden'
-            }`}
+          <div class="sort" id="sort" onClick={this.changeSort}>
+            <span
+              id="sort-new"
+              className={
+                this.currentSortMethod == 'new' ? 'sort-current-method' : ''
+              }
+            >
+              new
+            </span>
+            <span
+              id="sort-hot"
+              className={
+                this.currentSortMethod == 'hot' ? 'sort-current-method' : ''
+              }
+            >
+              hot
+            </span>
+          </div>
+
+          <PostText
+            visibilityClass={this.textVisibilityClass}
+            title={this.title}
+            selftext={this.selftext}
           />
 
-          <video
-            poster="./images/loader.gif"
-            id="video"
-            src={videoSource ? videoSource : ''}
-            style={{
-              objectFit: this.props.api.visibilityOfElements.objectFit,
-            }}
-            className={`video ${
-              this.props.api.visibilityOfElements.video ? '' : 'hidden'
-            }`}
-            // preload="auto"
-            autoPlay="autoplay"
-            loop
-            playsInline
-            muted
-          ></video>
-
           <div
-            className={`description ${
-              this.props.api.visibilityOfElements.description ? '' : 'hidden'
-            }`}
-            id="description"
+            className="media"
+            id="media"
+            onDoubleClick={this.handleDoubleClick}
+            onWheel={this.handleWheel}
           >
-            <Dots
-              numberOfSubPosts={numberOfSubPosts}
-              active={active}
-              // bottom={
-              //   document.getElementById('description')
-              //     ? document.getElementById('description').offsetHeight
-              //     : 0
-              // }
-            />
-            <a
-              href={
-                this.props.api.currentSubreddit.currentPost &&
-                this.props.api.currentSubreddit.currentPost[1]
-                  ? this.props.api.currentSubreddit.currentPost[1].url
-                  : 'https://www.reddit.com'
+            <PostImage
+              src={this.imageSource}
+              objectFitClass={
+                this.props.api.visibilityOfElements.objectFitClass
               }
-              id="a"
-            >
-              <div className="title" id="title">
-                {title}
-              </div>
-            </a>
+              imageVisibilityClass={this.imageVisibilityClass}
+            />
+
+            <PostVideo
+              src={this.videoSource}
+              objectFitClass={
+                this.props.api.visibilityOfElements.objectFitClass
+              }
+              videoVisibilityClass={this.videoVisibilityClass}
+            />
           </div>
+          <PostTitleAndDots
+            numberOfSubPosts={this.numberOfSubPosts}
+            active={this.active}
+            titleVisibilityClass={this.titleVisibilityClass}
+            title={this.title}
+          />
         </Swipe>
       </Hammer>
     );
   }
 }
-
-// if (post && post.crosspost_parent != null)
-//   post = post.crosspost_parent_list[0];
-
-// if (post.url && post.url.includes('redd') && post.url.includes('.gif'))
-//   setSrc(image, post.url);
-
-// if (post.url && post.url.endsWith('.gifv') && !post.url.includes('redd')) {
-//   hide(image);
-//   setSrc(video, post.url.replace('gifv', 'mp4'));
-//   show(video);
-// }
-// if (post.url && post.url.endsWith('.gif') && !post.url.includes('redd')) {
-//   hide(image);
-//   setSrc(video, post.url.replace('gif', 'mp4'));
-//   show(video);
-// }
-
-// if (post.media && post.media.reddit_video != null) {
-//   hide(image);
-//   setSrc(video, post.media.reddit_video.fallback_url);
-//   show(video);
-// } //  else {
-// //   hide(video);
-// // }
-
-// if (post.url && post.url.includes('gfycat'))
-//   setSrc(image, post.secure_media.oembed.thumbnail_url);
-
-// if (post.url && post.url.includes('redgif')) {
-//   hide(image);
-//   setSrc(video, post.preview.reddit_video_preview.fallback_url);
-//   show(video);
-// }
 
 const mapStateToProps = ({ api }) => {
   // console.log(api.currentSubreddit.currentPost[0]);

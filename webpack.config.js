@@ -1,3 +1,4 @@
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const path = require('path');
 console.log('Build path: ', path.resolve(__dirname, 'build'));
 
@@ -24,4 +25,7 @@ module.exports = {
       },
     ],
   },
+  // plugins: [
+  //   new BundleAnalyzerPlugin()
+  // ]
 };

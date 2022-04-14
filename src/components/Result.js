@@ -1,6 +1,6 @@
 import React, { setState } from 'react';
 import { connect } from 'react-redux';
-import { checkIfSubredditIsOk } from '../actions';
+import { checkIfSubredditIsOk, changeSearchTerm } from '../actions';
 
 class Result extends React.Component {
   constructor(props) {
@@ -11,7 +11,20 @@ class Result extends React.Component {
 
   clickHandler(e) {
     // console.log('result:', e.target.childNodes[1].data);
-    this.props.dispatch(checkIfSubredditIsOk(e.target.childNodes[1].data));
+
+    let res = e.target.childNodes[1].data;
+    if (!this.props.api.search.searchTerm.includes('+')) {
+      this.props.dispatch(checkIfSubredditIsOk(res));
+    } else {
+      // console.log('search term:', this.props.api.search.searchTerm);
+      let valueArr = this.props.api.search.searchTerm.split('+');
+      let newValue = valueArr
+        .slice(0, -1)
+        .join('+')
+        .concat(`+${res.slice(3)}`);
+      this.props.dispatch(changeSearchTerm(newValue));
+      this.props.dispatch(checkIfSubredditIsOk(`/r/${newValue}`));
+    }
   }
 
   // componentDidMount() {

@@ -9,13 +9,21 @@ import Post from './components/Post.js';
 import SearchPanel from './components/SearchPanel.js';
 
 export default class App extends React.Component {
+  componentDidMount() {
+    // console.log('componentDidMount');
+  }
+
+  componentWillUnmount() {
+    // console.log('componentWillUnmount');
+  }
+
   render() {
     return (
       <Provider store={store}>
-        <WelcomeModal />
         <Menu />
         <Post />
         <SearchPanel />
+        <WelcomeModal />
       </Provider>
     );
   }

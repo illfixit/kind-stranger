@@ -2,8 +2,14 @@
 
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
   -webkit-overflow-scrolling: none;
   overflow: hidden;
+}
+
+html {
+  font-size: 62.5%;
 }
 
 body {
@@ -11,17 +17,14 @@ body {
   background-color: black;
   color: #fff;
   font-family: 'Lato', sans-serif;
-  min-height: 101vh;
-  min-width: 101vw;
+  min-height: 100vh;
+  min-width: 100vw;
   overflow: hidden;
   position: fixed;
-  top: -10px;
-  left: -10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* margin: auto; */
 }
 
 #root {
@@ -37,7 +40,46 @@ body {
   transform: translate3d(0, 0, 0);
 }
 
-.image {
+.sort {
+  color: rgba(250, 250, 250, 1);
+  display: block;
+  position: fixed;
+  top: 5rem;
+  left: 0;
+  right: 0;
+  cursor: pointer;
+  text-align: center;
+  font-size: 2rem;
+  width: 100vw;
+  height: auto;
+  margin-top: 10px;
+  /* font-weight: 600; */
+}
+
+.sort span {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.sort-current-method {
+  text-transform: uppercase;
+}
+
+.selftext {
+  display: none;
+  position: inherit;
+  padding-top: 20%;
+  padding-bottom: 20%;
+  width: 70vw;
+  left: 2rem;
+  top: 10rem;
+  bottom: 5rem;
+  z-index: -100;
+  font-size: 2.25rem;
+  /* background-color: red; */
+}
+
+.media {
   height: 100%;
   width: 100vw;
   top: 0px;
@@ -46,8 +88,27 @@ body {
   display: block;
   object-fit: cover;
   z-index: -100;
+}
+
+.image {
+  height: 100%;
+  width: 100vw;
+  object-fit: cover;
+  top: 0px;
+  left: 0px;
+  position: fixed;
+  display: block;
+  z-index: -100;
   /* cursor: none; */
   /* filter: brightness(0.5) ; */
+}
+
+.cover {
+  object-fit: cover;
+}
+
+.contain {
+  object-fit: contain;
 }
 
 video {
@@ -71,6 +132,10 @@ video[poster] {
   display: none !important;
 }
 
+.visible {
+  display: block;
+}
+
 input {
   outline: none;
 }
@@ -88,12 +153,12 @@ input {
   top: 0;
   left: 0;
   text-align: left;
-  font-size: 1.2rem;
+  font-size: 2rem;
   font-weight: bold;
-  height: 3rem;
+  height: 5rem;
   width: 100vw;
   /* padding: 0.5rem; */
-  padding-left: 1rem;
+  padding-left: 1.6rem;
   z-index: 100;
 }
 
@@ -101,46 +166,65 @@ input {
   /* Chrome, Firefox, Opera, Safari 10.1+ */
   color: white;
   opacity: 1; /* Firefox */
-  font-size: 1rem;
+  font-size: 1.6rem;
 }
 
 .results {
   /* width: 100vw; */
-  width: 101vw;
+  width: 100vw;
   position: fixed;
-  top: 3rem;
+  top: 5rem;
   left: 0;
   right: 0;
   height: auto;
   background-color: rgba(0, 0, 0, 0.3);
   color: #fff;
-  padding: 1rem;
+  padding: 1.5rem;
   cursor: pointer;
   z-index: 100;
 }
 
 .result {
   width: auto;
-  height: 2rem;
-  font-size: 1.2rem;
-  padding: 0.3rem;
-  margin-bottom: 1.2rem;
+  height: 3.2rem;
+  font-size: 2rem;
+  padding: 0.5rem;
+  margin-bottom: 2rem;
   z-index: 100;
 }
 
-.description {
+.titleAndDots {
   position: fixed;
+  display: flex;
+  flex-direction: column;
   bottom: 0;
   left: 0;
   right: 0;
-  overflow: visible;
-  width: 100vw;
-  height: auto;
-  font-size: 1.2rem;
-  /* background-color: rgba(255, 255, 255, 0.3); */
+  /* background-color: aquamarine; */
+}
+
+.title {
+  /* overflow: visible; */
+  font-size: 2rem;
   background-color: rgba(0, 0, 0, 0.35);
   text-align: center;
-  padding: 1rem;
+  padding: 1.6rem;
+}
+
+.dots {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.8rem;
+}
+
+.dot {
+  color: rgb(255, 255, 255, 0.5);
+}
+
+.active {
+  color: rgb(255, 255, 255, 0.8);
 }
 
 a {
@@ -160,8 +244,8 @@ a {
   outline: none;
   top: 0;
   right: 0;
-  height: 3rem;
-  width: 3rem;
+  height: 5rem;
+  width: 5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -347,39 +431,121 @@ a {
 } */
 
 .welcome {
-  border-radius: 20px;
-  padding: 1.5rem;
-  font-size: 1.1rem;
-  background-color: rgba(255, 255, 255, 0.7);
+  /* border-radius: 2rem; */
+  padding: 2.25rem;
+  font-size: 1.7rem;
+  /* background-color: rgba(0, 0, 0, 0.1); */
+  background: #312e4af8;
+
   text-align: center;
-  max-width: 90vw;
-  color: black;
+  width: 100vw;
+  height: 100vh;
   z-index: 300;
-  transform: translateY(-38px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  /* backdrop-filter: blur(10px); */
+  /* -webkit-backdrop-filter: blur(10px); */
+}
+
+.welcome-text {
+  /* background-color: white; */
+  color: white;
+  width: fit-content;
+  padding: 3rem;
+  border-radius: 2rem;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #312e4a;
+
+  box-shadow: -1rem 1rem 3rem #27243af8, 1rem -1rem 3rem #3b385af8;
 }
 
 .blurred {
   filter: blur(5px);
 }
 
-.dots {
-  position: absolute;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  /* top: 2.5rem; */
-  top: -35px;
-  width: 100vw;
+.scrollButtons {
+  position: fixed;
+  width: 5rem;
+  top: 3rem;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* .comments {
+  display: none;
+  top: 1rem;
   left: 0;
-  font-size: 28px;
-  /* border: 1px red solid; */
+  width: 100vw;
+  height: 100vh;
+  background-color: antiquewhite;
+  color: cornflowerblue;
+  z-index: 500;
 }
 
-.dot {
-  color: rgb(255, 255, 255, 0.5);
+.closeComments {
+  display: none;
+  top: 20vh;
+  left: 0;
+  height: 10vh;
+  width: 100vw;
+  background-color: palevioletred;
+  color: cornflowerblue;
+  z-index: 500;
+} */
+
+@media (prefers-color-scheme: dark) {
+  .selftext {
+    font-size: 1.35rem;
+  }
 }
 
-.active {
-  color: rgb(255, 255, 255, 0.8);
+@media only screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) {
+  .selftext {
+    font-size: 1.3rem;
+    /* background-color: red; */
+  }
+}
+
+@media only screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) {
+  .selftext {
+    font-size: 1.5rem;
+    /* background-color: orange; */
+  }
+}
+
+/* iPhone XR 1792x828px at 326ppi */
+@media only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+  html {
+    font-size: 70%;
+  }
+  .selftext {
+    font-size: 2rem;
+    /* background-color: green; */
+  }
+}
+
+/* iPhone XS 2436x1125px at 458ppi */
+@media only screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) {
+  html {
+    font-size: 70%;
+  }
+  .selftext {
+    font-size: 1.75rem;
+    /* background-color: greenyellow; */
+  }
+}
+
+/* iPhone XS Max 2688x1242px at 458ppi */
+@media only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) {
+  html {
+    font-size: 70%;
+  }
+  .selftext {
+    font-size: 1.75rem;
+    /* background-color: cornflowerblue; */
+  }
 }

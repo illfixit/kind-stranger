@@ -24,6 +24,9 @@ import {
   CHANGE_PRELOAD_AFTER,
   UPDATE_PRELOADED,
   CHANGE_MEDIA_SCALE,
+  SHOW_COMMENTS,
+  HIDE_COMMENTS,
+  CHANGE_SORT,
 } from '../actiontypes';
 import { filterPostsArray, prefetchImages } from '../utils';
 import store from '../store';
@@ -38,6 +41,7 @@ export const fetchNextPost = () => {
       .then((response) => response.json())
       .then((data) => {
         dispatch(updateCurrentSubredditAfter(data.data.after));
+
         let postsArray = data.data.children.map((post) => post.data);
         let after = data.data.after;
         let filteredPostsArray;
@@ -52,14 +56,7 @@ export const fetchNextPost = () => {
 
         dispatch(fetchNextPostSuccess({ filteredPostsArray, after }));
         dispatch(showCurrentPost());
-        // console.log(
-        //   'previous posts:',
-        //   store.getState().api.currentSubreddit.previousPosts.length
-        // );
-        // console.log(
-        //   'preloaded:',
-        //   store.getState().api.preload.preloaded.length * 5
-        // );
+
         if (
           store.getState().api.preload.preloaded.length * 5 -
             store.getState().api.currentSubreddit.previousPosts.length <
@@ -85,19 +82,23 @@ export const checkIfSubredditIsOk = (subreddit) => {
       .then((data) => data.json())
       .then((data) => {
         // console.log('check', data.data);
-        for (let i = 1; i < 10; i++) {
-          try {
-            if (
-              data.data.children[i].data.preview.images[0].resolutions.length >
-              1
-            ) {
-              exists = true;
-              break;
-            }
-          } catch (e) {
-            // console.log(e);
-          }
-        }
+
+        // IMPORTANT ORIGINAL CHECK IF SUBREDDIT HAS IMAGES
+        // for (let i = 1; i < 10; i++) {
+        //   try {
+        //     if (
+        //       data.data.children[i].data.preview.images[0].resolutions.length >
+        //       1
+        //     ) {
+        //       exists = true;
+        //       break;
+        //     }
+        //   } catch (e) {
+        //     // console.log(e);
+        //   }
+        // }
+
+        exists = true;
         if (exists === false) {
           dispatch(checkIfSubredditIsOkFailure('Bad subreddit'));
         } else if (exists === true) {
@@ -260,9 +261,15 @@ export const changeVisibility = (elements) => ({
 
 export const prefetchPostsInCurrentSubreddit = () => {
   return (dispatch) => {
-    const { subreddit, after } = store.getState().api.preload;
+    let { subreddit, after, sort } = store.getState().api.preload;
 
-    fetch(`https://www.reddit.com${subreddit}hot.json?limit=5&after=${after}`)
+    if (typeof sort == 'undefined') {
+      sort = 'hot';
+    }
+
+    fetch(
+      `https://www.reddit.com${subreddit}${sort}.json?limit=5&after=${after}`
+    )
       .then((response) => response.json())
       .then((data) => {
         dispatch(changePreloadAfter(data.data.after));
@@ -304,16 +311,24 @@ const updatePreloaded = (images) => ({
   payload: images,
 });
 
-export const changeMediaScale = () => {
-  if (store.getState().api.visibilityOfElements.objectFit == 'contain') {
-    return {
-      type: CHANGE_MEDIA_SCALE,
-      payload: 'cover',
-    };
-  } else {
-    return {
-      type: CHANGE_MEDIA_SCALE,
-      payload: 'contain',
-    };
-  }
+export const changeMediaScale = (objectFitClass) => {
+  return {
+    type: CHANGE_MEDIA_SCALE,
+    payload: objectFitClass,
+  };
 };
+
+export const changeSort = (srt) => {
+  return {
+    type: CHANGE_SORT,
+    payload: srt,
+  };
+};
+
+export const showComments = () => ({
+  type: SHOW_COMMENTS,
+});
+
+export const hideComments = () => ({
+  type: HIDE_COMMENTS,
+});
