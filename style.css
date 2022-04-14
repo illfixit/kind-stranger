@@ -54,15 +54,19 @@ body {
   height: auto;
   margin-top: 10px;
   /* font-weight: 600; */
+  display: inline;
+
+  color: #ffffff80;
 }
 
-.sort span {
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
+.sort > span {
+  margin-left: 0.35rem;
+  margin-right: 0.35rem;
 }
 
 .sort-current-method {
   text-transform: uppercase;
+  color: #ffffff;
 }
 
 .selftext {

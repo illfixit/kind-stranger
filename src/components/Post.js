@@ -230,15 +230,16 @@ class Post extends React.Component {
                 this.currentSortMethod == 'new' ? 'sort-current-method' : ''
               }
             >
-              new
-            </span>
+              New
+            </span>{' '}
+            |{' '}
             <span
               id="sort-hot"
               className={
                 this.currentSortMethod == 'hot' ? 'sort-current-method' : ''
               }
             >
-              hot
+              Hot
             </span>
           </div>
 
