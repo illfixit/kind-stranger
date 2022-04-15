@@ -146,10 +146,11 @@ class Post extends React.Component {
 
   changeSort(e) {
     let sortMethod = e.target.innerText.toLowerCase();
-    console.log('changeSort', sortMethod);
-
-    this.props.dispatch(changeSort(sortMethod));
-    this.props.dispatch(fetchNextPost());
+    // console.log('changeSort', sortMethod);
+    if (sortMethod == 'new' || sortMethod == 'hot') {
+      this.props.dispatch(changeSort(sortMethod));
+      this.props.dispatch(fetchNextPost());
+    }
   }
 
   preparePost(currentPost) {

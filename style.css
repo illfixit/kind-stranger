@@ -49,7 +49,7 @@ body {
   right: 0;
   cursor: pointer;
   text-align: center;
-  font-size: 2rem;
+  font-size: 1.8rem;
   width: 100vw;
   height: auto;
   margin-top: 10px;
@@ -65,7 +65,7 @@ body {
 }
 
 .sort-current-method {
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   color: #ffffff;
 }
 
@@ -438,9 +438,7 @@ a {
   /* border-radius: 2rem; */
   padding: 2.25rem;
   font-size: 1.7rem;
-  /* background-color: rgba(0, 0, 0, 0.1); */
-  background: #312e4af8;
-
+  background-color: #312e4af8;
   text-align: center;
   width: 100vw;
   height: 100vh;
@@ -462,9 +460,8 @@ a {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #312e4a;
-
-  box-shadow: -1rem 1rem 3rem #27243af8, 1rem -1rem 3rem #3b385af8;
+  background-color: #312e4a;
+  box-shadow: -1rem 1rem 3rem #211f32f8, 1rem -1rem 3rem #413d62f8;
 }
 
 .blurred {
