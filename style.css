@@ -438,7 +438,7 @@ a {
   /* border-radius: 2rem; */
   padding: 2.25rem;
   font-size: 1.7rem;
-  background-color: #454545;
+  background-color: #454545f7;
   text-align: center;
   width: 100vw;
   height: 100vh;
@@ -461,7 +461,7 @@ a {
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: #444444;
-  box-shadow: -1rem 1rem 3rem #363636, 1rem -1rem 3rem #545454;
+  box-shadow: -1rem 1rem 3rem #363636f1, 1rem -1rem 3rem #545454f1;
 }
 
 .blurred {
