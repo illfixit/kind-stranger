@@ -81,7 +81,7 @@ class WelcomeModal extends React.Component {
             <span
               style={{ color: 'rgba(150, 150, 150, 1)', marginTop: '0.5rem' }}
             >
-              Build: 0.9.3
+              Build: 0.9.7
             </span>
           </p>
         </div>
