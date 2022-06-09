@@ -5,7 +5,7 @@
 Minimalistic Mobile Reddit Viewer written in React and Redux
 
 ## Demo
-You can visit https://illfixit.github.io/kind-stranger-react to start using it.
+You can visit https://illfixit.github.io/kind-stranger to start using it.
 
 ## Reviews
 

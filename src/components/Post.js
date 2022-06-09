@@ -15,7 +15,7 @@ import Swipe from 'react-easy-swipe';
 import PostText from './PostText';
 import PostImage from './PostImage';
 import PostVideo from './PostVideo';
-import PostTitleAndDots from './PostTitleAndDots';
+import PostInfo from './PostInfo';
 
 import Comments from './Comments';
 import Hammer from 'rc-hammerjs';
@@ -39,6 +39,8 @@ class Post extends React.Component {
 
     this.videoSource = '';
     this.videoVisibilityClass = 'hidden';
+
+    this.imageSize = [0,0];
 
     this.title = '';
     this.titleVisibilityClass = 'hidden';
@@ -162,11 +164,15 @@ class Post extends React.Component {
 
           let post = currentPost[this.active];
           let postObject = getPostInfo(post);
+          // console.log('post', post)
 
           this.imageSource = postObject.imageSource;
           this.videoSource = postObject.videoSource;
           this.title = postObject.title;
           this.selftext = postObject.selftext;
+          this.imageSize = postObject.imageSize;
+
+          // console.log('this.imageSize', this.imageSize)
 
           if (!this.videoSource) {
             this.videoVisibilityClass = 'hidden';
@@ -272,8 +278,10 @@ class Post extends React.Component {
               videoVisibilityClass={this.videoVisibilityClass}
             />
           </div>
-          <PostTitleAndDots
+          <PostInfo
             numberOfSubPosts={this.numberOfSubPosts}
+            imageSource={this.imageSource}
+            imageSize={this.imageSize}
             active={this.active}
             titleVisibilityClass={this.titleVisibilityClass}
             title={this.title}

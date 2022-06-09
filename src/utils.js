@@ -95,10 +95,13 @@ export const prefetchImages = (images) => {
 export const getPostInfo = (post) => {
   let imageSource;
   let videoSource;
+  let imageSize = [0, 0];
   let title;
   let selftext;
 
-  // console.log('post:', post);
+  // console.log('post resolution:', post.preview.images[0].resolutions[
+  //   post.preview.images[0].resolutions.length - 1
+  // ]);
 
   imageSource = post.preview
     ? post.preview.images[0].resolutions[
@@ -133,7 +136,10 @@ export const getPostInfo = (post) => {
   title = post.title;
   selftext = post.selftext ? post.selftext : '';
 
-  if (typeof imageSource == 'undefined') imageSource = '';
+  if (typeof imageSource == 'undefined') { 
+    imageSource = '';
+    imageSize = [NaN, NaN];
+  };
   if (typeof videoSource == 'undefined') videoSource = '';
   if (typeof title == 'undefined') title = '';
   if (typeof selftext == 'undefined') selftext = '';
@@ -148,5 +154,9 @@ export const getPostInfo = (post) => {
   //   selftext.slice(0, 16)
   // );
 
-  return { imageSource, videoSource, title, selftext };
+  return { imageSource, imageSize: [post.preview.images[0].resolutions[
+    post.preview.images[0].resolutions.length - 1
+  ].width, post.preview.images[0].resolutions[
+    post.preview.images[0].resolutions.length - 1
+  ].height], videoSource, title, selftext };
 };

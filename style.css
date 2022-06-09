@@ -231,6 +231,29 @@ input {
   color: rgb(255, 255, 255, 0.8);
 }
 
+#previewContainer {
+  display: block;
+  height: 15vh;
+  width: auto;
+  align-self: flex-end;
+  margin: 1vh;
+  
+  /* opacity: 80%; */
+}
+
+#imagePreview {
+  display: block;
+  height: 15vh;
+  width: auto;
+  object-fit: contain;
+}
+
+#previewRectangle {
+  /* height: 100%; */
+  /* width: auto; */
+  /* border: 3px solid lightskyblue; */
+}
+
 a {
   position: relative;
   /* color: rgba(0, 0, 0, 0.7); */
