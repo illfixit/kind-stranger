@@ -55,9 +55,9 @@ class WelcomeModal extends React.Component {
           or press left-right keys
           <br /> */}
             <br />
-            <strong>Tap twice</strong>
+            <strong>Long Tap</strong>
             <br />
-            to change the scale of images.
+            to see the whole image.
             <br />
             <br />
             <strong
@@ -81,7 +81,7 @@ class WelcomeModal extends React.Component {
             <span
               style={{ color: 'rgba(150, 150, 150, 1)', marginTop: '0.5rem' }}
             >
-              Build: 0.9.7
+              Build: 1.0.0
             </span>
           </p>
         </div>

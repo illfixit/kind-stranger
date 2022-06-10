@@ -6,9 +6,7 @@ import {
   showPreviousPost,
   showNextSubpost,
   showPreviousSubpost,
-  changeMediaScale,
   changeSort,
-  showComments,
 } from '../actions/index';
 import Swipe from 'react-easy-swipe';
 
@@ -25,11 +23,11 @@ class Post extends React.Component {
   constructor(props) {
     super(props);
 
-    this.onSwipeUp = this.onSwipeUp.bind(this);
-    this.onSwipeDown = this.onSwipeDown.bind(this);
-    this.onSwipeLeft = this.onSwipeLeft.bind(this);
-    this.onSwipeRight = this.onSwipeRight.bind(this);
-    this.handleDoubleTap = this.handleDoubleTap.bind(this);
+    this.onSwipe = this.onSwipe.bind(this);
+    // this.handleDoubleTap = this.handleDoubleTap.bind(this);
+    this.pressed = false;
+    this.handlePress = this.handlePress.bind(this);
+    this.handlePressUp = this.handlePressUp.bind(this);
     this.handleKeyboard = this.handleKeyboard.bind(this);
     this.changeSort = this.changeSort.bind(this);
     // this.showPostComments = this.showPostComments.bind(this);
@@ -53,6 +51,13 @@ class Post extends React.Component {
     this.active;
 
     this.currentSortMethod = 'hot';
+    this.intervalId = 0;
+
+    window.oncontextmenu = function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    };
   }
 
   componentDidMount() {
@@ -64,13 +69,43 @@ class Post extends React.Component {
     document.removeEventListener('keydown', this.handleKeyboard, false);
   }
 
-  onSwipeDown(position, event) {
-    if (this.props.api.currentSubreddit.previousPosts.length > 1) {
-      this.props.dispatch(showPreviousPost());
+  onSwipe(e) {
+    // console.log('onSwipe', e)
+    // 50 - tolerance value
+    if(Math.abs(e.deltaY) - 50 > Math.abs(e.deltaX)) {
+      if(e.deltaY < 0) {
+        this.onSwipeUp()
+      } else {
+        this.onSwipeDown()
+      }
+    } else {
+      if(e.deltaX < 0) {
+        this.onSwipeLeft()
+      } else {
+        this.onSwipeRight()
+      }
     }
   }
 
+  onSwipeDown(position, event) {
+    // console.log('onSwipeDown')
+    // e.preventDefault()
+
+    document.getElementById('image').style.objectFit = "cover";
+    document.getElementById('video').style.objectFit = "cover";
+    if (this.props.api.currentSubreddit.previousPosts.length > 1) {
+      this.props.dispatch(showPreviousPost());
+    }
+
+  
+  }
+
   onSwipeUp(position, event) {
+    // console.log('onSwipeUp')
+    // e.preventDefault()
+
+    document.getElementById('image').style.objectFit = "cover";
+    document.getElementById('video').style.objectFit = "cover";
     if (this.props.api.currentSubreddit.nextPosts.length === 0) {
       try {
         this.props.dispatch(fetchNextPost());
@@ -81,32 +116,73 @@ class Post extends React.Component {
     } else {
       this.props.dispatch(showNextPost());
     }
+
+  
   }
 
   onSwipeLeft(position, event) {
-    // console.log('onSwipeLeft', this.props.api.currentSubreddit.currentPost);
-    let active = this.props.api.currentSubreddit.currentPost[0].active;
+    // console.log('onSwipeLeft')
 
-    if (active < this.props.api.currentSubreddit.currentPost.length - 1) {
-      this.props.dispatch(showNextSubpost());
-    }
+    // e.preventDefault()
+
+    document.getElementById('image').style.objectFit = "cover";
+    document.getElementById('video').style.objectFit = "cover";
+    // console.log('onSwipeLeft', this.props.api.currentSubreddit.currentPost);
+
+      let active = this.props.api.currentSubreddit.currentPost[0].active;
+
+      if (active < this.props.api.currentSubreddit.currentPost.length - 1) {
+        this.props.dispatch(showNextSubpost());
+      }
+    
+    
+
   }
 
   onSwipeRight(position, event) {
-    // console.log('onSwipeRight', this.props.api.currentSubreddit.currentPost);
-    let active = this.props.api.currentSubreddit.currentPost[0].active;
+    // console.log('onSwipeRight')
 
-    if (active > 1) {
-      this.props.dispatch(showPreviousSubpost());
+    // e.preventDefault()
+
+    document.getElementById('image').style.objectFit = "cover";
+    document.getElementById('video').style.objectFit = "cover";
+    // console.log('onSwipeRight', this.props.api.currentSubreddit.currentPost);
+      let active = this.props.api.currentSubreddit.currentPost[0].active;
+
+      if (active > 1) {
+        this.props.dispatch(showPreviousSubpost());
+      }
+  }
+
+  // handleDoubleTap(e) {
+  //   if (this.objectFitClass !== 'cover') {
+  //     this.props.dispatch(changeMediaScale('cover'));
+  //   } else {
+  //     this.props.dispatch(changeMediaScale('contain'));
+  //   }
+  // }
+
+  handlePress(e) {
+    // console.log('handlePress')
+
+    // e.preventDefault()
+    document.getElementById('image').style.objectFit = "cover";
+    document.getElementById('video').style.objectFit = "cover";
+
+
+    if(e.target.id == 'image' || e.target.id == 'video' || e.target.id == 'imagePreview' || e.target.id == 'titleAndDots' || e.target.id == 'previewContainer') {
+        document.getElementById('image').style.objectFit = "contain";
+        document.getElementById('video').style.objectFit = "contain";
+
     }
   }
 
-  handleDoubleTap(e) {
-    if (this.objectFitClass !== 'cover') {
-      this.props.dispatch(changeMediaScale('cover'));
-    } else {
-      this.props.dispatch(changeMediaScale('contain'));
-    }
+  handlePressUp(e) {
+    // console.log('handlePressUp')
+    // e.preventDefault()
+
+    document.getElementById('image').style.objectFit = "cover";
+    document.getElementById('video').style.objectFit = "cover";
   }
 
   handleKeyboard(e) {
@@ -213,23 +289,32 @@ class Post extends React.Component {
   render() {
     window.scrollTo(0, 1);
 
-    this.objectFitClass =
-      this.props.api.visibilityOfElements.objectFitClass || 'cover';
 
     let currentPost = this.props.api.currentSubreddit.currentPost;
     this.preparePost(currentPost);
     this.currentSortMethod = this.props.api.currentSubreddit.sort;
     // console.log(this.currentSortMethod);
 
+    let options = {
+      touchAction:'compute',
+      recognizers: {
+          tap: {
+              time: 200,
+              threshold: 100
+              }
+          }
+      };
+
     return (
-      <Hammer onDoubleTap={this.handleDoubleTap}>
-        <Swipe
-          onSwipeDown={this.onSwipeDown}
-          onSwipeUp={this.onSwipeUp}
-          onSwipeRight={this.onSwipeRight}
-          onSwipeLeft={this.onSwipeLeft}
-          tolerance={50}
+      <Hammer 
+        // onDoubleTap={this.handleDoubleTap} 
+        onPress={this.handlePress}
+        onPressUp={this.handlePressUp}
+        options={options}
+        onSwipe={this.onSwipe}
+        direction='DIRECTION_ALL'
         >
+          <div>
           <div class="sort" id="sort" onClick={this.changeSort}>
             <span
               id="sort-new"
@@ -264,19 +349,18 @@ class Post extends React.Component {
           >
             <PostImage
               src={this.imageSource}
-              objectFitClass={
-                this.props.api.visibilityOfElements.objectFitClass
-              }
+
               imageVisibilityClass={this.imageVisibilityClass}
             />
 
             <PostVideo
               src={this.videoSource}
-              objectFitClass={
-                this.props.api.visibilityOfElements.objectFitClass
-              }
+
               videoVisibilityClass={this.videoVisibilityClass}
             />
+
+            <div id="moveLeft"></div>
+            <div id="moveRight"></div>
           </div>
           <PostInfo
             numberOfSubPosts={this.numberOfSubPosts}
@@ -286,7 +370,7 @@ class Post extends React.Component {
             titleVisibilityClass={this.titleVisibilityClass}
             title={this.title}
           />
-        </Swipe>
+          </div>
       </Hammer>
     );
   }

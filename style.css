@@ -6,10 +6,15 @@
   padding: 0;
   -webkit-overflow-scrolling: none;
   overflow: hidden;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout:none;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
 html {
   font-size: 62.5%;
+
 }
 
 body {
@@ -92,6 +97,38 @@ body {
   display: block;
   object-fit: cover;
   z-index: -100;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout:none;
+}
+
+image { 
+  object-fit: cover; 
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout:none;
+  -webkit-user-drag: none;
+}
+
+video {
+  height: 100%;
+  width: 100vw;
+  top: 0px;
+  left: 0px;
+  position: fixed;
+  display: block;
+  object-fit: cover;
+  z-index: -50;
+  /* cursor: none; */
+  /* pointer-events: none; */
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout:none;
+}
+
+video[poster] {
+  backdrop-filter: brightness(0);
+  -webkit-backdrop-filter: brightness(0);
 }
 
 .image {
@@ -105,32 +142,12 @@ body {
   z-index: -100;
   /* cursor: none; */
   /* filter: brightness(0.5) ; */
+  /* pointer-events: none; */
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout:none;
 }
 
-.cover {
-  object-fit: cover;
-}
-
-.contain {
-  object-fit: contain;
-}
-
-video {
-  height: 100%;
-  width: 100vw;
-  top: 0px;
-  left: 0px;
-  position: fixed;
-  display: block;
-  object-fit: cover;
-  z-index: -50;
-  /* cursor: none; */
-}
-
-video[poster] {
-  backdrop-filter: brightness(0);
-  -webkit-backdrop-filter: brightness(0);
-}
 
 .hidden {
   display: none !important;
@@ -142,6 +159,7 @@ video[poster] {
 
 input {
   outline: none;
+  -webkit-user-select: auto;
 }
 
 .search {
@@ -164,6 +182,8 @@ input {
   /* padding: 0.5rem; */
   padding-left: 1.6rem;
   z-index: 100;
+  -webkit-user-select: auto;
+
 }
 
 ::placeholder {
@@ -186,6 +206,8 @@ input {
   padding: 1.5rem;
   cursor: pointer;
   z-index: 100;
+  -webkit-user-select: auto;
+
 }
 
 .result {
@@ -195,6 +217,8 @@ input {
   padding: 0.5rem;
   margin-bottom: 2rem;
   z-index: 100;
+  -webkit-user-select: auto;
+
 }
 
 .titleAndDots {
@@ -233,7 +257,10 @@ input {
 
 #previewContainer {
   display: block;
-  height: 15vh;
+  max-height: 15vh;
+  left: 30vw;
+
+  height: auto;
   width: auto;
   align-self: flex-end;
   margin: 1vh;

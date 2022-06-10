@@ -14,7 +14,7 @@ export default class PostImage extends React.Component {
       <img
         id="image"
         src={this.props.src}
-        className={`image ${this.props.objectFitClass} ${this.props.imageVisibilityClass}`}
+        className={`image ${this.props.imageVisibilityClass}`}
       />
     );
   }

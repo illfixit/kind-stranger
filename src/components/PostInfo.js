@@ -23,12 +23,13 @@ export default class PostInfo extends React.Component {
     //     .getComputedStyle(this.titleElement, null)
     //     .getPropertyValue('height');
     // }
+
     let imagePreview = null;
     let viewportAspectRatio = Math.round(window.innerWidth * 100 / window.innerHeight) / 100
     // console.log(viewportAspectRatio)
     // console.log('imageSize[0]', this.props.imageSize[0])
     // console.log('imageSize[1]', this.props.imageSize[1])
-    if (this.props.imageSize[0] * 1.5 > this.props.imageSize[1]/viewportAspectRatio) {
+    if (viewportAspectRatio <= 1 && (this.props.imageSize[0] >= this.props.imageSize[1]) || viewportAspectRatio > 1 && (this.props.imageSize[0] <= this.props.imageSize[1])) {
       imagePreview = <img src={this.props.imageSource} id='imagePreview' />;
     }
 

@@ -107,6 +107,7 @@ export const checkIfSubredditIsOk = (subreddit) => {
           dispatch(changeSubreddit(subreddit));
           dispatch(prefetchPostsInCurrentSubreddit());
           dispatch(fetchNextPost());
+          dispatch(showCurrentPost());
         }
       })
       .catch((e) => {

@@ -154,9 +154,15 @@ export const getPostInfo = (post) => {
   //   selftext.slice(0, 16)
   // );
 
-  return { imageSource, imageSize: [post.preview.images[0].resolutions[
+  if (imageSource) {
+    imageSize = [post.preview.images[0].resolutions[
     post.preview.images[0].resolutions.length - 1
   ].width, post.preview.images[0].resolutions[
     post.preview.images[0].resolutions.length - 1
-  ].height], videoSource, title, selftext };
+  ].height]
+  } else {
+    imageSize = [0,0];
+  }
+
+  return { imageSource,imageSize , videoSource, title, selftext };
 };

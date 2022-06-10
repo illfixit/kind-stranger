@@ -17,7 +17,7 @@ export default class PostVideo extends React.Component {
         poster="./images/loader.gif"
         id="video"
         src={this.props.src}
-        className={`video ${this.props.objectFitClass} ${this.props.videoVisibilityClass}`}
+        className={`video ${this.props.videoVisibilityClass}`}
         autoPlay="autoplay"
         loop
         playsInline
