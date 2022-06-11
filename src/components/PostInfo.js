@@ -24,24 +24,24 @@ export default class PostInfo extends React.Component {
     //     .getPropertyValue('height');
     // }
 
-    let imagePreview = null;
-    let viewportAspectRatio = Math.round(window.innerWidth * 100 / window.innerHeight) / 100
-    // console.log(viewportAspectRatio)
-    // console.log('imageSize[0]', this.props.imageSize[0])
-    // console.log('imageSize[1]', this.props.imageSize[1])
-    if (viewportAspectRatio <= 1 && (this.props.imageSize[0] >= this.props.imageSize[1]) || viewportAspectRatio > 1 && (this.props.imageSize[0] <= this.props.imageSize[1])) {
-      imagePreview = <img src={this.props.imageSource} id='imagePreview' />;
-    }
+    // let imagePreview = null;
+    // let viewportAspectRatio = Math.round(window.innerWidth * 100 / window.innerHeight) / 100
+    // // console.log(viewportAspectRatio)
+    // // console.log('imageSize[0]', this.props.imageSize[0])
+    // // console.log('imageSize[1]', this.props.imageSize[1])
+    // if (viewportAspectRatio <= 1 && (this.props.imageSize[0] >= this.props.imageSize[1]) || viewportAspectRatio > 1 && (this.props.imageSize[0] <= this.props.imageSize[1])) {
+    //   imagePreview = <img src={this.props.imageSource} id='imagePreview' />;
+    // }
 
     return (
       // TODO: Change name of class and id 
       <div className="titleAndDots" id="titleAndDots">
 
-        <div id="previewContainer">
+        {/* <div id="previewContainer">
           {imagePreview}
           <div id="previewRectangle"> 
           </div>
-        </div>
+        </div> */}
 
 
         <PostDots

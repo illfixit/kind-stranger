@@ -9,6 +9,8 @@ export default class PostImage extends React.Component {
 
   componentWillUnmount() {}
 
+
+
   render() {
     return (
       <img

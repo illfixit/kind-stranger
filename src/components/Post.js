@@ -25,6 +25,14 @@ class Post extends React.Component {
 
     this.onSwipe = this.onSwipe.bind(this);
     // this.handleDoubleTap = this.handleDoubleTap.bind(this);
+    // this.handleTap = this.handleTap.bind(this);
+
+    this.handlePan = this.handlePan.bind(this);
+    this.handlePanStart = this.handlePanStart.bind(this);
+    this.handlePanEnd = this.handlePanEnd.bind(this);
+    this.handlePanCancel = this.handlePanCancel.bind(this);
+
+
     this.pressed = false;
     this.handlePress = this.handlePress.bind(this);
     this.handlePressUp = this.handlePressUp.bind(this);
@@ -38,7 +46,7 @@ class Post extends React.Component {
     this.videoSource = '';
     this.videoVisibilityClass = 'hidden';
 
-    this.imageSize = [0,0];
+    // this.imageSize = [0,0];
 
     this.title = '';
     this.titleVisibilityClass = 'hidden';
@@ -69,10 +77,36 @@ class Post extends React.Component {
     document.removeEventListener('keydown', this.handleKeyboard, false);
   }
 
+  // handleTap(e) {
+  //   console.log('handleTap')
+  // }
+
+  handlePan(e) {
+    // console.log('handlePan', e)
+  }
+
+  handlePanStart(e) {
+    // console.log('handlePanStart', e)
+  }
+
+  handlePanEnd(e) {
+    // console.log('handlePanEnd', e)
+    document.getElementById('image').style.objectFit = "cover";
+    document.getElementById('video').style.objectFit = "cover";
+
+  }
+
+  handlePanCancel(e) {
+    // console.log('handlePanCancel', e)
+  }
+
   onSwipe(e) {
-    // console.log('onSwipe', e)
+    // console.log('onSwipe');
+    this.pressed = false;
+    document.getElementById('image').style.objectFit = "cover";
+    document.getElementById('video').style.objectFit = "cover";
     // 50 - tolerance value
-    if(Math.abs(e.deltaY) - 50 > Math.abs(e.deltaX)) {
+    if(Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
       if(e.deltaY < 0) {
         this.onSwipeUp()
       } else {
@@ -163,23 +197,25 @@ class Post extends React.Component {
   // }
 
   handlePress(e) {
-    // console.log('handlePress')
+    // console.log('handlePress', e)
 
     // e.preventDefault()
     document.getElementById('image').style.objectFit = "cover";
     document.getElementById('video').style.objectFit = "cover";
 
 
-    if(e.target.id == 'image' || e.target.id == 'video' || e.target.id == 'imagePreview' || e.target.id == 'titleAndDots' || e.target.id == 'previewContainer') {
-        document.getElementById('image').style.objectFit = "contain";
-        document.getElementById('video').style.objectFit = "contain";
+    if(e.target.id == 'image' || e.target.id == 'video') {
+      this.pressed = true;
+      document.getElementById('image').style.objectFit = "contain";
+      document.getElementById('video').style.objectFit = "contain";
 
     }
   }
 
   handlePressUp(e) {
-    // console.log('handlePressUp')
+    // console.log('handlePressUp', e)
     // e.preventDefault()
+    this.pressed = false;
 
     document.getElementById('image').style.objectFit = "cover";
     document.getElementById('video').style.objectFit = "cover";
@@ -298,16 +334,28 @@ class Post extends React.Component {
     let options = {
       touchAction:'compute',
       recognizers: {
-          tap: {
-              time: 200,
-              threshold: 100
-              }
+          // tap: {
+          //     // time: 200,
+          //     threshold: 10
+          //     }
+            press: {
+              // time: 3000
+              threshold: 1
+              // threshold: 3
+
+            }
           }
       };
 
     return (
       <Hammer 
         // onDoubleTap={this.handleDoubleTap} 
+        // onTap={this.handleTap}
+        onPan={this.handlePan}
+        onPanStart={this.handlePanStart}
+        onPanEnd={this.handlePanEnd}
+        onPanCancel={this.handlePanCancel}
+
         onPress={this.handlePress}
         onPressUp={this.handlePressUp}
         options={options}
@@ -344,7 +392,6 @@ class Post extends React.Component {
           <div
             className="media"
             id="media"
-            onDoubleClick={this.handleDoubleClick}
             onWheel={this.handleWheel}
           >
             <PostImage
@@ -358,14 +405,11 @@ class Post extends React.Component {
 
               videoVisibilityClass={this.videoVisibilityClass}
             />
-
-            <div id="moveLeft"></div>
-            <div id="moveRight"></div>
           </div>
           <PostInfo
             numberOfSubPosts={this.numberOfSubPosts}
             imageSource={this.imageSource}
-            imageSize={this.imageSize}
+            // imageSize={this.imageSize}
             active={this.active}
             titleVisibilityClass={this.titleVisibilityClass}
             title={this.title}
