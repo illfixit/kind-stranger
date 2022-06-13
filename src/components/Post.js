@@ -324,6 +324,9 @@ class Post extends React.Component {
 
   render() {
     window.scrollTo(0, 1);
+    // try{
+    //   console.log()
+    // } catch(e) {}
 
 
     let currentPost = this.props.api.currentSubreddit.currentPost;
@@ -413,6 +416,8 @@ class Post extends React.Component {
             active={this.active}
             titleVisibilityClass={this.titleVisibilityClass}
             title={this.title}
+            subreddit={this.props.api.currentSubreddit.currentPost[this.active] && this.props.api.currentSubreddit.currentPost[this.active].subreddit}
+            author={this.props.api.currentSubreddit.currentPost[this.active] && this.props.api.currentSubreddit.currentPost[this.active].author}
           />
           </div>
       </Hammer>

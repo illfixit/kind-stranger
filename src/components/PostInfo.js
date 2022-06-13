@@ -49,9 +49,13 @@ export default class PostInfo extends React.Component {
           active={this.props.active}
           // bottom={this.bottom}
         />
+
+        
         <PostTitle
           titleVisibilityClass={this.props.titleVisibilityClass}
           title={this.props.title}
+          subreddit={this.props.subreddit}
+          author={this.props.author}
         />
       </div>
     );

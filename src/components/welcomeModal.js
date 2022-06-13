@@ -71,7 +71,7 @@ class WelcomeModal extends React.Component {
             <br />
             <br />
             <a
-              href="https://github.com/illfixit/kind-stranger-react"
+              href="https://github.com/illfixit/kind-stranger"
               style={{ color: 'CHOCOLATE' }}
             >
               My GitHub Repository
@@ -81,7 +81,7 @@ class WelcomeModal extends React.Component {
             <span
               style={{ color: 'rgba(150, 150, 150, 1)', marginTop: '0.5rem' }}
             >
-              Build: 1.0.0
+              Build: 1.1.0
             </span>
           </p>
         </div>

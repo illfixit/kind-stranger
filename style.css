@@ -60,7 +60,7 @@ body {
   margin-top: 10px;
   /* font-weight: 600; */
   display: inline;
-
+  transform: translateX(-0.35rem);
   color: #ffffff80;
 }
 
@@ -97,9 +97,9 @@ body {
   display: block;
   object-fit: cover;
   z-index: -100;
-  -webkit-user-drag: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout:none;
+  -webkit-user-drag:auto;
+  -webkit-user-select:auto;
+  -webkit-touch-callout:initial;
 }
 
 image { 
@@ -233,23 +233,37 @@ input {
 
 .title {
   /* overflow: visible; */
-  font-size: 2rem;
-  background-color: rgba(0, 0, 0, 0.35);
-  text-align: center;
-  padding: 1.6rem;
+  font-size: 2.2rem;
+  /* background-color: rgba(0, 0, 0, 0.35); */
+  text-align: left;
+  max-width: 70vw;
+  padding: 1.4em;
+  font-weight: bold;
 }
 
 .dots {
   display: flex;
+  position: fixed;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  font-size: 2.8rem;
+  font-size: 2.2rem;
+  top:8rem;
+  left: 0;
+  right: 0;
+
 }
 
 .dot {
   color: rgb(255, 255, 255, 0.5);
 }
+
+#subredditAndAuthor {
+  margin-top: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 100;
+}
+
 
 .active {
   color: rgb(255, 255, 255, 0.8);
@@ -572,6 +586,11 @@ a {
 @media only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
   html {
     font-size: 70%;
+  }
+
+  .title {
+    /* overflow: visible; */
+    font-size: 2rem;
   }
   .selftext {
     font-size: 2rem;

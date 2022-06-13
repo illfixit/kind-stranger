@@ -14,7 +14,12 @@ export default class PostTitle extends React.Component {
 
     return (
       <div className={`title ${this.props.titleVisibilityClass}`} id="title">
-        {this.props.title.replace('&amp', '&')}
+        {this.props.title.replace('&amp', '&').replace('&lt', '<').replace('&gt', '>')}<br/>
+        
+        <div id="subredditAndAuthor">r/{this.props.subreddit && this.props.subreddit}<br/> 
+        u/{this.props.author}<br/>   
+        </div>     
+
       </div>
     );
   }
