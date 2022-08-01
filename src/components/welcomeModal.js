@@ -57,7 +57,11 @@ class WelcomeModal extends React.Component {
             <br />
             <strong>Long Tap</strong>
             <br />
-            to see the whole image.
+            to zoom in on the specific 
+            <br />
+            area of the image
+            <br />
+            (left-center-right).
             <br />
             <br />
             <strong
@@ -81,7 +85,7 @@ class WelcomeModal extends React.Component {
             <span
               style={{ color: 'rgba(150, 150, 150, 1)', marginTop: '0.5rem' }}
             >
-              Build: 1.1.0
+              Build: 1.2.0
             </span>
           </p>
         </div>

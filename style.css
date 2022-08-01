@@ -117,7 +117,8 @@ video {
   left: 0px;
   position: fixed;
   display: block;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   z-index: -50;
   /* cursor: none; */
   /* pointer-events: none; */
@@ -134,7 +135,8 @@ video[poster] {
 .image {
   height: 100%;
   width: 100vw;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   top: 0px;
   left: 0px;
   position: fixed;
@@ -147,7 +149,6 @@ video[poster] {
   -webkit-user-select: none;
   -webkit-touch-callout:none;
 }
-
 
 .hidden {
   display: none !important;
@@ -227,7 +228,7 @@ input {
   flex-direction: column;
   bottom: 0;
   left: 0;
-  right: 0;
+  /* right: 0; */
   /* background-color: aquamarine; */
 }
 
@@ -237,7 +238,8 @@ input {
   /* background-color: rgba(0, 0, 0, 0.35); */
   text-align: left;
   max-width: 70vw;
-  padding: 1.4em;
+  /* padding: 1.4em; */
+  margin: 0 0 1.4em 1.4em;
   font-weight: bold;
 }
 

@@ -33,6 +33,7 @@ class Post extends React.Component {
     this.handlePanCancel = this.handlePanCancel.bind(this);
 
 
+    this.shift = 0;
     this.pressed = false;
     this.handlePress = this.handlePress.bind(this);
     this.handlePressUp = this.handlePressUp.bind(this);
@@ -82,7 +83,7 @@ class Post extends React.Component {
   // }
 
   handlePan(e) {
-    // console.log('handlePan', e)
+      // console.log('handlePan', e)
   }
 
   handlePanStart(e) {
@@ -91,8 +92,11 @@ class Post extends React.Component {
 
   handlePanEnd(e) {
     // console.log('handlePanEnd', e)
-    document.getElementById('image').style.objectFit = "cover";
-    document.getElementById('video').style.objectFit = "cover";
+    this.shift = 0;
+    document.getElementById('image').style.objectFit = "contain";
+    document.getElementById('video').style.objectFit = "contain";
+    document.getElementById('image').style.objectPosition = "center";
+    document.getElementById('video').style.objectPosition = "center";
 
   }
 
@@ -103,8 +107,10 @@ class Post extends React.Component {
   onSwipe(e) {
     // console.log('onSwipe');
     this.pressed = false;
-    document.getElementById('image').style.objectFit = "cover";
-    document.getElementById('video').style.objectFit = "cover";
+    document.getElementById('image').style.objectFit = "contain";
+    document.getElementById('video').style.objectFit = "contain";
+    document.getElementById('image').style.objectPosition = "center";
+    document.getElementById('video').style.objectPosition = "center";
     // 50 - tolerance value
     if(Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
       if(e.deltaY < 0) {
@@ -125,8 +131,10 @@ class Post extends React.Component {
     // console.log('onSwipeDown')
     // e.preventDefault()
 
-    document.getElementById('image').style.objectFit = "cover";
-    document.getElementById('video').style.objectFit = "cover";
+    document.getElementById('image').style.objectFit = "contain";
+    document.getElementById('video').style.objectFit = "contain";
+    document.getElementById('image').style.objectPosition = "center";
+    document.getElementById('video').style.objectPosition = "center";
     if (this.props.api.currentSubreddit.previousPosts.length > 1) {
       this.props.dispatch(showPreviousPost());
     }
@@ -138,8 +146,10 @@ class Post extends React.Component {
     // console.log('onSwipeUp')
     // e.preventDefault()
 
-    document.getElementById('image').style.objectFit = "cover";
-    document.getElementById('video').style.objectFit = "cover";
+    document.getElementById('image').style.objectFit = "contain";
+    document.getElementById('video').style.objectFit = "contain";
+    document.getElementById('image').style.objectPosition = "center";
+    document.getElementById('video').style.objectPosition = "center";
     if (this.props.api.currentSubreddit.nextPosts.length === 0) {
       try {
         this.props.dispatch(fetchNextPost());
@@ -159,8 +169,10 @@ class Post extends React.Component {
 
     // e.preventDefault()
 
-    document.getElementById('image').style.objectFit = "cover";
-    document.getElementById('video').style.objectFit = "cover";
+    document.getElementById('image').style.objectFit = "contain";
+    document.getElementById('video').style.objectFit = "contain";
+    document.getElementById('image').style.objectPosition = "center";
+    document.getElementById('video').style.objectPosition = "center";
     // console.log('onSwipeLeft', this.props.api.currentSubreddit.currentPost);
 
       let active = this.props.api.currentSubreddit.currentPost[0].active;
@@ -178,8 +190,10 @@ class Post extends React.Component {
 
     // e.preventDefault()
 
-    document.getElementById('image').style.objectFit = "cover";
-    document.getElementById('video').style.objectFit = "cover";
+    document.getElementById('image').style.objectFit = "contain";
+    document.getElementById('video').style.objectFit = "contain";
+    document.getElementById('image').style.objectPosition = "center";
+    document.getElementById('video').style.objectPosition = "center";
     // console.log('onSwipeRight', this.props.api.currentSubreddit.currentPost);
       let active = this.props.api.currentSubreddit.currentPost[0].active;
 
@@ -197,17 +211,29 @@ class Post extends React.Component {
   // }
 
   handlePress(e) {
-    // console.log('handlePress', e)
 
+    this.shift = (e.center.x / window.innerWidth).toFixed(2);
+    // console.log('handlePress', (e.center.x / window.innerWidth).toFixed(2))
+    // this.pressed = true;
     // e.preventDefault()
-    document.getElementById('image').style.objectFit = "cover";
-    document.getElementById('video').style.objectFit = "cover";
+    document.getElementById('image').style.objectFit = "contain";
+    document.getElementById('video').style.objectFit = "contain";
 
 
     if(e.target.id == 'image' || e.target.id == 'video') {
-      this.pressed = true;
-      document.getElementById('image').style.objectFit = "contain";
-      document.getElementById('video').style.objectFit = "contain";
+      document.getElementById('image').style.objectFit = "cover";
+      document.getElementById('video').style.objectFit = "cover";
+
+      if(this.shift < 0.35) {
+        document.getElementById('image').style.objectPosition = "left";
+        document.getElementById('video').style.objectPosition = "left";
+      } else if(this.shift > 0.65) {
+        document.getElementById('image').style.objectPosition = "right";
+        document.getElementById('video').style.objectPosition = "right";
+      } else {
+        document.getElementById('image').style.objectPosition = "center";
+        document.getElementById('video').style.objectPosition = "center";
+      }
 
     }
   }
@@ -217,8 +243,10 @@ class Post extends React.Component {
     // e.preventDefault()
     this.pressed = false;
 
-    document.getElementById('image').style.objectFit = "cover";
-    document.getElementById('video').style.objectFit = "cover";
+    document.getElementById('image').style.objectFit = "contain";
+    document.getElementById('video').style.objectFit = "contain";
+    document.getElementById('image').style.objectPosition = "center";
+    document.getElementById('video').style.objectPosition = "center";
   }
 
   handleKeyboard(e) {
@@ -416,8 +444,8 @@ class Post extends React.Component {
             active={this.active}
             titleVisibilityClass={this.titleVisibilityClass}
             title={this.title}
-            subreddit={this.props.api.currentSubreddit.currentPost[this.active] && this.props.api.currentSubreddit.currentPost[this.active].subreddit}
-            author={this.props.api.currentSubreddit.currentPost[this.active] && this.props.api.currentSubreddit.currentPost[this.active].author}
+            subreddit={this.props.api.currentSubreddit && this.props.api.currentSubreddit.currentPost && this.props.api.currentSubreddit.currentPost[this.active] && this.props.api.currentSubreddit.currentPost[this.active].subreddit}
+            author={this.props.api.currentSubreddit && this.props.api.currentSubreddit.currentPost && this.props.api.currentSubreddit.currentPost[this.active] && this.props.api.currentSubreddit.currentPost[this.active].author}
           />
           </div>
       </Hammer>
