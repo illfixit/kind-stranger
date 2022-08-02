@@ -226,6 +226,11 @@ class Post extends React.Component {
   handlePress(e) {
     this.pressed =  this.pressed == true ? false : true;
     if(this.pressed) {
+      this.shift = Math.max((e.center.x / window.innerWidth).toFixed(2), 0);
+
+      document.getElementById('image').style.objectPosition = `${this.shift*100}%`;
+      document.getElementById('video').style.objectPosition = `${this.shift*100}%`;
+      
       document.getElementById('image').style.objectFit = "cover";
       document.getElementById('video').style.objectFit = "cover";
       
