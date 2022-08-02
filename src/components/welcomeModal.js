@@ -41,25 +41,13 @@ class WelcomeModal extends React.Component {
             <strong>Kind Stranger</strong>
             <br />
             <br />
-            To navigate between posts:
+            Long tap to toggle between<br />
+            <strong>Navigation mode</strong> (Zoomed out)<br />
+            <strong>Cover mode</strong> (Zoomed in)<br />
             <br />
-            <strong>Use up-down swipes or keys</strong>
-            <br />
-            {/* <br />
-          <br />
-          If post has <strong>multiple images</strong>
-          <br />
-          (you'll see white dots)
-          <br />
-          you can swipe left-right <br />
-          or press left-right keys
-          <br /> */}
-            <br />
-            <strong>Long Tap</strong>
-            <br />
-            to zoom in on the specific 
-            <br />
-            area of the image.
+            Use swipes in <strong>Zoomed Out</strong> mode<br />
+            to <strong>navigate</strong> between posts
+
             <br />
             <br />
             <strong
@@ -83,7 +71,7 @@ class WelcomeModal extends React.Component {
             <span
               style={{ color: 'rgba(150, 150, 150, 1)', marginTop: '0.5rem' }}
             >
-              Build: 1.5.0
+              Build: 1.5.7
             </span>
           </p>
         </div>

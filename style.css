@@ -54,6 +54,8 @@ body {
   right: 0;
   cursor: pointer;
   text-align: center;
+  text-shadow: #44444465 1px 1px;
+
   font-size: 1.8rem;
   width: 100vw;
   height: auto;
@@ -103,7 +105,7 @@ body {
 }
 
 image { 
-  object-fit: cover; 
+  /* object-fit: cover;  */
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout:none;
@@ -176,6 +178,7 @@ input {
   top: 0;
   left: 0;
   text-align: left;
+  text-shadow: #44444465 1px 1px;
   font-size: 2rem;
   font-weight: bold;
   height: 5rem;
@@ -237,12 +240,12 @@ input {
   font-size: 2.2rem;
   /* background-color: rgba(0, 0, 0, 0.35); */
   text-align: left;
+  text-shadow: #44444465 1px 1px;
   max-width: 70vw;
   /* padding: 1.4em; */
   margin: 0 0 1em 1em;
   padding: 0.4em;
   font-weight: bold;
-  background-color: rgba(0, 0, 0, 0.35);
 }
 
 .dots {

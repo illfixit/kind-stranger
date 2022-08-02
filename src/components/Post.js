@@ -84,6 +84,14 @@ class Post extends React.Component {
 
   handlePan(e) {
       // console.log('handlePan', e)
+    this.shift = Math.max((e.center.x / window.innerWidth).toFixed(2), 0);
+
+
+
+      if(this.pressed){
+        document.getElementById('image').style.objectPosition = `${this.shift*100}%`;
+        document.getElementById('video').style.objectPosition = `${this.shift*100}%`;
+      }
   }
 
   handlePanStart(e) {
@@ -93,10 +101,10 @@ class Post extends React.Component {
   handlePanEnd(e) {
     // console.log('handlePanEnd', e)
     this.shift = 0;
-    document.getElementById('image').style.objectFit = "contain";
-    document.getElementById('video').style.objectFit = "contain";
-    document.getElementById('image').style.objectPosition = "center";
-    document.getElementById('video').style.objectPosition = "center";
+    // document.getElementById('image').style.objectFit = "contain";
+    // document.getElementById('video').style.objectFit = "contain";
+    // document.getElementById('image').style.objectPosition = "center";
+    // document.getElementById('video').style.objectPosition = "center";
 
   }
 
@@ -105,12 +113,13 @@ class Post extends React.Component {
   }
 
   onSwipe(e) {
-    // console.log('onSwipe');
-    this.pressed = false;
-    document.getElementById('image').style.objectFit = "contain";
-    document.getElementById('video').style.objectFit = "contain";
-    document.getElementById('image').style.objectPosition = "center";
-    document.getElementById('video').style.objectPosition = "center";
+    // console.log('onSwipe', e);
+    if(this.pressed) return
+    // this.pressed = false;
+    // document.getElementById('image').style.objectFit = "contain";
+    // document.getElementById('video').style.objectFit = "contain";
+    // document.getElementById('image').style.objectPosition = "center";
+    // document.getElementById('video').style.objectPosition = "center";
     // 50 - tolerance value
     if(Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
       if(e.deltaY < 0) {
@@ -131,10 +140,11 @@ class Post extends React.Component {
     // console.log('onSwipeDown')
     // e.preventDefault()
 
-    document.getElementById('image').style.objectFit = "contain";
-    document.getElementById('video').style.objectFit = "contain";
-    document.getElementById('image').style.objectPosition = "center";
-    document.getElementById('video').style.objectPosition = "center";
+    // document.getElementById('image').style.objectFit = "contain";
+    // document.getElementById('video').style.objectFit = "contain";
+    // document.getElementById('image').style.objectPosition = "center";
+    // document.getElementById('video').style.objectPosition = "center";
+
     if (this.props.api.currentSubreddit.previousPosts.length > 1) {
       this.props.dispatch(showPreviousPost());
     }
@@ -146,10 +156,11 @@ class Post extends React.Component {
     // console.log('onSwipeUp')
     // e.preventDefault()
 
-    document.getElementById('image').style.objectFit = "contain";
-    document.getElementById('video').style.objectFit = "contain";
-    document.getElementById('image').style.objectPosition = "center";
-    document.getElementById('video').style.objectPosition = "center";
+    // document.getElementById('image').style.objectFit = "contain";
+    // document.getElementById('video').style.objectFit = "contain";
+    // document.getElementById('image').style.objectPosition = "center";
+    // document.getElementById('video').style.objectPosition = "center";
+
     if (this.props.api.currentSubreddit.nextPosts.length === 0) {
       try {
         this.props.dispatch(fetchNextPost());
@@ -169,10 +180,11 @@ class Post extends React.Component {
 
     // e.preventDefault()
 
-    document.getElementById('image').style.objectFit = "contain";
-    document.getElementById('video').style.objectFit = "contain";
-    document.getElementById('image').style.objectPosition = "center";
-    document.getElementById('video').style.objectPosition = "center";
+    // document.getElementById('image').style.objectFit = "contain";
+    // document.getElementById('video').style.objectFit = "contain";
+    // document.getElementById('image').style.objectPosition = "center";
+    // document.getElementById('video').style.objectPosition = "center";
+
     // console.log('onSwipeLeft', this.props.api.currentSubreddit.currentPost);
 
       let active = this.props.api.currentSubreddit.currentPost[0].active;
@@ -190,10 +202,11 @@ class Post extends React.Component {
 
     // e.preventDefault()
 
-    document.getElementById('image').style.objectFit = "contain";
-    document.getElementById('video').style.objectFit = "contain";
-    document.getElementById('image').style.objectPosition = "center";
-    document.getElementById('video').style.objectPosition = "center";
+    // document.getElementById('image').style.objectFit = "contain";
+    // document.getElementById('video').style.objectFit = "contain";
+    // document.getElementById('image').style.objectPosition = "center";
+    // document.getElementById('video').style.objectPosition = "center";
+
     // console.log('onSwipeRight', this.props.api.currentSubreddit.currentPost);
       let active = this.props.api.currentSubreddit.currentPost[0].active;
 
@@ -211,13 +224,33 @@ class Post extends React.Component {
   // }
 
   handlePress(e) {
+    this.pressed =  this.pressed == true ? false : true;
+    if(this.pressed) {
+      document.getElementById('image').style.objectFit = "cover";
+      document.getElementById('video').style.objectFit = "cover";
+      
+      document.getElementById('search').style.display = "none";
+      document.getElementById('menubtn').style.display = "none";
+      document.getElementById('sort').style.display = "none";
+      document.getElementById('dots').style.display = "none";
 
-    this.shift = (e.center.x / window.innerWidth).toFixed(2);
+    } else {
+      document.getElementById('image').style.objectFit = "contain";
+      document.getElementById('video').style.objectFit = "contain";
+      document.getElementById('image').style.objectPosition = "center";
+      document.getElementById('video').style.objectPosition = "center";
+
+      document.getElementById('search').style.display = "flex";
+      document.getElementById('menubtn').style.display = "flex";
+      document.getElementById('sort').style.display = "inline";
+      document.getElementById('dots').style.display = "flex";
+    }
+    // this.shift = Math.max((e.center.x / window.innerWidth).toFixed(2), 0);
     // console.log('handlePress', (e.center.x / window.innerWidth).toFixed(2))
     // this.pressed = true;
     // e.preventDefault()
-    document.getElementById('image').style.objectFit = "contain";
-    document.getElementById('video').style.objectFit = "contain";
+    // document.getElementById('image').style.objectFit = "contain";
+    // document.getElementById('video').style.objectFit = "contain";
 
     // document.getElementById('search').style.display = "none";
     // document.getElementById('sort').style.display = "none";
@@ -225,12 +258,12 @@ class Post extends React.Component {
     // document.getElementById('menubtn').style.display = "none";
 
 
-    if(e.target.id == 'image' || e.target.id == 'video') {
-      document.getElementById('image').style.objectFit = "cover";
-      document.getElementById('video').style.objectFit = "cover";
+    // if(e.target.id == 'image' || e.target.id == 'video') {
+    //   document.getElementById('image').style.objectFit = "cover";
+    //   document.getElementById('video').style.objectFit = "cover";
 
-      document.getElementById('image').style.objectPosition = `${this.shift*100}% 50%`;
-      document.getElementById('video').style.objectPosition = `${this.shift*100}% 50%`;
+    //   document.getElementById('image').style.objectPosition = `${this.shift*100}%`;
+    //   document.getElementById('video').style.objectPosition = `${this.shift*100}%`;
 
       // if(this.shift < 0.35) {
       //   document.getElementById('image').style.objectPosition = "left";
@@ -243,23 +276,23 @@ class Post extends React.Component {
       //   document.getElementById('video').style.objectPosition = "center";
       // }
 
-    }
+    
   }
 
   handlePressUp(e) {
     // console.log('handlePressUp', e)
     // e.preventDefault()
-    this.pressed = false;
+    // this.pressed = false;
 
     // document.getElementById('search').style.display = "flex";
     // document.getElementById('sort').style.display = "inline";
     // // document.getElementById('titleAndDots').style.display = "flex";
     // document.getElementById('menubtn').style.display = "flex";
 
-    document.getElementById('image').style.objectFit = "contain";
-    document.getElementById('video').style.objectFit = "contain";
-    document.getElementById('image').style.objectPosition = "center";
-    document.getElementById('video').style.objectPosition = "center";
+    // document.getElementById('image').style.objectFit = "contain";
+    // document.getElementById('video').style.objectFit = "contain";
+    // document.getElementById('image').style.objectPosition = "center";
+    // document.getElementById('video').style.objectPosition = "center";
   }
 
   handleKeyboard(e) {
