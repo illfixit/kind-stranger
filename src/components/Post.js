@@ -219,21 +219,29 @@ class Post extends React.Component {
     document.getElementById('image').style.objectFit = "contain";
     document.getElementById('video').style.objectFit = "contain";
 
+    // document.getElementById('search').style.display = "none";
+    // document.getElementById('sort').style.display = "none";
+    // document.getElementById('titleAndDots').style.display = "none";
+    // document.getElementById('menubtn').style.display = "none";
+
 
     if(e.target.id == 'image' || e.target.id == 'video') {
       document.getElementById('image').style.objectFit = "cover";
       document.getElementById('video').style.objectFit = "cover";
 
-      if(this.shift < 0.35) {
-        document.getElementById('image').style.objectPosition = "left";
-        document.getElementById('video').style.objectPosition = "left";
-      } else if(this.shift > 0.65) {
-        document.getElementById('image').style.objectPosition = "right";
-        document.getElementById('video').style.objectPosition = "right";
-      } else {
-        document.getElementById('image').style.objectPosition = "center";
-        document.getElementById('video').style.objectPosition = "center";
-      }
+      document.getElementById('image').style.objectPosition = `${this.shift*100}% 50%`;
+      document.getElementById('video').style.objectPosition = `${this.shift*100}% 50%`;
+
+      // if(this.shift < 0.35) {
+      //   document.getElementById('image').style.objectPosition = "left";
+      //   document.getElementById('video').style.objectPosition = "left";
+      // } else if(this.shift > 0.65) {
+      //   document.getElementById('image').style.objectPosition = "right";
+      //   document.getElementById('video').style.objectPosition = "right";
+      // } else {
+      //   document.getElementById('image').style.objectPosition = "center";
+      //   document.getElementById('video').style.objectPosition = "center";
+      // }
 
     }
   }
@@ -242,6 +250,11 @@ class Post extends React.Component {
     // console.log('handlePressUp', e)
     // e.preventDefault()
     this.pressed = false;
+
+    // document.getElementById('search').style.display = "flex";
+    // document.getElementById('sort').style.display = "inline";
+    // // document.getElementById('titleAndDots').style.display = "flex";
+    // document.getElementById('menubtn').style.display = "flex";
 
     document.getElementById('image').style.objectFit = "contain";
     document.getElementById('video').style.objectFit = "contain";
