@@ -152,6 +152,34 @@ video[poster] {
   -webkit-touch-callout:none;
 }
 
+#coverModeNavigation {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 3fr 4fr 4fr;
+  color: rgba(0,0,0,0);
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+}
+
+#top, #bottom {
+  grid-column-start: 1;
+  grid-column-end: 3;
+}
+
+/* #left {
+  grid-column-start: 1;
+  grid-column-end: 2;
+}
+
+#right {
+  grid-column-start: 2;
+  grid-column-end: 3;
+} */
+
+
 .hidden {
   display: none !important;
 }
@@ -241,9 +269,9 @@ input {
   /* background-color: rgba(0, 0, 0, 0.35); */
   text-align: left;
   text-shadow: #44444465 1px 1px;
-  max-width: 70vw;
+  max-width: 60vw;
   /* padding: 1.4em; */
-  margin: 0 0 1em 1em;
+  margin: 0 0 1.4em 1em;
   padding: 0.4em;
   font-weight: bold;
 }
@@ -255,14 +283,15 @@ input {
   justify-content: center;
   align-items: center;
   font-size: 2.2rem;
-  top:8rem;
-  left: 0;
-  right: 0;
+  /* top:8rem; */
+  left: 2.8rem;
+  bottom: 1.25rem;
+  /* right: 0; */
 
 }
 
 .dot {
-  color: rgb(255, 255, 255, 0.5);
+  color: rgb(255, 255, 255, 0.3);
 }
 
 #subredditAndAuthor {
@@ -273,7 +302,7 @@ input {
 
 
 .active {
-  color: rgb(255, 255, 255, 0.8);
+  color: rgb(255, 255, 255, 0.7);
 }
 
 #previewContainer {
@@ -525,7 +554,8 @@ a {
   /* background-color: white; */
   color: white;
   width: fit-content;
-  padding: 3rem;
+  /* max-width: 96% */
+  padding: 2.5rem;
   border-radius: 2rem;
   position: fixed;
   top: 50%;

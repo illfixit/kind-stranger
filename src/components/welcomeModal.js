@@ -37,17 +37,23 @@ class WelcomeModal extends React.Component {
         >
           <p id="welcome-text" className="welcome-text">
             <br />
-            Welcome to my Reddit viewer... <br />
+            Welcome to my Reddit client... <br />
             <strong>Kind Stranger</strong>
             <br />
             <br />
-            Long tap to toggle between<br />
+            Long tap to toggle between:<br />
             <strong>Navigation mode</strong> (Zoomed out)<br />
             <strong>Cover mode</strong> (Zoomed in)<br />
             <br />
-            Use swipes in <strong>Zoomed Out</strong> mode<br />
-            to <strong>navigate</strong> between posts
+            To <strong>navigate</strong> between posts:<br />
+            In <strong>Navigation mode</strong> use swipes.<br />
+            In <strong>Cover mode</strong> use (double) taps on<br />
+            top-left-right-bottom areas.
+            <br />
+            <br />
 
+            You can move around the image<br />
+            in <strong>Cover mode</strong> using swipes
             <br />
             <br />
             <strong
@@ -71,7 +77,7 @@ class WelcomeModal extends React.Component {
             <span
               style={{ color: 'rgba(150, 150, 150, 1)', marginTop: '0.5rem' }}
             >
-              Build: 1.5.7
+              Build: 2.0.1
             </span>
           </p>
         </div>

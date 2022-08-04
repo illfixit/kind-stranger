@@ -24,8 +24,8 @@ class Post extends React.Component {
     super(props);
 
     this.onSwipe = this.onSwipe.bind(this);
-    // this.handleDoubleTap = this.handleDoubleTap.bind(this);
-    // this.handleTap = this.handleTap.bind(this);
+    this.handleDoubleTap = this.handleTap.bind(this);
+    this.handleTap = this.handleTap.bind(this);
 
     this.handlePan = this.handlePan.bind(this);
     this.handlePanStart = this.handlePanStart.bind(this);
@@ -78,9 +78,14 @@ class Post extends React.Component {
     document.removeEventListener('keydown', this.handleKeyboard, false);
   }
 
-  // handleTap(e) {
-  //   console.log('handleTap')
-  // }
+  handleTap(e) {
+    if(this.pressed){
+      if(e.target.id == "top") this.onSwipeDown();
+      if(e.target.id == "bottom" || e.target.id == "title" || e.target.id == "subredditAndAuthor") this.onSwipeUp();
+      if(e.target.id == "left") this.onSwipeRight();
+      if(e.target.id == "right") this.onSwipeLeft();
+    }
+  }
 
   handlePan(e) {
       // console.log('handlePan', e)
@@ -237,7 +242,8 @@ class Post extends React.Component {
       document.getElementById('search').style.display = "none";
       document.getElementById('menubtn').style.display = "none";
       document.getElementById('sort').style.display = "none";
-      document.getElementById('dots').style.display = "none";
+
+      document.getElementById('coverModeNavigation').style.display = "grid";
 
     } else {
       document.getElementById('image').style.objectFit = "contain";
@@ -248,7 +254,8 @@ class Post extends React.Component {
       document.getElementById('search').style.display = "flex";
       document.getElementById('menubtn').style.display = "flex";
       document.getElementById('sort').style.display = "inline";
-      document.getElementById('dots').style.display = "flex";
+
+      document.getElementById('coverModeNavigation').style.display = "none";
     }
     // this.shift = Math.max((e.center.x / window.innerWidth).toFixed(2), 0);
     // console.log('handlePress', (e.center.x / window.innerWidth).toFixed(2))
@@ -431,8 +438,8 @@ class Post extends React.Component {
 
     return (
       <Hammer 
-        // onDoubleTap={this.handleDoubleTap} 
-        // onTap={this.handleTap}
+        onDoubleTap={this.handleTap} 
+        onTap={this.handleTap}
         onPan={this.handlePan}
         onPanStart={this.handlePanStart}
         onPanEnd={this.handlePanEnd}
@@ -487,6 +494,13 @@ class Post extends React.Component {
 
               videoVisibilityClass={this.videoVisibilityClass}
             />
+            <div id="coverModeNavigation">
+              <div id="top">Top</div>
+              <div id="left">Left</div>
+              <div id="right">Right</div>
+              <div id="bottom">Bottom</div>
+            </div>
+
           </div>
           <PostInfo
             numberOfSubPosts={this.numberOfSubPosts}
