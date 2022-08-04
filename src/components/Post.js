@@ -32,7 +32,7 @@ class Post extends React.Component {
     this.handlePanEnd = this.handlePanEnd.bind(this);
     this.handlePanCancel = this.handlePanCancel.bind(this);
 
-
+    this.x;
     this.shift = 0;
     this.pressed = false;
     this.handlePress = this.handlePress.bind(this);
@@ -87,11 +87,9 @@ class Post extends React.Component {
     }
   }
 
-  handlePan(e) {
-      // console.log('handlePan', e)
-    this.shift = Math.max((e.center.x / window.innerWidth).toFixed(2), 0);
-
-
+  handlePan(e) {                                   
+      // console.log('handlePan', e)                  
+    this.shift = Math.min(Math.max((0.5 + (e.center.x / window.innerWidth - 0.5)*1.25).toFixed(2), 0), 1);
 
       if(this.pressed){
         document.getElementById('image').style.objectPosition = `${this.shift*100}%`;
@@ -231,7 +229,9 @@ class Post extends React.Component {
   handlePress(e) {
     this.pressed =  this.pressed == true ? false : true;
     if(this.pressed) {
-      this.shift = Math.max((e.center.x / window.innerWidth).toFixed(2), 0);
+      // this.shift = Math.min(Math.max((e.center.x / window.innerWidth).toFixed(2), 0), 100);
+      this.shift = Math.min(Math.max((0.5 + (e.center.x / window.innerWidth - 0.5)*1.25).toFixed(2), 0), 1);
+
 
       document.getElementById('image').style.objectPosition = `${this.shift*100}%`;
       document.getElementById('video').style.objectPosition = `${this.shift*100}%`;
