@@ -155,7 +155,7 @@ video[poster] {
 #coverModeNavigation {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 3fr 4fr 4fr;
+  grid-template-rows: 3fr 4fr 3fr;
   color: rgba(0,0,0,0);
   margin: 0;
   padding: 0;
