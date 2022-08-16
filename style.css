@@ -119,7 +119,7 @@ video {
   left: 0px;
   position: fixed;
   display: block;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   z-index: -50;
   /* cursor: none; */
@@ -137,7 +137,7 @@ video[poster] {
 .image {
   height: 100%;
   width: 100vw;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   top: 0px;
   left: 0px;

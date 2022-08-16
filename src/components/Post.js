@@ -79,22 +79,22 @@ class Post extends React.Component {
   }
 
   handleTap(e) {
-    if(this.pressed){
+    // if(this.pressed){
       if(e.target.id == "top") this.onSwipeDown();
       if(e.target.id == "bottom" || e.target.id == "title" || e.target.id == "subredditAndAuthor") this.onSwipeUp();
       if(e.target.id == "left") this.onSwipeRight();
       if(e.target.id == "right") this.onSwipeLeft();
-    }
+    // }
   }
 
   handlePan(e) {                                   
       // console.log('handlePan', e)                  
     this.shift = Math.min(Math.max((0.5 + (e.center.x / window.innerWidth - 0.5)*1.25).toFixed(2), 0), 1);
 
-      if(this.pressed){
+      // if(this.pressed){
         document.getElementById('image').style.objectPosition = `${this.shift*100}%`;
         document.getElementById('video').style.objectPosition = `${this.shift*100}%`;
-      }
+      // }
   }
 
   handlePanStart(e) {
@@ -227,36 +227,44 @@ class Post extends React.Component {
   // }
 
   handlePress(e) {
-    this.pressed =  this.pressed == true ? false : true;
-    if(this.pressed) {
-      // this.shift = Math.min(Math.max((e.center.x / window.innerWidth).toFixed(2), 0), 100);
-      this.shift = Math.min(Math.max((0.5 + (e.center.x / window.innerWidth - 0.5)*1.25).toFixed(2), 0), 1);
 
-
-      document.getElementById('image').style.objectPosition = `${this.shift*100}%`;
-      document.getElementById('video').style.objectPosition = `${this.shift*100}%`;
-      
-      document.getElementById('image').style.objectFit = "cover";
-      document.getElementById('video').style.objectFit = "cover";
-      
-      document.getElementById('search').style.display = "none";
-      document.getElementById('menubtn').style.display = "none";
-      document.getElementById('sort').style.display = "none";
-
-      document.getElementById('coverModeNavigation').style.display = "grid";
-
-    } else {
+    if(document.getElementById('image').style.objectFit != "contain"){  
       document.getElementById('image').style.objectFit = "contain";
       document.getElementById('video').style.objectFit = "contain";
-      document.getElementById('image').style.objectPosition = "center";
-      document.getElementById('video').style.objectPosition = "center";
-
-      document.getElementById('search').style.display = "flex";
-      document.getElementById('menubtn').style.display = "flex";
-      document.getElementById('sort').style.display = "inline";
-
-      document.getElementById('coverModeNavigation').style.display = "none";
+    } else {
+      document.getElementById('image').style.objectFit = "cover";
+      document.getElementById('video').style.objectFit = "cover";
     }
+
+    // this.pressed =  this.pressed == true ? false : true;
+    // if(this.pressed) {
+    //   // this.shift = Math.min(Math.max((e.center.x / window.innerWidth).toFixed(2), 0), 100);
+    //   this.shift = Math.min(Math.max((0.5 + (e.center.x / window.innerWidth - 0.5)*1.25).toFixed(2), 0), 1);
+
+
+    //   document.getElementById('image').style.objectPosition = `${this.shift*100}%`;
+    //   document.getElementById('video').style.objectPosition = `${this.shift*100}%`;
+      
+    //   document.getElementById('image').style.objectFit = "cover";
+    //   document.getElementById('video').style.objectFit = "cover";
+      
+    //   document.getElementById('search').style.display = "none";
+    //   document.getElementById('menubtn').style.display = "none";
+    //   document.getElementById('sort').style.display = "none";
+
+    //   document.getElementById('coverModeNavigation').style.display = "grid";
+
+    // } else {
+
+    //   document.getElementById('image').style.objectPosition = "center";
+    //   document.getElementById('video').style.objectPosition = "center";
+
+    //   document.getElementById('search').style.display = "flex";
+    //   document.getElementById('menubtn').style.display = "flex";
+    //   document.getElementById('sort').style.display = "inline";
+
+    //   document.getElementById('coverModeNavigation').style.display = "none";
+    // }
     // this.shift = Math.max((e.center.x / window.innerWidth).toFixed(2), 0);
     // console.log('handlePress', (e.center.x / window.innerWidth).toFixed(2))
     // this.pressed = true;
@@ -292,6 +300,11 @@ class Post extends React.Component {
   }
 
   handlePressUp(e) {
+
+    document.getElementById('image').style.objectFit = "cover";
+    document.getElementById('video').style.objectFit = "cover";
+
+
     // console.log('handlePressUp', e)
     // e.preventDefault()
     // this.pressed = false;

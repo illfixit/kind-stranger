@@ -15,7 +15,7 @@ class SearchPanel extends React.Component {
     super(props);
 
     this.handleInput = this.handleInput.bind(this);
-    this.reloadPage = this.reloadPage.bind(this);
+    this.toggleHeader = this.toggleHeader.bind(this);
   }
 
   handleInput(e) {
@@ -39,8 +39,21 @@ class SearchPanel extends React.Component {
     }
   }
 
-  reloadPage() {
-    document.location.reload();
+  toggleHeader() {
+    let d = document.getElementById('search').style.display;
+
+    if(d == 'flex' || d == '') {
+      document.getElementById('search').style.display = "none";
+      document.getElementById('sort').style.display = 'none';
+    } else {
+      document.getElementById('search').style.display = "flex";
+      document.getElementById('sort').style.display = 'inline';
+    }
+
+
+
+
+    // document.location.reload();
   }
 
   // componentDidMount() {
@@ -64,7 +77,7 @@ class SearchPanel extends React.Component {
           className={`menubtn ${
             this.props.api.visibilityOfElements.searchPanel ? '' : 'hidden'
           }`}
-          onClick={this.reloadPage}
+          onClick={this.toggleHeader}
         >
           <img src="./images/icon.png" className="menuimg" id="menuImg" />
         </button>

@@ -1,6 +1,6 @@
 {
   "name": "kind-stranger-react",
-  "version": "2.0.1",
+  "version": "2.0.5",
   "description": "Kind Stranger. Reddit Viewer written using React",
   "main": "./build/index.js",
   "scripts": {
