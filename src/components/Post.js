@@ -88,9 +88,9 @@ class Post extends React.Component {
   }
 
   handlePan(e) {                                   
-    console.log(this.shift);                  
+    // console.log(this.shift);                  
     this.shift = Math.min(Math.max((0.5 + (e.center.x / window.innerWidth - 0.5)*1.25).toFixed(2), 0), 1);
-    console.log('handlePan', e.center.x, this.shift);                  
+    // console.log('handlePan', e.center.x, this.shift);                  
 
       // if(this.pressed){
         document.getElementById('image').style.objectPosition = `${this.shift*100}%`;
