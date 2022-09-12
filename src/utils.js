@@ -111,26 +111,35 @@ export const getPostInfo = (post) => {
 
   if (post.url && post.url.includes('redd') && post.url.includes('.gif')) {
     imageSource = post.url;
+    // console.log('redd, gif ', post)
   }
 
   if (post.url && post.url.includes('gfycat')) {
     imageSource = post.secure_media.oembed.thumbnail_url;
+    // console.log('gfycat ', post)
   }
 
   if (post.url && post.url.endsWith('.gifv') && !post.url.includes('redd')) {
     videoSource = post.url.replace('gifv', 'mp4');
+    // console.log('redd, gifv ', post)
   }
 
   if (post.url && post.url.endsWith('.gif') && !post.url.includes('redd')) {
     videoSource = post.url.replace('gif', 'mp4');
+    // console.log('redd, !gif ', post)
+
   }
 
   if (post.media && post.media.reddit_video != null) {
     videoSource = post.media.reddit_video.fallback_url;
+    // console.log('reddit_video ', post)
+
   }
 
   if (post.url && post.url.includes('redgif')) {
     videoSource = post.preview.reddit_video_preview.fallback_url;
+    // console.log('redgif ', post)
+    
   }
 
   title = post.title;
@@ -164,5 +173,5 @@ export const getPostInfo = (post) => {
     imageSize = [0,0];
   }
 
-  return { imageSource,imageSize , videoSource, title, selftext };
+  return { imageSource,imageSize , videoSource: null, title, selftext };
 };
