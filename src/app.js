@@ -1,12 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import store from './store';
+import React from "react";
+import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
+import store from "./store";
 
-import WelcomeModal from './components/WelcomeModal.js';
-import Menu from './components/Menu.js';
-import Post from './components/Post.js';
-import SearchPanel from './components/SearchPanel.js';
+import TopPanel from "./components/TopPanel.js";
+import Post from "./components/Post.js";
 
 export default class App extends React.Component {
   componentDidMount() {
@@ -20,13 +18,11 @@ export default class App extends React.Component {
   render() {
     return (
       <Provider store={store}>
-        <Menu />
+        <TopPanel />
         <Post />
-        <SearchPanel />
-        <WelcomeModal />
       </Provider>
     );
   }
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById("root"));

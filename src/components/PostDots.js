@@ -1,46 +1,39 @@
-import React from 'react';
+import React from "react";
+import { connect } from "react-redux";
+import { changeVisibility } from "../actions";
 
-export default class PostDots extends React.Component {
-  constructor(props) {
-    super(props);
+export const PostDots = (props) => {
+  let numberOfDots = props.numberOfSubPosts;
+  let active = props.active;
+  let dots = [];
 
-    this.dotsVisibilityClass = 'hidden';
-  }
-
-  componentDidMount() {}
-
-  componentWillUnmount() {}
-
-  showDots(numberOfDots, active) {
-    // console.log('showDots', numberOfDots, active);
-    if (numberOfDots > 1) {
-      return [...Array(numberOfDots)].map((e, i) => {
-        if (i + 1 == active) {
-          return (
-            <span key={i} className="dot active">
-              &#8226;
-            </span>
-          );
-        }
-
+  if (numberOfDots > 1) {
+    dots = [...Array(numberOfDots)].map((e, i) => {
+      if (i + 1 == active) {
         return (
-          <span key={i} className="dot">
+          <span key={i} className="dot active">
             &#8226;
           </span>
         );
-      });
-    }
+      }
+
+      return (
+        <span key={i} className="dot">
+          &#8226;
+        </span>
+      );
+    });
   }
 
-  render() {
-    if (this.props.numberOfSubPosts > 1) {
-      this.dotsVisibilityClass = 'visible';
-    }
+  return (
+    <div id="dots" className={`dots ${dots.length > 1 ? "" : "hidden"}`}>
+      {dots}
+    </div>
+  );
+};
 
-    return (
-      <div id="dots" className={`dots ${this.dotsVisibilityClass}`}>
-        {this.showDots(this.props.numberOfSubPosts, this.props.active)}
-      </div>
-    );
-  }
-}
+const mapStateToProps = ({ api }) => {
+  return { api };
+};
+
+export default connect(mapStateToProps)(PostDots);

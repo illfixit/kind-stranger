@@ -27,9 +27,11 @@ import {
   SHOW_COMMENTS,
   HIDE_COMMENTS,
   CHANGE_SORT,
-} from '../actiontypes';
-import { filterPostsArray, prefetchImages } from '../utils';
-import store from '../store';
+  SHOW_SEARCH_PANEL,
+  HIDE_SEARCH_PANEL,
+} from "../actiontypes";
+import { filterPostsArray, prefetchImages } from "../utils";
+import store from "../store";
 
 export const fetchNextPost = () => {
   const { url, sort, after } = store.getState().api.currentSubreddit;
@@ -100,7 +102,7 @@ export const checkIfSubredditIsOk = (subreddit) => {
 
         exists = true;
         if (exists === false) {
-          dispatch(checkIfSubredditIsOkFailure('Bad subreddit'));
+          dispatch(checkIfSubredditIsOkFailure("Bad subreddit"));
         } else if (exists === true) {
           dispatch(checkIfSubredditIsOkSuccess());
           dispatch(hideSearchResults(subreddit.slice(3, -1)));
@@ -114,7 +116,7 @@ export const checkIfSubredditIsOk = (subreddit) => {
         // console.log(`${subreddit} doesn't exist!`);
         // alert('Please, choose another subreddit');
         exists = false;
-        dispatch(checkIfSubredditIsOkFailure('Bad subreddit'));
+        dispatch(checkIfSubredditIsOkFailure("Bad subreddit"));
       });
   };
 };
@@ -129,7 +131,7 @@ export const getListOfSubreddits = (searchTerm) => {
       .then((response) => response.json())
       .then((data) => {
         let results = data.data.children.filter(
-          (r) => typeof r.data.url === 'string'
+          (r) => typeof r.data.url === "string"
         );
 
         dispatch(showSearchResults());
@@ -264,8 +266,8 @@ export const prefetchPostsInCurrentSubreddit = () => {
   return (dispatch) => {
     let { subreddit, after, sort } = store.getState().api.preload;
 
-    if (typeof sort == 'undefined') {
-      sort = 'hot';
+    if (typeof sort == "undefined") {
+      sort = "hot";
     }
 
     fetch(
@@ -283,10 +285,10 @@ export const prefetchPostsInCurrentSubreddit = () => {
               subreddit,
               url: post.data.preview.images[0].resolutions[
                 post.data.preview.images[0].resolutions.length - 1
-              ].url.replace(/amp;/gi, ''),
+              ].url.replace(/amp;/gi, ""),
             };
           } catch (e) {
-            console.log('unable to prefetch');
+            console.log("unable to prefetch");
           }
         });
         // console.log('images[0].url', images[0].url);
@@ -312,13 +314,6 @@ const updatePreloaded = (images) => ({
   payload: images,
 });
 
-export const changeMediaScale = (objectFitClass) => {
-  return {
-    type: CHANGE_MEDIA_SCALE,
-    payload: objectFitClass,
-  };
-};
-
 export const changeSort = (srt) => {
   return {
     type: CHANGE_SORT,
@@ -326,10 +321,10 @@ export const changeSort = (srt) => {
   };
 };
 
-export const showComments = () => ({
-  type: SHOW_COMMENTS,
+export const showSearchPanel = () => ({
+  type: SHOW_SEARCH_PANEL,
 });
 
-export const hideComments = () => ({
-  type: HIDE_COMMENTS,
+export const hideSearchPanel = () => ({
+  type: HIDE_SEARCH_PANEL,
 });

@@ -22,51 +22,48 @@ import {
   CHANGE_VISIBILITY,
   CHANGE_PRELOAD_AFTER,
   UPDATE_PRELOADED,
-  CHANGE_MEDIA_SCALE,
-  SHOW_COMMENTS,
-  HIDE_COMMENTS,
+  SHOW_SEARCH_PANEL,
+  HIDE_SEARCH_PANEL,
   CHANGE_SORT,
-} from '../actiontypes';
-import { combineReducers } from 'redux';
+} from "../actiontypes";
+import { combineReducers } from "redux";
 
 const INITIAL_STATE = {
   currentSubreddit: {
-    url: '/r/itookapicture/',
-    after: '',
-    sort: 'hot',
+    url: "/r/itookapicture/",
+    after: "",
+    sort: "hot",
     currentPost: {},
     previousPosts: [],
     nextPosts: [],
   },
   previousSubreddit: {
-    url: '',
-    after: '',
-    sort: 'hot',
+    url: "",
+    after: "",
+    sort: "hot",
     currentPost: null,
     previousPosts: {},
     nextPosts: [],
   },
   search: {
-    searchTerm: '',
+    searchTerm: "",
     results: [],
     hidden: true,
   },
   visibilityOfElements: {
-    welcomeModal: true,
-    searchPanel: true,
+    searchPanel: false,
+    settingsPanel: false,
+    selfText: true,
     results: false,
     image: true,
     video: false,
     dots: false,
     description: false,
-    menu: false,
-    objectFit: 'cover',
-    comments: false,
   },
   preload: {
-    subreddit: '/r/itookapicture/',
-    after: '',
-    sort: 'hot',
+    subreddit: "/r/itookapicture/",
+    after: "",
+    sort: "hot",
     preloaded: [],
   },
   loading: false,
@@ -207,8 +204,8 @@ const api = (state = INITIAL_STATE, action) => {
         previousSubreddit: { ...state.currentSubreddit },
         currentSubreddit: {
           url: action.payload.subreddit,
-          after: '',
-          sort: 'hot',
+          after: "",
+          sort: "hot",
           currentPost: {},
           previousPosts: [],
           nextPosts: [],
@@ -219,7 +216,7 @@ const api = (state = INITIAL_STATE, action) => {
         },
         preload: {
           subreddit: action.payload.subreddit,
-          after: '',
+          after: "",
           preloaded: [],
         },
       };
@@ -272,19 +269,29 @@ const api = (state = INITIAL_STATE, action) => {
         },
       };
 
+    // case CHANGE_VISIBILITY:
+    //   // console.log('CHANGE_VISIBILITY');
+    //   return {
+    //     ...state,
+    //     visibilityOfElements: {
+    //       welcomeModal: false,
+    //       searchPanel: true,
+    //       results: true,
+    //       image: true,
+    //       video: false,
+    //       dots: true,
+    //       description: true,
+    //       menu: true,
+    //     },
+    //   };
+
     case CHANGE_VISIBILITY:
-      // console.log('CHANGE_VISIBILITY');
+      console.log("CHANGE_VISIBILITY", action.payload);
       return {
         ...state,
         visibilityOfElements: {
-          welcomeModal: false,
-          searchPanel: true,
-          results: true,
-          image: true,
-          video: false,
-          dots: true,
-          description: true,
-          menu: true,
+          ...state.visibilityOfElements,
+          ...action.payload,
         },
       };
 
@@ -308,15 +315,6 @@ const api = (state = INITIAL_STATE, action) => {
         },
       };
 
-    case CHANGE_MEDIA_SCALE:
-      return {
-        ...state,
-        visibilityOfElements: {
-          ...state.visibilityOfElements,
-          objectFitClass: action.payload,
-        },
-      };
-
     case CHANGE_SORT:
       // console.log('CHANGE_SORT');
 
@@ -325,35 +323,53 @@ const api = (state = INITIAL_STATE, action) => {
         currentSubreddit: {
           ...state.currentSubreddit,
           sort: action.payload,
-          after: '',
+          after: "",
           previousPosts: [],
           nextPosts: [],
         },
         preload: {
           ...state.preload,
           preloaded: [],
-          after: '',
+          after: "",
           sort: action.payload,
         },
       };
 
-    case SHOW_COMMENTS:
-      console.log('SHOW_COMMENTS');
+    // visibilityOfElements: {
+    //   searchPanel: false,
+    //settings: false,
+    //   results: false,
+    //   image: true,
+    //   video: false,
+    //   dots: false,
+    //   description: false,
+    // },
+
+    case SHOW_SEARCH_PANEL:
+      // console.log("SHOW_SEARCH_PANEL");
       return {
         ...state,
         visibilityOfElements: {
           ...state.visibilityOfElements,
-          comments: true,
+          searchPanel: true,
+          settingsPanel: false,
+          results: true,
+          dots: false,
+          description: false,
         },
       };
 
-    case HIDE_COMMENTS:
-      console.log('HIDE_COMMENTS');
+    case HIDE_SEARCH_PANEL:
+      // console.log("HIDE_SEARCH_PANEL");
       return {
         ...state,
         visibilityOfElements: {
           ...state.visibilityOfElements,
-          comments: false,
+          searchPanel: false,
+          settingsPanel: false,
+          results: false,
+          dots: true,
+          description: true,
         },
       };
 

@@ -13,14 +13,14 @@ export const filterPostsArray = (postsArray) => {
     return (
       (post.preview && post.preview.images[0] != null) ||
       post.media_metadata != null ||
-      post.domain.includes('imgur') ||
-      post.url.includes('jpg') ||
+      post.domain.includes("imgur") ||
+      post.url.includes("jpg") ||
       post.selftext != null
     );
   });
 
   if (filteredPostsArray.length < 1) {
-    throw new Error('incompatible post');
+    throw new Error("incompatible post");
   }
 
   filteredPostsArray = filteredPostsArray.map((post) => {
@@ -93,65 +93,61 @@ export const prefetchImages = (images) => {
 };
 
 export const getPostInfo = (post) => {
-  let imageSource;
-  let videoSource;
-  let imageSize = [0, 0];
-  let title;
-  let selftext;
+  let imageSource = "";
+  let videoSource = "";
+  let title = "";
+  let selftext = "";
 
   // console.log('post resolution:', post.preview.images[0].resolutions[
   //   post.preview.images[0].resolutions.length - 1
   // ]);
 
-  imageSource = post.preview
-    ? post.preview.images[0].resolutions[
-        post.preview.images[0].resolutions.length - 1
-      ].url.replace(/amp;/gi, '')
-    : '';
+  imageSource =
+    post.preview &&
+    post.preview.images &&
+    post.preview.images[0].resolutions.length > 0
+      ? post.preview.images[0].resolutions[
+          post.preview.images[0].resolutions.length - 1
+        ].url.replace(/amp;/gi, "")
+      : undefined;
 
-  if (post.url && post.url.includes('redd') && post.url.includes('.gif')) {
+  if (post.url && post.url.includes("redd") && post.url.includes(".gif")) {
     imageSource = post.url;
-    console.log('redd, gif ')
+    console.log("redd, gif ");
   }
 
-  if (post.url && post.url.includes('gfycat')) {
+  if (post.url && post.url.includes("gfycat")) {
     imageSource = post.secure_media.oembed.thumbnail_url;
-    console.log('gfycat ')
+    console.log("gfycat ");
   }
 
-  if (post.url && post.url.endsWith('.gifv') && !post.url.includes('redd')) {
-    videoSource = post.url.replace('gifv', 'mp4');
-    console.log('redd, gifv ')
+  if (post.url && post.url.endsWith(".gifv") && !post.url.includes("redd")) {
+    videoSource = post.url.replace("gifv", "mp4");
+    console.log("redd, gifv ");
   }
 
-  if (post.url && post.url.endsWith('.gif') && !post.url.includes('redd')) {
-    videoSource = post.url.replace('gif', 'mp4');
-    console.log('redd, !gif ')
-
+  if (post.url && post.url.endsWith(".gif") && !post.url.includes("redd")) {
+    videoSource = post.url.replace("gif", "mp4");
+    console.log("redd, !gif ");
   }
 
   if (post.media && post.media.reddit_video != null) {
     videoSource = post.media.reddit_video.fallback_url;
-    console.log('reddit_video ')
-
+    console.log("reddit_video ");
   }
 
-  if (post.url && post.url.includes('redgif')) {
+  if (post.url && post.url.includes("redgif")) {
     videoSource = post.preview.reddit_video_preview.fallback_url;
-    console.log('redgif ')
-    
+    console.log("redgif ");
   }
 
   title = post.title;
-  selftext = post.selftext ? post.selftext : '';
+  selftext = post.selftext ? post.selftext : "";
 
-  if (typeof imageSource == 'undefined') { 
-    imageSource = '';
-    imageSize = [NaN, NaN];
-  };
-  if (typeof videoSource == 'undefined') videoSource = '';
-  if (typeof title == 'undefined') title = '';
-  if (typeof selftext == 'undefined') selftext = '';
+  if (typeof imageSource == "undefined") imageSource = "";
+  if (typeof videoSource == "undefined") videoSource = "";
+  if (typeof title == "undefined") title = "";
+  if (typeof selftext == "undefined") selftext = "";
 
   // console.log(
   //   imageSource,
@@ -163,15 +159,24 @@ export const getPostInfo = (post) => {
   //   selftext.slice(0, 16)
   // );
 
-  if (imageSource) {
-    imageSize = [post.preview.images[0].resolutions[
-    post.preview.images[0].resolutions.length - 1
-  ].width, post.preview.images[0].resolutions[
-    post.preview.images[0].resolutions.length - 1
-  ].height]
-  } else {
-    imageSize = [0,0];
-  }
+  // if (imageSource) {
+  //   imageSize = [
+  //     post.preview.images[0].resolutions[
+  //       post.preview.images[0].resolutions.length - 1
+  //     ].width,
+  //     post.preview.images[0].resolutions[
+  //       post.preview.images[0].resolutions.length - 1
+  //     ].height,
+  //   ];
+  // } else {
+  //   imageSource = "";
+  //   imageSize = [0, 0];
+  // }
 
-  return { imageSource,imageSize , videoSource, title, selftext };
+  return {
+    imageSource,
+    videoSource,
+    title,
+    selftext,
+  };
 };

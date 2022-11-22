@@ -1,6 +1,6 @@
-import React, { setState } from 'react';
-import { connect } from 'react-redux';
-import { checkIfSubredditIsOk, changeSearchTerm } from '../actions';
+import React, { setState } from "react";
+import { connect } from "react-redux";
+import { checkIfSubredditIsOk, changeSearchTerm } from "../actions";
 
 class Result extends React.Component {
   constructor(props) {
@@ -13,31 +13,19 @@ class Result extends React.Component {
     // console.log('result:', e.target.childNodes[1].data);
 
     let res = e.target.childNodes[1].data;
-    if (!this.props.api.search.searchTerm.includes('+')) {
+    if (!this.props.api.search.searchTerm.includes("+")) {
       this.props.dispatch(checkIfSubredditIsOk(res));
     } else {
       // console.log('search term:', this.props.api.search.searchTerm);
-      let valueArr = this.props.api.search.searchTerm.split('+');
+      let valueArr = this.props.api.search.searchTerm.split("+");
       let newValue = valueArr
         .slice(0, -1)
-        .join('+')
+        .join("+")
         .concat(`+${res.slice(3)}`);
       this.props.dispatch(changeSearchTerm(newValue));
       this.props.dispatch(checkIfSubredditIsOk(`/r/${newValue}`));
     }
   }
-
-  // componentDidMount() {
-  //   console.log('Result:CDM', this.state);
-  // }
-
-  // componentDidUpdate() {
-  //   console.log('Result:CDU', this.state);
-  // }
-
-  // componentWillUnmount() {
-  //   console.log('Result:CWU', this.state);
-  // }
 
   render() {
     return (
@@ -46,25 +34,18 @@ class Result extends React.Component {
           <img
             src={this.props.iconUrl}
             style={{
-              width: '1.5rem',
-              height: '1.5rem',
-              marginRight: '0.5rem',
+              width: "1.5rem",
+              height: "1.5rem",
+              marginRight: "0.5rem",
             }}
           />
-          {this.props.url} -{' '}
-          {new Intl.NumberFormat().format(this.props.numOfSubscribers)}{' '}
+          {this.props.url} -{" "}
+          {new Intl.NumberFormat().format(this.props.numOfSubscribers)}{" "}
           subscribers
         </div>
       </React.Fragment>
     );
   }
-}
-
-{
-  /* 
-{element.data.url} - ${new Intl.NumberFormat().format(
-   element.data.subscribers
- )} subscribers */
 }
 
 const mapStateToProps = ({ api }) => {

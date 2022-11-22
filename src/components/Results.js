@@ -1,5 +1,5 @@
-import React from 'react';
-import Result from './Result';
+import React from "react";
+import Result from "./Result";
 
 export default class Results extends React.Component {
   constructor(props) {
@@ -31,9 +31,9 @@ export default class Results extends React.Component {
   }
 
   render() {
-    let classes = 'results';
+    let classes = "results";
     if (this.props.hidden) {
-      classes = 'results hidden';
+      classes = "results hidden";
     }
     return (
       <div id="results" className={classes}>
