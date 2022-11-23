@@ -23,10 +23,13 @@ export const TopPanel = (props) => {
       <img
         id="searchIcon"
         onClick={toggleSearchPanel}
-        src="../images/search_icon.png"
+        src="https://illfixit.github.io/kind-stranger/images/search_icon.png"
       />
       {settingsPanelVisible === true ? <SettingsPanel /> : null}
-      <img id="settingsIcon" src="../images/icon.png" />
+      <img
+        id="settingsIcon"
+        src="https://illfixit.github.io/kind-stranger/images/icon.png"
+      />
     </React.Fragment>
   );
 };
