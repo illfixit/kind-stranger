@@ -1,36 +1,22 @@
 import React from "react";
 import { connect } from "react-redux";
-import { showSearchPanel, hideSearchPanel } from "../actions";
-import SearchPanel from "./SearchPanel";
+import { showSearchPanel, showSettingsPanel } from "../actions";
 
-export const TopPanel = (props) => {
-  let searchPanelVisible = props.api.visibilityOfElements.searchPanel;
-  let settingsPanelVisible = props.api.visibilityOfElements.settingsPanel;
-
-  const toggleSearchPanel = () => {
-    // console.log("TopPanel::toggleSearchPanel");
-
-    searchPanelVisible === true
-      ? props.dispatch(hideSearchPanel())
-      : props.dispatch(showSearchPanel());
-
-    searchPanelVisible = props.api.visibilityOfElements.searchPanel;
-  };
-
+const TopPanel = (props) => {
   return (
-    <React.Fragment>
-      {searchPanelVisible === true ? <SearchPanel /> : null}
+    <div id="top-panel">
+      <div id="top-panel-placeholder"></div>
       <img
-        id="searchIcon"
-        onClick={toggleSearchPanel}
+        className="icon"
         src="https://illfixit.github.io/kind-stranger/images/search_icon.png"
+        onClick={() => props.dispatch(showSearchPanel())}
       />
-      {settingsPanelVisible === true ? <SettingsPanel /> : null}
       <img
-        id="settingsIcon"
+        className="icon"
         src="https://illfixit.github.io/kind-stranger/images/icon.png"
+        onClick={() => props.dispatch(showSettingsPanel())}
       />
-    </React.Fragment>
+    </div>
   );
 };
 

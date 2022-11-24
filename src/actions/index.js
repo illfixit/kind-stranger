@@ -29,17 +29,22 @@ import {
   CHANGE_SORT,
   SHOW_SEARCH_PANEL,
   HIDE_SEARCH_PANEL,
+  SHOW_SETTINGS_PANEL,
+  HIDE_SETTINGS_PANEL,
 } from "../actiontypes";
 import { filterPostsArray, prefetchImages } from "../utils";
 import store from "../store";
 
 export const fetchNextPost = () => {
-  const { url, sort, after } = store.getState().api.currentSubreddit;
+  // console.log("fetchNextPost");
+  const { subreddit, sort, after } = store.getState().api.currentSubreddit;
 
   return (dispatch) => {
     dispatch(fetchNextPostStarted());
 
-    fetch(`https://www.reddit.com${url}${sort}.json?limit=1&after=${after}`)
+    fetch(
+      `https://www.reddit.com/r/${subreddit}/${sort}.json?limit=1&after=${after}`
+    )
       .then((response) => response.json())
       .then((data) => {
         dispatch(updateCurrentSubredditAfter(data.data.after));
@@ -76,52 +81,36 @@ export const fetchNextPost = () => {
 };
 
 export const checkIfSubredditIsOk = (subreddit) => {
+  console.log("checkIfSubredditIsOk");
   return (dispatch) => {
     dispatch(checkIfSubredditIsOkStarted());
 
-    let exists = false;
-    fetch(`https://www.reddit.com${subreddit}hot.json`)
+    fetch(`https://www.reddit.com/r/${subreddit}/hot.json`)
       .then((data) => data.json())
       .then((data) => {
-        // console.log('check', data.data);
-
-        // IMPORTANT ORIGINAL CHECK IF SUBREDDIT HAS IMAGES
-        // for (let i = 1; i < 10; i++) {
-        //   try {
-        //     if (
-        //       data.data.children[i].data.preview.images[0].resolutions.length >
-        //       1
-        //     ) {
-        //       exists = true;
-        //       break;
-        //     }
-        //   } catch (e) {
-        //     // console.log(e);
-        //   }
-        // }
-
-        exists = true;
-        if (exists === false) {
-          dispatch(checkIfSubredditIsOkFailure("Bad subreddit"));
-        } else if (exists === true) {
+        console.log("check", data);
+        if (data.message != "Not Found") {
+          console.log("success");
           dispatch(checkIfSubredditIsOkSuccess());
-          dispatch(hideSearchResults(subreddit.slice(3, -1)));
+          dispatch(hideSearchResults());
           dispatch(changeSubreddit(subreddit));
           dispatch(prefetchPostsInCurrentSubreddit());
           dispatch(fetchNextPost());
           dispatch(showCurrentPost());
+        } else {
+          console.log(`${subreddit} doesn't exist!`);
+          dispatch(checkIfSubredditIsOkFailure("Bad subreddit"));
         }
       })
       .catch((e) => {
-        // console.log(`${subreddit} doesn't exist!`);
-        // alert('Please, choose another subreddit');
-        exists = false;
+        console.log(`${subreddit} doesn't exist!`);
         dispatch(checkIfSubredditIsOkFailure("Bad subreddit"));
       });
   };
 };
 
 export const getListOfSubreddits = (searchTerm) => {
+  // console.log("getListOfSubreddits");
   return (dispatch) => {
     dispatch(getListOfSubredditsStarted());
 
@@ -142,6 +131,45 @@ export const getListOfSubreddits = (searchTerm) => {
         console.log(e);
         dispatch(getListOfSubredditsFailure(e));
       });
+  };
+};
+
+export const prefetchPostsInCurrentSubreddit = () => {
+  // console.log("prefetchPostsInCurrentSubreddit");
+  return (dispatch) => {
+    let { subreddit, after, sort } = store.getState().api.preload;
+
+    if (typeof sort == "undefined") {
+      sort = "hot";
+    }
+
+    fetch(
+      `https://www.reddit.com/r/${subreddit}/${sort}.json?limit=5&after=${after}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        dispatch(changePreloadAfter(data.data.after));
+
+        let posts = data.data.children;
+        // console.log('posts', posts);
+        let images = posts.map((post) => {
+          if (
+            post.data &&
+            post.data.preview &&
+            post.data.preview.images.length > 0
+          ) {
+            return {
+              subreddit,
+              url: post.data.preview.images[0].resolutions[
+                post.data.preview.images[0].resolutions.length - 1
+              ].url.replace(/amp;/gi, ""),
+            };
+          }
+        });
+        prefetchImages(images);
+        dispatch(updatePreloaded(images));
+      })
+      .catch((e) => {});
   };
 };
 
@@ -250,7 +278,6 @@ const updateSearchResults = (results) => ({
 
 export const hideSearchResults = (subreddit) => ({
   type: HIDE_SEARCH_RESULTS,
-  payload: subreddit,
 });
 
 export const showSearchResults = () => ({
@@ -261,48 +288,6 @@ export const changeVisibility = (elements) => ({
   type: CHANGE_VISIBILITY,
   payload: elements,
 });
-
-export const prefetchPostsInCurrentSubreddit = () => {
-  return (dispatch) => {
-    let { subreddit, after, sort } = store.getState().api.preload;
-
-    if (typeof sort == "undefined") {
-      sort = "hot";
-    }
-
-    fetch(
-      `https://www.reddit.com${subreddit}${sort}.json?limit=5&after=${after}`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        dispatch(changePreloadAfter(data.data.after));
-
-        let posts = data.data.children;
-        // console.log('posts', posts);
-        let images = posts.map((post) => {
-          try {
-            return {
-              subreddit,
-              url: post.data.preview.images[0].resolutions[
-                post.data.preview.images[0].resolutions.length - 1
-              ].url.replace(/amp;/gi, ""),
-            };
-          } catch (e) {
-            console.log("unable to prefetch");
-          }
-        });
-        // console.log('images[0].url', images[0].url);
-
-        // images.forEach((image) => {
-        //   let img = new Image();
-        //   img.src = image.url;
-        // });
-
-        prefetchImages(images);
-        dispatch(updatePreloaded(images));
-      });
-  };
-};
 
 export const changePreloadAfter = (after) => ({
   type: CHANGE_PRELOAD_AFTER,
@@ -327,4 +312,12 @@ export const showSearchPanel = () => ({
 
 export const hideSearchPanel = () => ({
   type: HIDE_SEARCH_PANEL,
+});
+
+export const showSettingsPanel = () => ({
+  type: SHOW_SETTINGS_PANEL,
+});
+
+export const hideSettingsPanel = () => ({
+  type: HIDE_SETTINGS_PANEL,
 });

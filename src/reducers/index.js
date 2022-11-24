@@ -24,13 +24,15 @@ import {
   UPDATE_PRELOADED,
   SHOW_SEARCH_PANEL,
   HIDE_SEARCH_PANEL,
+  SHOW_SETTINGS_PANEL,
+  HIDE_SETTINGS_PANEL,
   CHANGE_SORT,
 } from "../actiontypes";
 import { combineReducers } from "redux";
 
 const INITIAL_STATE = {
   currentSubreddit: {
-    url: "/r/itookapicture/",
+    subreddit: "itookapicture",
     after: "",
     sort: "hot",
     currentPost: {},
@@ -38,7 +40,7 @@ const INITIAL_STATE = {
     nextPosts: [],
   },
   previousSubreddit: {
-    url: "",
+    subreddit: "",
     after: "",
     sort: "hot",
     currentPost: null,
@@ -48,20 +50,22 @@ const INITIAL_STATE = {
   search: {
     searchTerm: "",
     results: [],
-    hidden: true,
   },
-  visibilityOfElements: {
+  // visibilityOfElements: {
+
+  //   selfText: true,
+  //   results: false,
+  //   image: true,
+  //   video: false,
+  //   dots: false,
+  //   description: false,
+  // },
+  visibilityOfComponents: {
     searchPanel: false,
     settingsPanel: false,
-    selfText: true,
-    results: false,
-    image: true,
-    video: false,
-    dots: false,
-    description: false,
   },
   preload: {
-    subreddit: "/r/itookapicture/",
+    subreddit: "itookapicture",
     after: "",
     sort: "hot",
     preloaded: [],
@@ -92,7 +96,6 @@ const api = (state = INITIAL_STATE, action) => {
         },
         search: {
           ...state.search,
-          hidden: true,
         },
         loading: false,
         error: null,
@@ -179,12 +182,16 @@ const api = (state = INITIAL_STATE, action) => {
       };
 
     case CHECK_IF_SUBREDDIT_IS_OK_STARTED:
+      console.log(CHECK_IF_SUBREDDIT_IS_OK_STARTED);
       return {
         ...state,
         loading: true,
+        error: null,
       };
 
     case CHECK_IF_SUBREDDIT_IS_OK_FAILURE:
+      console.log(CHECK_IF_SUBREDDIT_IS_OK_FAILURE);
+
       return {
         ...state,
         loading: false,
@@ -192,18 +199,20 @@ const api = (state = INITIAL_STATE, action) => {
       };
 
     case CHECK_IF_SUBREDDIT_IS_OK_SUCCESS:
+      console.log(CHECK_IF_SUBREDDIT_IS_OK_SUCCESS);
       return {
         ...state,
         loading: false,
         error: null,
       };
+
     case CHANGE_SUBREDDIT:
       // console.log('CHANGE_SUBREDDIT', action.payload);
       return {
         ...state,
         previousSubreddit: { ...state.currentSubreddit },
         currentSubreddit: {
-          url: action.payload.subreddit,
+          subreddit: action.payload.subreddit,
           after: "",
           sort: "hot",
           currentPost: {},
@@ -212,7 +221,6 @@ const api = (state = INITIAL_STATE, action) => {
         },
         search: {
           ...state.search,
-          hidden: true,
         },
         preload: {
           subreddit: action.payload.subreddit,
@@ -245,7 +253,6 @@ const api = (state = INITIAL_STATE, action) => {
         search: {
           ...state.search,
           results: action.payload,
-          hidden: false,
         },
       };
 
@@ -255,8 +262,6 @@ const api = (state = INITIAL_STATE, action) => {
         ...state,
         search: {
           ...state.search,
-          searchTerm: action.payload,
-          hidden: true,
         },
       };
     case SHOW_SEARCH_RESULTS:
@@ -265,7 +270,6 @@ const api = (state = INITIAL_STATE, action) => {
         ...state,
         search: {
           ...state.search,
-          hidden: false,
         },
       };
 
@@ -289,8 +293,8 @@ const api = (state = INITIAL_STATE, action) => {
       console.log("CHANGE_VISIBILITY", action.payload);
       return {
         ...state,
-        visibilityOfElements: {
-          ...state.visibilityOfElements,
+        visibilityOfComponents: {
+          ...state.visibilityOfComponents,
           ...action.payload,
         },
       };
@@ -346,30 +350,48 @@ const api = (state = INITIAL_STATE, action) => {
     // },
 
     case SHOW_SEARCH_PANEL:
-      // console.log("SHOW_SEARCH_PANEL");
-      return {
+      console.log("SHOW_SEARCH_PANEL");
+      state = {
         ...state,
-        visibilityOfElements: {
-          ...state.visibilityOfElements,
+        visibilityOfComponents: {
+          ...state.visibilityOfComponents,
           searchPanel: true,
           settingsPanel: false,
-          results: true,
-          dots: false,
-          description: false,
+        },
+      };
+      return state;
+
+    case HIDE_SEARCH_PANEL:
+      console.log("HIDE_SEARCH_PANEL");
+      return {
+        ...state,
+        visibilityOfComponents: {
+          ...state.visibilityOfComponents,
+          searchPanel: false,
+          settingsPanel: false,
         },
       };
 
-    case HIDE_SEARCH_PANEL:
-      // console.log("HIDE_SEARCH_PANEL");
+    case SHOW_SETTINGS_PANEL:
+      console.log("SHOW_SETTINGS_PANEL");
+      state = {
+        ...state,
+        visibilityOfComponents: {
+          ...state.visibilityOfComponents,
+          searchPanel: false,
+          settingsPanel: true,
+        },
+      };
+      return state;
+
+    case HIDE_SETTINGS_PANEL:
+      console.log("HIDE_SETTINGS_PANEL");
       return {
         ...state,
-        visibilityOfElements: {
-          ...state.visibilityOfElements,
+        visibilityOfComponents: {
+          ...state.visibilityOfComponents,
           searchPanel: false,
-          settingsPanel: false,
-          results: false,
-          dots: true,
-          description: true,
+          settingsPanel: true,
         },
       };
 

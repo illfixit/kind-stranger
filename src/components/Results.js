@@ -1,15 +1,10 @@
 import React from "react";
 import Result from "./Result";
 
-export default class Results extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = { results: [] };
-  }
-
-  showResults() {
-    let results = this.props.resultsArray.map((element) => {
+const Results = (props) => {
+  let results;
+  if (props.resultsArray.length > 0) {
+    results = props.resultsArray.map((element) => {
       let iconUrl = element.data.community_icon
         ? element.data.community_icon
         : element.data.icon_img ||
@@ -26,19 +21,13 @@ export default class Results extends React.Component {
         </React.Fragment>
       );
     });
-
-    return results;
   }
 
-  render() {
-    let classes = "results";
-    if (this.props.hidden) {
-      classes = "results hidden";
-    }
-    return (
-      <div id="results" className={classes}>
-        {this.showResults()}
-      </div>
-    );
-  }
-}
+  return results.length > 0 ? (
+    <div id="results" className="results">
+      {results}
+    </div>
+  ) : null;
+};
+
+export default Results;

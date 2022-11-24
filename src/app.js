@@ -3,8 +3,11 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import store from "./store";
 
-import TopPanel from "./components/TopPanel.js";
 import Post from "./components/Post.js";
+import TopPanel from "./components/TopPanel";
+
+import SearchPanel from "./components/SearchPanel";
+import SettingsPanel from "./components/SettingsPanel";
 
 export default class App extends React.Component {
   componentDidMount() {
@@ -19,6 +22,8 @@ export default class App extends React.Component {
     return (
       <Provider store={store}>
         <TopPanel />
+        <SearchPanel />
+        <SettingsPanel />
         <Post />
       </Provider>
     );
