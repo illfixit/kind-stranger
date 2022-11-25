@@ -158,7 +158,7 @@ const api = (state = INITIAL_STATE, action) => {
       };
     case SHOW_NEXT_SUBPOST:
       // console.log(SHOW_NEXT_SUBPOST);
-      // // console.log(state.currentSubreddit.currentPost);
+      // console.log(state.currentSubreddit.currentPost);
       return {
         ...state,
         currentSubreddit: {
@@ -182,7 +182,7 @@ const api = (state = INITIAL_STATE, action) => {
       };
 
     case CHECK_IF_SUBREDDIT_IS_OK_STARTED:
-      console.log(CHECK_IF_SUBREDDIT_IS_OK_STARTED);
+      // console.log(CHECK_IF_SUBREDDIT_IS_OK_STARTED);
       return {
         ...state,
         loading: true,
@@ -190,7 +190,7 @@ const api = (state = INITIAL_STATE, action) => {
       };
 
     case CHECK_IF_SUBREDDIT_IS_OK_FAILURE:
-      console.log(CHECK_IF_SUBREDDIT_IS_OK_FAILURE);
+      // console.log(CHECK_IF_SUBREDDIT_IS_OK_FAILURE);
 
       return {
         ...state,
@@ -199,7 +199,7 @@ const api = (state = INITIAL_STATE, action) => {
       };
 
     case CHECK_IF_SUBREDDIT_IS_OK_SUCCESS:
-      console.log(CHECK_IF_SUBREDDIT_IS_OK_SUCCESS);
+      // console.log(CHECK_IF_SUBREDDIT_IS_OK_SUCCESS);
       return {
         ...state,
         loading: false,
@@ -239,13 +239,28 @@ const api = (state = INITIAL_STATE, action) => {
       };
     case GET_LIST_OF_SUBREDDITS_STARTED:
       // // console.log('GET_LIST_OF_SUBREDDITS_STARTED');
-      return state;
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+
     case GET_LIST_OF_SUBREDDITS_FAILURE:
       // // console.log('GET_LIST_OF_SUBREDDITS_FAILURE');
-      return state;
+      return {
+        ...state,
+        loading: false,
+        error: action.payload.error,
+      };
+
     case GET_LIST_OF_SUBREDDITS_SUCCESS:
       // // console.log('GET_LIST_OF_SUBREDDITS_SUCCESS');
-      return state;
+      return {
+        ...state,
+        loading: false,
+        error: null,
+      };
+
     case UPDATE_SEARCH_RESULTS:
       // console.log('UPDATE_SEARCH_RESULTS', action.payload);
       return {
@@ -290,7 +305,7 @@ const api = (state = INITIAL_STATE, action) => {
     //   };
 
     case CHANGE_VISIBILITY:
-      console.log("CHANGE_VISIBILITY", action.payload);
+      // console.log("CHANGE_VISIBILITY", action.payload);
       return {
         ...state,
         visibilityOfComponents: {
@@ -350,7 +365,7 @@ const api = (state = INITIAL_STATE, action) => {
     // },
 
     case SHOW_SEARCH_PANEL:
-      console.log("SHOW_SEARCH_PANEL");
+      // console.log("SHOW_SEARCH_PANEL");
       state = {
         ...state,
         visibilityOfComponents: {
@@ -362,7 +377,7 @@ const api = (state = INITIAL_STATE, action) => {
       return state;
 
     case HIDE_SEARCH_PANEL:
-      console.log("HIDE_SEARCH_PANEL");
+      // console.log("HIDE_SEARCH_PANEL");
       return {
         ...state,
         visibilityOfComponents: {
@@ -373,7 +388,7 @@ const api = (state = INITIAL_STATE, action) => {
       };
 
     case SHOW_SETTINGS_PANEL:
-      console.log("SHOW_SETTINGS_PANEL");
+      // console.log("SHOW_SETTINGS_PANEL");
       state = {
         ...state,
         visibilityOfComponents: {
@@ -385,7 +400,7 @@ const api = (state = INITIAL_STATE, action) => {
       return state;
 
     case HIDE_SETTINGS_PANEL:
-      console.log("HIDE_SETTINGS_PANEL");
+      // console.log("HIDE_SETTINGS_PANEL");
       return {
         ...state,
         visibilityOfComponents: {

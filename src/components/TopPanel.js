@@ -14,7 +14,7 @@ const TopPanel = (props) => {
       <img
         className="icon"
         src="https://illfixit.github.io/kind-stranger/images/icon.png"
-        onClick={() => props.dispatch(showSettingsPanel())}
+        // onClick={() => props.dispatch(showSettingsPanel())}
       />
     </div>
   );

@@ -26,7 +26,7 @@ export const PostDots = (props) => {
   }
 
   return (
-    <div id="dots" className={`dots ${dots.length > 1 ? "" : "hidden"}`}>
+    <div id="dots" className="dots">
       {dots}
     </div>
   );

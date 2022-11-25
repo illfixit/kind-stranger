@@ -77,7 +77,7 @@ body {
 }
 
 .selftext {
-  display: none;
+  display: block;
   position: inherit;
   padding-top: 20%;
   padding-bottom: 20%;
@@ -365,26 +365,30 @@ input {
 
 }
 
-.titleAndDots {
+#subredditAndAuthor {
+  display: block;
   position: fixed;
-  display: flex;
-  flex-direction: column;
-  bottom: 0;
-  left: 0;
-  /* right: 0; */
-  /* background-color: aquamarine; */
+  left: 3rem;
+  bottom: 4rem;
+  margin-top: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 100;
 }
 
 .title {
   /* overflow: visible; */
+  display: block;
+  position: fixed;
+  left: 3rem;
+  bottom: 8rem;
   font-size: 2.2rem;
   /* background-color: rgba(0, 0, 0, 0.35); */
   text-align: left;
   text-shadow: #44444465 1px 1px;
   max-width: 60vw;
   /* padding: 1.4em; */
-  margin: 0 0 1.4em 1em;
-  padding: 0.4em;
+  /* margin: 0 0 1.4em 1em; */
+  /* padding: 0.4em; */
   font-weight: bold;
 }
 
@@ -406,11 +410,7 @@ input {
   color: rgb(255, 255, 255, 0.3);
 }
 
-#subredditAndAuthor {
-  margin-top: 0.5rem;
-  font-size: 1.5rem;
-  font-weight: 100;
-}
+
 
 
 .active {
@@ -688,28 +688,6 @@ a {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.1);
 }
-
-/* .comments {
-  display: none;
-  top: 1rem;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: antiquewhite;
-  color: cornflowerblue;
-  z-index: 500;
-}
-
-.closeComments {
-  display: none;
-  top: 20vh;
-  left: 0;
-  height: 10vh;
-  width: 100vw;
-  background-color: palevioletred;
-  color: cornflowerblue;
-  z-index: 500;
-} */
 
 @media (prefers-color-scheme: dark) {
   .selftext {

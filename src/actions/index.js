@@ -81,16 +81,16 @@ export const fetchNextPost = () => {
 };
 
 export const checkIfSubredditIsOk = (subreddit) => {
-  console.log("checkIfSubredditIsOk");
+  // console.log("checkIfSubredditIsOk");
   return (dispatch) => {
     dispatch(checkIfSubredditIsOkStarted());
 
     fetch(`https://www.reddit.com/r/${subreddit}/hot.json`)
       .then((data) => data.json())
       .then((data) => {
-        console.log("check", data);
+        // console.log("check", data);
         if (data.message != "Not Found") {
-          console.log("success");
+          // console.log("success");
           dispatch(checkIfSubredditIsOkSuccess());
           dispatch(hideSearchResults());
           dispatch(changeSubreddit(subreddit));

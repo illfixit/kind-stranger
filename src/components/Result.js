@@ -1,13 +1,33 @@
-import React, { setState } from "react";
+import React, { useEffect, useRef } from "react";
 import { connect } from "react-redux";
 import {
   checkIfSubredditIsOk,
   changeSearchTerm,
   hideSearchPanel,
-  changeSubreddit,
 } from "../actions";
 
 const Result = (props) => {
+  // let shouldHidePanel = useRef(false);
+
+  // useEffect(() => {
+  //   let errorLoadingSubreddit = props.api.error;
+  //   if (!props.api.loading) {
+  //     if (props.api.error) {
+  //       alert(`Subreddit ${props.api.search.searchTerm} doesn't exist`);
+  //       errorLoadingSubreddit = false;
+  //     }
+
+  //     if (!props.api.error) {
+  //       if (shouldHidePanel.current) {
+  //         setTimeout(() => {
+  //           props.dispatch(hideSearchPanel());
+  //           shouldHidePanel.current = false;
+  //         }, 500);
+  //       }
+  //     }
+  //   }
+  // }, [props.api.loading, props.api.error]);
+
   const clickHandler = (e) => {
     // console.log('result:', e.target.childNodes[1].data);
 
@@ -17,6 +37,7 @@ const Result = (props) => {
     // console.log("res", res);
     props.dispatch(changeSearchTerm(res));
     props.dispatch(checkIfSubredditIsOk(res));
+    // shouldHidePanel.current = true;
     props.dispatch(hideSearchPanel());
 
     // let res = e.target.childNodes[1].data;

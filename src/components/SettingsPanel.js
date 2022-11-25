@@ -1,8 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
+import { hideSearchPanel } from "../actions";
 
 const SettingsPanel = (props) => {
-  let settingsPanelVisible = props.api.visibilityOfComponents.settingsPanel;
+  // console.log("SettingsPanel!");
+  // let settingsPanelVisible = props.api.visibilityOfComponents.settingsPanel;
   // let settingsPanelVisible = true;
   // return settingsPanelVisible ? null : (
   //   <img

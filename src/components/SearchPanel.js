@@ -2,13 +2,10 @@ import React, { useEffect, useRef } from "react";
 import { connect } from "react-redux";
 import {
   changeSearchTerm,
-  changeSubreddit,
-  changeVisibility,
   checkIfSubredditIsOk,
-  fetchNextPost,
   getListOfSubreddits,
   hideSearchPanel,
-  showSearchPanel,
+  hideSettingsPanel,
 } from "../actions";
 import Results from "./Results";
 
@@ -18,27 +15,27 @@ const SearchPanel = (props) => {
     props.dispatch(hideSettingsPanel());
   }
 
-  let errorLoadingSubreddit = props.api.error;
   let shouldHidePanel = useRef(false);
 
   useEffect(() => {
-    errorLoadingSubreddit = props.api.error;
-    if (!props.api.loading) {
-      if (errorLoadingSubreddit) {
+    // errorLoadingSubreddit = props.api.error;
+    if (props.api.loading == false) {
+      // console.log("props.api.loading == false");
+      //
+      if (props.api.error) {
+        // console.log("props.api.error");
         alert(`Subreddit ${props.api.search.searchTerm} doesn't exist`);
-        errorLoadingSubreddit = false;
+        shouldHidePanel.current = false;
       }
-      if (!errorLoadingSubreddit) {
-        console.log(
-          "errorLoadingSubreddit, shouldHidePanel",
-          errorLoadingSubreddit,
-          shouldHidePanel
-        );
-        if (shouldHidePanel) {
+      //
+      if (!props.api.error) {
+        // console.log("!props.api.error");
+
+        if (shouldHidePanel.current) {
           setTimeout(() => {
             props.dispatch(hideSearchPanel());
             shouldHidePanel.current = false;
-          }, 300);
+          }, 500);
         }
       }
     }
@@ -60,21 +57,21 @@ const SearchPanel = (props) => {
       cValue = cValue[cValue.length - 1];
     }
 
-    props.dispatch(changeSearchTerm(value));
-    if (!cValue) {
-      props.dispatch(getListOfSubreddits(value));
-    } else {
-      props.dispatch(getListOfSubreddits(cValue));
-    }
-
     if (value && (e.key === "Enter" || e.keyCode === 13)) {
       // console.log("hide search panel pleasee");
       checkSubredditAndHideSearchPanel();
+    } else {
+      props.dispatch(changeSearchTerm(value));
+      if (!cValue) {
+        props.dispatch(getListOfSubreddits(value));
+      } else {
+        props.dispatch(getListOfSubreddits(cValue));
+      }
     }
   };
 
   const cleanInput = () => {
-    console.log("cleanInput");
+    // console.log("cleanInput");
     document.getElementById("search-panel").value = "";
     props.dispatch(changeSearchTerm(""));
     document.getElementById("search-panel").focus();
@@ -82,7 +79,6 @@ const SearchPanel = (props) => {
 
   return searchPanelVisible ? (
     <div id="search-window">
-      {/* <button id="close-search-panel">&#60;</button> */}
       <div id="search-panel">
         <span id="input-with-clean-icon">
           <input
@@ -99,12 +95,7 @@ const SearchPanel = (props) => {
             // autocomplete="off"
             // spellcheck="false"
           />
-          <div
-            id="cleanInputContainer"
-            onClick={() => {
-              props.dispatch(cleanInput());
-            }}
-          >
+          <div id="cleanInputContainer" onClick={() => cleanInput()}>
             <img
               id="cleanInputIcon"
               class="search-panel-icon"

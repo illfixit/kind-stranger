@@ -8,28 +8,33 @@ import {
   showPreviousSubpost,
 } from "../actions/index";
 
-import PostText from "./PostText";
+import PostSelfText from "./PostSelfText";
 import PostImage from "./PostImage";
 import PostVideo from "./PostVideo";
-import PostInfo from "./PostInfo";
+import PostMeta from "./PostMeta";
+import PostDots from "./PostDots";
 
 import Hammer from "rc-hammerjs";
 import { getPostInfo } from "../utils";
+import PostTitle from "./PostTitle";
 
 export const Post = (props) => {
   let oldShift = 0;
   let shift = 0;
 
   let imageSource = "";
-  let imageVisibilityClass = "hidden";
-  let videoSource = "";
-  let videoVisibilityClass = "hidden";
-  let title = "";
-  let titleVisibilityClass = "hidden";
-  let selftext = "";
-  let textVisibilityClass = "hidden";
+  let imageVisible = false;
 
-  let currentSortMethod = "hot";
+  let videoSource = "";
+  let videoVisible = false;
+
+  let title = "";
+  let titleVisible = false;
+
+  let selftext = "";
+  let selfTextVisible = false;
+
+  let dotsVisible = false;
   let numberOfSubPosts = 0;
   let active;
 
@@ -39,21 +44,27 @@ export const Post = (props) => {
     return document.removeEventListener("keydown", handleKeyboard, false);
   }, []);
 
+  useEffect(() => {
+    if (props.api.loading) {
+      imageSource = "./images/loader.gif";
+    }
+  }, [props.api.loading]);
+
   const handleTap = (e) => {
-    console.log("tap ", e.target.id);
-    if (e.target.id == "top") onShowPreviousPost();
-    if (
-      e.target.id == "bottom" ||
-      e.target.id == "title" ||
-      e.target.id == "subredditAndAuthor"
-    )
-      showNextPost();
-    if (e.target.id == "left") onShowPreviousSubPost();
-    if (e.target.id == "right") onShowNextSubPost();
+    // console.log("tap ", e.target.id);
+    // if (e.target.id == "top") onShowPreviousPost();
+    // if (
+    //   e.target.id == "bottom" ||
+    //   e.target.id == "title" ||
+    //   e.target.id == "subredditAndAuthor"
+    // )
+    //   showNextPost();
+    // if (e.target.id == "left") onShowPreviousSubPost();
+    // if (e.target.id == "right") onShowNextSubPost();
   };
 
   const handlePan = (e) => {
-    if (e.center.y / window.innerHeight > 0.8) {
+    if (e.center.y / window.innerHeight > 0.85) {
       // console.log("handlePan", e);
       oldShift = shift;
       shift = Math.min(
@@ -66,31 +77,23 @@ export const Post = (props) => {
 
       let newShift = ((shift + oldShift) * 100) / 2;
 
-      document.getElementById("image").style.objectPosition = `${newShift}%`;
-      document.getElementById("video").style.objectPosition = `${newShift}%`;
+      if (document.getElementById("image"))
+        document.getElementById("image").style.objectPosition = `${newShift}%`;
+      if (document.getElementById("video"))
+        document.getElementById("video").style.objectPosition = `${newShift}%`;
     } else {
       // console.log("handlePan else", e.center.x);
     }
   };
 
-  const handlePanStart = (e) => {
-    // console.log('handlePanStart', e)
-  };
+  const handlePanStart = (e) => {};
 
-  const handlePanEnd = (e) => {
-    // console.log('handlePanEnd', e)
-    // shift = 0;
-    // document.getElementById('image').style.objectFit = "contain";
-    // document.getElementById('video').style.objectFit = "contain";
-    // document.getElementById('image').style.objectPosition = "center";
-    // document.getElementById('video').style.objectPosition = "center";
-  };
+  const handlePanEnd = (e) => {};
 
-  const handlePanCancel = (e) => {
-    // console.log('handlePanCancel', e)
-  };
+  const handlePanCancel = (e) => {};
 
   const onSwipe = (e) => {
+    // console.log(e);
     // 50 - tolerance value
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
       if (e.deltaY < 0) {
@@ -143,50 +146,18 @@ export const Post = (props) => {
   };
 
   const onSwipeDown = (position, event) => {
-    // console.log('onSwipeDown')
-    // e.preventDefault()
-    // document.getElementById('image').style.objectFit = "contain";
-    // document.getElementById('video').style.objectFit = "contain";
-    // document.getElementById('image').style.objectPosition = "center";
-    // document.getElementById('video').style.objectPosition = "center";
     onShowPreviousPost();
   };
 
   const onSwipeUp = (position, event) => {
-    // console.log('onSwipeUp')
-    // e.preventDefault()
-    // document.getElementById('image').style.objectFit = "contain";
-    // document.getElementById('video').style.objectFit = "contain";
-    // document.getElementById('image').style.objectPosition = "center";
-    // document.getElementById('video').style.objectPosition = "center";
     onShowNextPost();
   };
 
   const onSwipeLeft = (position, event) => {
-    // console.log('onSwipeLeft')
-
-    // e.preventDefault()
-
-    // document.getElementById('image').style.objectFit = "contain";
-    // document.getElementById('video').style.objectFit = "contain";
-    // document.getElementById('image').style.objectPosition = "center";
-    // document.getElementById('video').style.objectPosition = "center";
-
-    // console.log('onSwipeLeft', props.api.currentSubreddit.currentPost);
     onShowNextSubPost();
   };
 
   const onSwipeRight = (position, event) => {
-    // console.log('onSwipeRight')
-
-    // e.preventDefault()
-
-    // document.getElementById('image').style.objectFit = "contain";
-    // document.getElementById('video').style.objectFit = "contain";
-    // document.getElementById('image').style.objectPosition = "center";
-    // document.getElementById('video').style.objectPosition = "center";
-
-    // console.log('onSwipeRight', props.api.currentSubreddit.currentPost);
     onShowPreviousSubPost();
   };
 
@@ -199,18 +170,32 @@ export const Post = (props) => {
   // }
 
   const handlePress = (e) => {
-    if (document.getElementById("image").style.objectFit != "contain") {
-      document.getElementById("image").style.objectFit = "contain";
-      document.getElementById("video").style.objectFit = "contain";
+    e.preventDefault();
+    if (
+      (document.getElementById("image") &&
+        document.getElementById("image").style.objectFit != "contain") ||
+      (document.getElementById("video") &&
+        document.getElementById("video").style.objectFit != "contain")
+    ) {
+      if (document.getElementById("image"))
+        document.getElementById("image").style.objectFit = "contain";
+      if (document.getElementById("video"))
+        document.getElementById("video").style.objectFit = "contain";
     } else {
-      document.getElementById("image").style.objectFit = "cover";
-      document.getElementById("video").style.objectFit = "cover";
+      if (document.getElementById("image"))
+        document.getElementById("image").style.objectFit = "cover";
+      if (document.getElementById("video"))
+        document.getElementById("video").style.objectFit = "cover";
     }
   };
 
   const handlePressUp = (e) => {
-    document.getElementById("image").style.objectFit = "cover";
-    document.getElementById("video").style.objectFit = "cover";
+    e.preventDefault();
+
+    if (document.getElementById("image"))
+      document.getElementById("image").style.objectFit = "cover";
+    if (document.getElementById("video"))
+      document.getElementById("video").style.objectFit = "cover";
   };
 
   const handleKeyboard = (e) => {
@@ -259,6 +244,11 @@ export const Post = (props) => {
       try {
         if (currentPost[0]) {
           numberOfSubPosts = currentPost.length - 1;
+          if (numberOfSubPosts > 1) {
+            dotsVisible = true;
+          } else {
+            dotsVisible = false;
+          }
           active = currentPost[0].active;
 
           let post = currentPost[active];
@@ -273,33 +263,33 @@ export const Post = (props) => {
           // console.log('imageSize', imageSize)
 
           if (!videoSource) {
-            videoVisibilityClass = "hidden";
+            videoVisible = false;
           }
 
           if (!imageSource) {
-            imageVisibilityClass = "hidden";
+            imageVisible = false;
           }
 
           if (!videoSource && !imageSource) {
             // console.log("!videoSource && !imageSource");
-            titleVisibilityClass = "hidden";
-            textVisibilityClass = "visible";
+            titleVisible = false;
+            selfTextVisible = true;
           }
 
           if (imageSource) {
-            imageVisibilityClass = "visible";
-            videoVisibilityClass = "hidden";
+            imageVisible = true;
+            videoVisible = false;
 
-            titleVisibilityClass = "visible";
-            textVisibilityClass = "hidden";
+            titleVisible = true;
+            selfTextVisible = false;
           }
 
           if (videoSource) {
-            imageVisibilityClass = "hidden";
-            videoVisibilityClass = "visible";
+            imageVisible = false;
+            videoVisible = true;
 
-            titleVisibilityClass = "visible";
-            textVisibilityClass = "hidden";
+            titleVisible = true;
+            selfTextVisible = false;
           }
         }
       } catch (e) {
@@ -310,10 +300,8 @@ export const Post = (props) => {
 
   let currentPost = props.api.currentSubreddit.currentPost;
   preparePost(currentPost);
-  currentSortMethod = props.api.currentSubreddit.sort;
-  // console.log(currentSortMethod);
 
-  let options = {
+  const options = {
     touchAction: "compute",
     recognizers: {
       // tap: {
@@ -343,49 +331,46 @@ export const Post = (props) => {
       direction="DIRECTION_ALL"
     >
       <div>
-        <PostText
-          visibilityClass={textVisibilityClass}
-          title={title}
-          selftext={selftext}
-        />
-
-        <div className="media" id="media">
-          <PostImage
-            src={imageSource}
-            imageVisibilityClass={imageVisibilityClass}
-          />
-
-          <PostVideo
-            src={videoSource}
-            videoVisibilityClass={videoVisibilityClass}
-          />
-          <div id="coverModeNavigation">
+        {/* <div id="coverModeNavigation">
             <div id="top">Top</div>
             <div id="left">Left</div>
             <div id="right">Right</div>
             <div id="bottom">Bottom</div>
-          </div>
+          </div> */}
+
+        {selfTextVisible ? (
+          <PostSelfText title={title} selftext={selftext} />
+        ) : null}
+
+        <div className="media" id="media">
+          {imageVisible ? (
+            <PostImage src={imageSource} imageVisible={imageVisible} />
+          ) : null}
+
+          {videoVisible ? (
+            <PostVideo src={videoSource} videoVisible={videoVisible} />
+          ) : null}
+
+          <PostMeta
+            subreddit={
+              props.api.currentSubreddit &&
+              props.api.currentSubreddit.currentPost &&
+              props.api.currentSubreddit.currentPost[active] &&
+              props.api.currentSubreddit.currentPost[active].subreddit
+            }
+            author={
+              props.api.currentSubreddit &&
+              props.api.currentSubreddit.currentPost &&
+              props.api.currentSubreddit.currentPost[active] &&
+              props.api.currentSubreddit.currentPost[active].author
+            }
+          />
+          {titleVisible ? <PostTitle title={title} /> : null}
+
+          {dotsVisible ? (
+            <PostDots numberOfSubPosts={numberOfSubPosts} active={active} />
+          ) : null}
         </div>
-        <PostInfo
-          numberOfSubPosts={numberOfSubPosts}
-          imageSource={imageSource}
-          // imageSize={imageSize}
-          active={active}
-          titleVisibilityClass={titleVisibilityClass}
-          title={title}
-          subreddit={
-            props.api.currentSubreddit &&
-            props.api.currentSubreddit.currentPost &&
-            props.api.currentSubreddit.currentPost[active] &&
-            props.api.currentSubreddit.currentPost[active].subreddit
-          }
-          author={
-            props.api.currentSubreddit &&
-            props.api.currentSubreddit.currentPost &&
-            props.api.currentSubreddit.currentPost[active] &&
-            props.api.currentSubreddit.currentPost[active].author
-          }
-        />
       </div>
     </Hammer>
   );
