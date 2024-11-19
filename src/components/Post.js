@@ -92,6 +92,25 @@ export const Post = (props) => {
 
   const handlePanCancel = (e) => {};
 
+const handleGyroscope = (event) => {
+  const gamma = event.gamma; // Left-right tilt in degrees
+  oldShift = shift;
+  shift = Math.min(
+    Math.max(
+      (0.5 - (gamma / 90) * 1.25).toFixed(2),
+      0
+    ),
+    1
+  );
+
+  let newShift = ((shift + oldShift) * 100) / 2;
+
+  if (document.getElementById("image"))
+    document.getElementById("image").style.objectPosition = `${newShift}%`;
+  if (document.getElementById("video"))
+    document.getElementById("video").style.objectPosition = `${newShift}%`;
+};
+
 const requestGyroscopePermission = () => {
   if (window.DeviceOrientationEvent) {
     if (typeof DeviceOrientationEvent.requestPermission === 'function') {
