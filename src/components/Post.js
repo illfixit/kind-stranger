@@ -114,7 +114,7 @@ const requestGyroscopePermission = () => {
 const button = document.createElement('button');
 button.innerText = 'Enable Gyroscope';
 button.style.position = 'fixed';
-button.style.top = '10px';
+button.style.bottom = '10px';
 button.style.left = '10px';
 button.addEventListener('click', requestGyroscopePermission);
 document.body.appendChild(button);
