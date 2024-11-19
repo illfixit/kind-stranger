@@ -92,6 +92,33 @@ export const Post = (props) => {
 
   const handlePanCancel = (e) => {};
 
+const requestGyroscopePermission = () => {
+  if (window.DeviceOrientationEvent) {
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission()
+        .then(permissionState => {
+          if (permissionState === 'granted') {
+            window.addEventListener('deviceorientation', handleGyroscope);
+          } else {
+            alert('Permission denied');
+          }
+        })
+        .catch(console.error);
+    } else {
+      window.addEventListener('deviceorientation', handleGyroscope);
+    }
+  }
+};
+
+// Add a button to request permission
+const button = document.createElement('button');
+button.innerText = 'Enable Gyroscope';
+button.style.position = 'fixed';
+button.style.top = '10px';
+button.style.left = '10px';
+button.addEventListener('click', requestGyroscopePermission);
+document.body.appendChild(button);
+
   const onSwipe = (e) => {
     // console.log(e);
     // 50 - tolerance value
