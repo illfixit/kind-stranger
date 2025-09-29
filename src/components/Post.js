@@ -93,7 +93,6 @@ export const Post = (props) => {
   const handlePanCancel = (e) => {};
 
   const onSwipe = (e) => {
-    // console.log(e);
     // 50 - tolerance value
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
       if (e.deltaY < 0) {
